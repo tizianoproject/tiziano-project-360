@@ -1,14 +1,18 @@
 package
 {
+	import com.chrisaiv.utils.ShowHideManager;
 	import com.gskinner.utils.SWFBridgeAS3;
 	
 	import flash.display.Loader;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
+	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
+	
+	import org.tizianoproject.view.components.Overlay;
 	
 	public class Main extends Sprite
 	{
@@ -23,9 +27,14 @@ package
 		public var wall_mc:MovieClip;
 		public var header_mc:MovieClip;
 		public var footer_mc:MovieClip;
+		
+		private var appStage:Stage;
+		private var overlay:Overlay
 
 		public function Main()
 		{		
+			appStage = stage;
+			
 			swfBridge = new SWFBridgeAS3( "swfBridge", this )
 			swfBridge.addEventListener( Event.CONNECT, onConnectHandler );			
 
@@ -45,7 +54,11 @@ package
 
 		public function onPressThumb( param1, param2 ):void
 		{
-			trace( "onPressThumb:", param1.description, param2 );
+			//trace( "onPressThumb:", param1.description, param2 );
+			overlay = new Overlay( 0, 70, appStage.stageWidth, 484 );
+			overlay.name = "overlay";
+			overlay.addEventListener( Event.CLOSE, onOverlayCloseHandler, false, 0, true );
+			ShowHideManager.addContent( appStage, overlay );
 		}
 
 		public function onRollOverThumb( param1, param2 ):void
@@ -64,5 +77,11 @@ package
 		{
 			trace( "main::sbTest: ", param1, param2 );
 		}		
+		
+		private function onOverlayCloseHandler( e:Event ):void
+		{
+			trace( "onOverlayCloseHandler" );
+			ShowHideManager.removeContent( appStage, e.currentTarget.name );
+		}
 	}
 }
