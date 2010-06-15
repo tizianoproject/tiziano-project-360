@@ -52,6 +52,9 @@ package
 			swfBridge.send( "sbTest", "Sent From:", loaderInfo.url.substr(loaderInfo.url.lastIndexOf("/")) );
 		}
 
+		/**********************************
+		*
+		**********************************/
 		public function onPressThumb( param1, param2 ):void
 		{
 			//trace( "onPressThumb:", param1.description, param2 );
