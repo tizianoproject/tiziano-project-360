@@ -59,7 +59,6 @@ package
 
 		public function onConnectHandler( e:Event ):void
 		{
-			trace( "onConnectHandler", e.currentTarget );
 			swfMessage( "connect" );
 		}
 		
@@ -82,10 +81,15 @@ package
 		{
 			trace( "onStageResizeHandler:", appStage.displayState, (this as Main).x, (this as Main).y );
 			
+			//Notify the Wall
+			swfMessage( appStage.displayState );
+			
 			if( appStage.displayState == FullScreenEvent.FULL_SCREEN ){
+				//Reposition
 				(this as Main).x = appStage.stageWidth / 2 - ( (this as Main).width /2 );
 				(this as Main).y = appStage.stageHeight / 2 - ( (this as Main).height /2 );				
 			} else {
+				//Reposition
 				(this as Main).x = 0;
 				(this as Main).y = 0;
 			}
