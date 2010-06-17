@@ -15,6 +15,7 @@ package
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
 	
+	import org.tizianoproject.view.ArticleView;
 	import org.tizianoproject.view.components.FullScreen;
 	import org.tizianoproject.view.components.Overlay;
 	
@@ -37,7 +38,9 @@ package
 		public var footer_mc:MovieClip;
 		
 		private var appStage:Stage;
-		private var overlay:Overlay
+		private var overlay:Overlay;
+		
+		private var articleView:ArticleView;
 
 		public function Main()
 		{		
@@ -46,17 +49,26 @@ package
 			appStage.scaleMode = StageScaleMode.NO_SCALE;
 			appStage.addEventListener( Event.RESIZE, onStageResizeHandler, false, 0, true );
 			
-			swfBridge = new SWFBridgeAS3( SWF_BRIDGE, this )
-			swfBridge.addEventListener( Event.CONNECT, onConnectHandler );			
 
-			context = new LoaderContext( true );
-			loader = new Loader();
-			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e){ trace( "Event.COMPLETE"); }, false, 0, true ); 
-			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, function(e){trace("IOErrorEvent.IO_ERROR") }, false, 0, true ); 
-			loader.load( new URLRequest( SWF_PATH ), context );
-			wall_mc.addChild(loader);
+			var offline:Boolean = true;
+			if( !offline ){
+				swfBridge = new SWFBridgeAS3( SWF_BRIDGE, this )
+				swfBridge.addEventListener( Event.CONNECT, onConnectHandler );			
+
+				context = new LoaderContext( true );
+				loader = new Loader();
+				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e:Event){ trace( "Event.COMPLETE"); }, false, 0, true ); 
+				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, function(e:Event){trace("IOErrorEvent.IO_ERROR") }, false, 0, true ); 
+				loader.load( new URLRequest( SWF_PATH ), context );
+				wall_mc.addChild(loader);	
+			}
+			
+			showArticleView();
 		}
 
+		/**********************************
+		 * SWFBridge Handlers
+		 **********************************/
 		public function onConnectHandler( e:Event ):void
 		{
 			swfMessage( "connect" );
@@ -77,6 +89,62 @@ package
 			}
 		}
 		
+		public function onPressThumb( param1:*, param2:* ):void
+		{
+			showArticleView();
+		}
+
+		public function onRollOverThumb( param1:*, param2:* ):void
+		{
+			trace( "onRollOverThumb:", param1.description, param2 );
+			footer_mc.title_txt.text = param1.description;
+		}
+
+		public function onRollOutThumb( param1:*, param2:* ):void
+		{
+			trace( "onRollOutThumb:", param1.description, param2 );	
+			footer_mc.title_txt.text = "";
+		}
+
+		public function sbTest( param1:String, param2:String ):void
+		{
+			trace( "main::sbTest: ", param1, param2 );
+		}		
+		
+		
+		private function showArticleView():void
+		{
+			//Add an Article Page
+			articleView = new ArticleView();
+			articleView.name = "articleView";
+			articleView.eDispatcher.addEventListener( Event.CLOSE, hideArticleView, false, 0, true );
+			ShowHideManager.addContent( appStage, articleView );			
+		}
+		
+		private function hideArticleView( e:Event ):void
+		{
+			trace( "Main::hideArticleView" );
+			ShowHideManager.removeContent( appStage, "articleView" );
+		}
+		
+		private function showOverlay():void
+		{
+			trace( "Main::showOverlay" );
+			overlay = new Overlay( 0, 70, appStage.stageWidth, 484 );
+			overlay.name = "overlay";
+			overlay.addEventListener( Event.CLOSE, hideOverlay, false, 0, true );
+			ShowHideManager.addContent( appStage, overlay );			
+		}
+		
+		private function hideOverlay( e:Event ):void
+		{
+			trace( "Main::hideOverlay" );
+			ShowHideManager.removeContent( appStage, "overlay" );
+		}
+
+		/**********************************
+		 * FullScreen Handlers
+		 **********************************/
 		private function onStageResizeHandler( e:Event ):void
 		{
 			trace( "onStageResizeHandler:", appStage.displayState, (this as Main).x, (this as Main).y );
@@ -95,40 +163,10 @@ package
 			}
 		}
 		
-
-		/**********************************
-		*
-		**********************************/
-		public function onPressThumb( param1, param2 ):void
-		{
-			//trace( "onPressThumb:", param1.description, param2 );
-			overlay = new Overlay( 0, 70, appStage.stageWidth, 484 );
-			overlay.name = "overlay";
-			overlay.addEventListener( Event.CLOSE, onOverlayCloseHandler, false, 0, true );
-			ShowHideManager.addContent( appStage, overlay );
-		}
-
-		public function onRollOverThumb( param1, param2 ):void
-		{
-			trace( "onRollOverThumb:", param1.description, param2 );
-			footer_mc.title_txt.text = param1.description;
-		}
-
-		public function onRollOutThumb( param1, param2 ):void
-		{
-			trace( "onRollOutThumb:", param1.description, param2 );	
-			footer_mc.title_txt.text = "";
-		}
-
-		public function sbTest( param1:String, param2:String ):void
-		{
-			trace( "main::sbTest: ", param1, param2 );
-		}		
 		
-		private function onOverlayCloseHandler( e:Event ):void
-		{
-			trace( "onOverlayCloseHandler" );
-			ShowHideManager.removeContent( appStage, e.currentTarget.name );
-		}
+		/**********************************
+		 *
+		 **********************************/
+
 	}
 }
