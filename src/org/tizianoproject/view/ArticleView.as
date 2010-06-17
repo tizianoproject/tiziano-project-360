@@ -11,6 +11,7 @@ package org.tizianoproject.view
 	
 	import org.casalib.util.NumberUtil;
 	import org.tizianoproject.view.components.Feature;
+	import org.tizianoproject.view.components.article.Slideshow;
 	import org.tizianoproject.view.components.article.Text;
 	
 	public class ArticleView extends MovieClip
@@ -32,6 +33,7 @@ package org.tizianoproject.view
 		public var next_btn:SimpleButton;
 
 		private var text:Text;
+		private var slideshow:Slideshow;
 
 		private var features:Array;
 		private var feature:Feature;
@@ -65,10 +67,16 @@ package org.tizianoproject.view
 				ShowHideManager.addContent( (this as ArticleView), feature );
 				features.push( feature );
 			}
-			
+
+			/*
 			text = new Text();
 			text.name = "text";
 			ShowHideManager.addContent( (this as ArticleView), text ); 			
+			*/
+			slideshow = new Slideshow();
+			slideshow.name = "slideshow";
+			ShowHideManager.addContent( (this as ArticleView), slideshow );
+			
 
 			prev_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
 			prev_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
