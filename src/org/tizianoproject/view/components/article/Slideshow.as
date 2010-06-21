@@ -1,67 +1,2 @@
-package org.tizianoproject.view.components.article
-{
-	import com.chrisaiv.flickr.FlickrLoader;
-	import com.chrisaiv.flickr.FlickrPhotoSetLoader;
-	import com.chrisaiv.utils.ShowHideManager;
-	import com.dtk.ImageManager;
-	
-	import flash.display.MovieClip;
-	import flash.events.Event;
-	import flash.net.URLLoader;
-	import flash.net.URLRequest;
-	
-	public class Slideshow extends MovieClip
-	{
-		private static const DEFAULT_X_POS:Number = 50;
-		private static const DEFAULT_Y_POS:Number = 50;
-
-		private var images:Array;
-		private var im:ImageManager;
-		private var flickrLoader:FlickrLoader;
-		private var  xmlURL:String = "http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=4415d421495d5b59d8537c0937fcce38&photoset_id=72157624101532779";
-
-		public function Slideshow()
-		{
-			flickrLoader = new FlickrLoader();
-			flickrLoader.load( "72157624101532779" );
-			flickrLoader.addEventListener( Event.COMPLETE, photoSetCompleteHandler, false, 0, true );
-			
-			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
-			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
-		}
-
-		private function photoSetCompleteHandler( e:Event ):void
-		{
-			var flickrLoader:FlickrLoader = FlickrLoader( e.currentTarget );
-				flickrLoader.removeEventListener( Event.COMPLETE, photoSetCompleteHandler );
-			//trace( "photoSetCompleteHandler:", flickrLoader.getImageData() );
-			var totalImages:Number = flickrLoader.getImageData().length;
-			
-			images = new Array();
-			for( var i:uint = 0; i < totalImages; i++ ){
-				images.push( { url: flickrLoader.getImageData()[i].url, 
-								title: flickrLoader.getImageData()[i].title } );
-			}
-			initSlideshow();
-		}
-		
-		private function initSlideshow():void
-		{
-			im = new ImageManager( 450, 300, 0, images );
-			im.name = "im";
-			im.x = DEFAULT_X_POS;
-			im.y = DEFAULT_Y_POS;
-			ShowHideManager.addContent( (this as Slideshow), im );			
-		}
-
-		private function onAddedToStageHandler( e:Event ):void
-		{
-			trace( "SlideShow::onAddedToStageHandler:" );
-		}
-		
-		private function onRemovedFromStageHandler( e:Event ):void
-		{
-			trace( "SlideShow::onRemovedFromStageHandler:" );
-		}		
-	}
-}
+﻿//http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=4415d421495d5b59d8537c0937fcce38&photoset_id=72157624101532779/** * ------------------------------------------------------- * Flickr Rest Request * ------------------------------------------------------- *  * Version: 1 * Created: cmendez@tizianoproject.org * Modified: 6/21/2010 *  * ------------------------------------------------------- * Notes: *  * FlickrRest Request makes requests and awaits a JSON response. *  * */package org.tizianoproject.view.components.article{	import com.chrisaiv.flickr.FlickrLoader;	import com.chrisaiv.utils.ShowHideManager;	import com.dtk.ImageManager;		import flash.display.MovieClip;	import flash.events.Event;	import flash.events.MouseEvent;	import flash.net.URLLoader;	import flash.net.URLRequest;	import flash.text.TextField;
+		public class Slideshow extends MovieClip	{		private static const DEFAULT_X_POS:Number = 35;		private static const DEFAULT_Y_POS:Number = 105;		private var images:Array;		private var im:ImageManager;		private var flickrLoader:FlickrLoader;				public var title_txt:TextField;		public var text_txt:TextField;		public function Slideshow()		{			images = new Array();			flickrLoader = new FlickrLoader();			flickrLoader.apiKey = "4415d421495d5b59d8537c0937fcce38";			flickrLoader.load( "72157624151203417" );			flickrLoader.addEventListener( Event.COMPLETE, photoSetCompleteHandler, false, 0, true );						addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );		}				private function photoSetCompleteHandler( e:Event ):void		{			trace( "Slideshow::photoSetCompleteHandler:" );			var flickrLoader:FlickrLoader = FlickrLoader( e.currentTarget );				flickrLoader.removeEventListener( Event.COMPLETE, photoSetCompleteHandler );			var totalImages:Number = flickrLoader.totalImages;						for( var i:uint = 0; i < totalImages; i++ ){				//trace( flickrLoader.photoSet[i].url, flickrLoader.photoSet[i].description );				images.push( { url: flickrLoader.photoSet[i].url, title: flickrLoader.photoSet[i].title, description: flickrLoader.photoSet[i].description } );			}			initSlideshow();		}				private function initSlideshow():void		{			im = new ImageManager( 450, 300, 0, images );			im.name = "im";						im.x = DEFAULT_X_POS;			im.y = DEFAULT_Y_POS;			im.addEventListener( MouseEvent.CLICK, onMouseClickHandler, false, 0, true );			ShowHideManager.addContent( (this as Slideshow), im );			title_txt.text = images[0].title;			text_txt.text = images[0].description;								}				private function onMouseClickHandler( e:MouseEvent ):void		{			var currentIndex:Number = ImageManager(e.currentTarget).currentImage;			trace( "Slideshow::onMouseClickHandler:", currentIndex );			title_txt.text = images[currentIndex].title;			text_txt.text = images[currentIndex].description;					}		private function onAddedToStageHandler( e:Event ):void		{			trace( "SlideShow::onAddedToStageHandler:" );		}				private function onRemovedFromStageHandler( e:Event ):void		{			trace( "SlideShow::onRemovedFromStageHandler:" );		}			}}
