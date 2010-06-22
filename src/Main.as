@@ -57,8 +57,8 @@ package
 
 				context = new LoaderContext( true );
 				loader = new Loader();
-				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e:Event){ trace( "Event.COMPLETE"); }, false, 0, true ); 
-				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, function(e:Event){trace("IOErrorEvent.IO_ERROR") }, false, 0, true ); 
+				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true ); 
+				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler, false, 0, true ); 
 				loader.load( new URLRequest( SWF_PATH ), context );
 				wall_mc.addChild(loader);	
 			}
@@ -112,6 +112,9 @@ package
 		}		
 		
 		
+		/**********************************
+		 * Article View
+		 **********************************/
 		private function showArticleView():void
 		{
 			//Add an Article Page
@@ -143,7 +146,7 @@ package
 		}
 
 		/**********************************
-		 * FullScreen Handlers
+		 * Event Handlers
 		 **********************************/
 		private function onStageResizeHandler( e:Event ):void
 		{
@@ -163,10 +166,15 @@ package
 			}
 		}
 		
+		private function ioErrorHandler( e:Event ):void
+		{
+			trace( "Main::ioErrorHandler" );
+		}
 		
-		/**********************************
-		 *
-		 **********************************/
+		private function onCompleteHandler( e:Event ):void
+		{
+			trace( "Main::onCompleteHandler:" );
+		}
 
 	}
 }
