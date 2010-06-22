@@ -163,7 +163,7 @@ package com.chrisaiv.flickr
 			addToCount( 1 );
 		}
 		
-		private function addToCount( increment ):void
+		private function addToCount( increment:Number ):void
 		{
 			count += increment;
 			//ONce all the images + respectie data has loaded, Dispatch Event.COMPLETE
