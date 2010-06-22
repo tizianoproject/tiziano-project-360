@@ -13,6 +13,7 @@ package org.tizianoproject.view
 	import org.tizianoproject.view.components.Feature;
 	import org.tizianoproject.view.components.article.Slideshow;
 	import org.tizianoproject.view.components.article.Text;
+	import org.tizianoproject.view.components.article.Video;
 	
 	public class ArticleView extends MovieClip
 	{
@@ -34,6 +35,7 @@ package org.tizianoproject.view
 
 		private var text:Text;
 		private var slideshow:Slideshow;
+		private var video:Video;
 
 		private var features:Array;
 		private var feature:Feature;
@@ -49,6 +51,9 @@ package org.tizianoproject.view
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
 		
+		/**********************************
+		 * Event Handlers
+		 **********************************/
 		private function onAddedToStageHandler( e:Event ):void
 		{
 			trace( "ArticleView::onAddedToStageHandler:" );
@@ -60,7 +65,12 @@ package org.tizianoproject.view
 			authorType_mc.gotoAndStop( random );
 			
 			features = new Array();
-			for( var i:uint = 0; i < 5; i++ ){
+
+			var columns:Number = 1;
+			for( var i:Number = 0; i < 4; i++ ){
+				var xx:Number = i%columns;
+				var yy:Number = Math.floor(i/columns);
+
 				feature = new Feature();
 				feature.name = "feature" + i;
 				feature.yPos = (i * feature.height); 
@@ -73,9 +83,14 @@ package org.tizianoproject.view
 			text.name = "text";
 			ShowHideManager.addContent( (this as ArticleView), text ); 			
 			*/
+			/*
 			slideshow = new Slideshow();
 			slideshow.name = "slideshow";
 			ShowHideManager.addContent( (this as ArticleView), slideshow );
+			*/
+			video = new Video();
+			video.name = "video";
+			ShowHideManager.addContent( (this as ArticleView), video );
 			
 
 			prev_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
