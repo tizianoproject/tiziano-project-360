@@ -15,12 +15,15 @@ package
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
 	
+	import nl.demonsters.debugger.MonsterDebugger;
+	
 	import org.tizianoproject.view.ArticleView;
 	import org.tizianoproject.view.components.FullScreen;
 	import org.tizianoproject.view.components.Overlay;
 	
 	public class Main extends Sprite
 	{
+		
 		private static const SWF_PATH:String = "http://demo.chrisaiv.com/swf/tiziano/wall.swf";
 
 		private static const SWF_BRIDGE:String = "swfBridge";
@@ -41,9 +44,13 @@ package
 		private var overlay:Overlay;
 		
 		private var articleView:ArticleView;
+		
+		private var monster:MonsterDebugger;
 
 		public function Main()
 		{		
+			monster = new MonsterDebugger( this );
+			
 			appStage = stage;
 			appStage.align = StageAlign.TOP_LEFT;
 			appStage.scaleMode = StageScaleMode.NO_SCALE;

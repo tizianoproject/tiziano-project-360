@@ -10,15 +10,17 @@ package org.tizianoproject.view.components
 	public class Feature extends MovieClip
 	{
 		//These Positions are Relative to ArticleView
-		private static const DEFAULT_X_POS:Number = 555;
-		private static const DEFAULT_Y_POS:Number = 73;
+		private static const DEFAULT_X_POS:Number = 0;
+		private static const DEFAULT_Y_POS:Number = 0;
 		
 		public var title_txt:TextField;
 		public var subhed_txt:TextField;
 		
 		public var image_mc:MovieClip;
 		public var authorType_mc:MovieClip;
-		
+
+		private var _y:Number;
+
 		public function Feature()
 		{
 			x = DEFAULT_X_POS;
@@ -48,16 +50,27 @@ package org.tizianoproject.view.components
 		{
 			trace( "Feature::onMouseClickHandler:", e.currentTarget.name );			
 		}
-		
-		public function set yPos( value:Number ):void
-		{
-			y = DEFAULT_Y_POS + value;
-		}
-		
+				
+		/*********************************
+		 * Getters | Setters
+		 *********************************/
 		public function set authorType( isMentor:Boolean ):void
 		{
 			if( isMentor ) authorType_mc.gotoAndStop( "mentor" );
 			else authorType_mc.gotoAndStop( "student" );
+		}
+		
+		/*********************************
+		 * Overrrides
+		*********************************/
+		override public function set y( value:Number ):void
+		{
+			super.y = DEFAULT_Y_POS + value;
+		}
+		
+		override public function get y():Number
+		{
+			return super.y;
 		}		
 	}
 }

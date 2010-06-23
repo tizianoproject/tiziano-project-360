@@ -1,6 +1,7 @@
 package org.tizianoproject.view
 {
 	import com.chrisaiv.utils.ShowHideManager;
+	import com.tis.utils.components.Scrollbar;
 	
 	import flash.display.MovieClip;
 	import flash.display.SimpleButton;
@@ -39,6 +40,10 @@ package org.tizianoproject.view
 
 		private var features:Array;
 		private var feature:Feature;
+		private var featureHolder:MovieClip;
+		
+		private var scrollBar:Scrollbar;
+		
 
 		public function ArticleView()
 		{
@@ -51,12 +56,52 @@ package org.tizianoproject.view
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
 		
+		private function initFeatures():void
+		{
+			//Collect all the Features in an Array
+			initFeaturesHolder();
+			
+			features = new Array();
+			var columns:Number = 1;
+			for( var i:Number = 0; i < 10; i++ ){
+				var xx:Number = i%columns;
+				var yy:Number = Math.floor(i/columns);
+				
+				feature = new Feature();
+				feature.name = "feature" + i;
+				//I am overriding y property in order to add DEFAULT_Y_POS
+				feature.y = (i * feature.height);
+				features.push( feature );
+				ShowHideManager.addContent( featureHolder, feature );
+			}			
+			
+			//Create the Features Holder
+			scrollBar = new Scrollbar( featureHolder );
+			scrollBar.name = "scrollBar";
+			ShowHideManager.addContent( (this as ArticleView), scrollBar );
+		}
+		
+		private function initFeaturesHolder():void
+		{
+			featureHolder = new MovieClip();
+			featureHolder.tabEnabled = false;
+			featureHolder.name = "featureHolder";
+			featureHolder.graphics.beginFill( 0xff00ff, 1 );
+			featureHolder.graphics.drawRect( 0, 0, 360, 500 );
+			featureHolder.graphics.endFill();
+			featureHolder.x = 530;
+			featureHolder.y = 73;
+			ShowHideManager.addContent( (this as ArticleView), featureHolder );
+		}
+		
+		
 		/**********************************
 		 * Event Handlers
 		 **********************************/
 		private function onAddedToStageHandler( e:Event ):void
 		{
-			trace( "ArticleView::onAddedToStageHandler:" );
+			//Add new Related Features
+			initFeatures();
 
 			title_txt.text = DEFAULT_TITLE;
 			author_txt.text = DEFAULT_AUTHOR;
@@ -64,30 +109,17 @@ package org.tizianoproject.view
 			var random:uint = NumberUtil.randomWithinRange( 1, 3 );
 			authorType_mc.gotoAndStop( random );
 			
-			features = new Array();
-
-			var columns:Number = 1;
-			for( var i:Number = 0; i < 4; i++ ){
-				var xx:Number = i%columns;
-				var yy:Number = Math.floor(i/columns);
-
-				feature = new Feature();
-				feature.name = "feature" + i;
-				feature.yPos = (i * feature.height); 
-				ShowHideManager.addContent( (this as ArticleView), feature );
-				features.push( feature );
-			}
-
 			/*
 			text = new Text();
 			text.name = "text";
-			ShowHideManager.addContent( (this as ArticleView), text ); 			
+			ShowHideManager.addContent( (this as ArticleView), text );
 			*/
 			/*
 			slideshow = new Slideshow();
 			slideshow.name = "slideshow";
 			ShowHideManager.addContent( (this as ArticleView), slideshow );
 			*/
+			
 			video = new Video();
 			video.name = "video";
 			ShowHideManager.addContent( (this as ArticleView), video );
@@ -114,7 +146,7 @@ package org.tizianoproject.view
 		private function onEventCloseHandler( e:Event ):void
 		{
 			//trace( "ArticleView::onEventCloseHandler:" );
-			eDispatcher.dispatchEvent( new Event( Event.CLOSE ) );
+			eDispatcher.dispatchEvent( e );
 		}
 		
 		private function onRollOverHandler( e:MouseEvent ):void
