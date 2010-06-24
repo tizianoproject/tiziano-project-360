@@ -12,6 +12,8 @@ package org.tizianoproject.view
 	
 	import org.casalib.util.NumberUtil;
 	import org.tizianoproject.view.components.Feature;
+	import org.tizianoproject.view.components.FeatureHolder;
+	import org.tizianoproject.view.components.article.Scroller;
 	import org.tizianoproject.view.components.article.Slideshow;
 	import org.tizianoproject.view.components.article.Text;
 	import org.tizianoproject.view.components.article.Video;
@@ -38,12 +40,10 @@ package org.tizianoproject.view
 		private var slideshow:Slideshow;
 		private var video:Video;
 
-		private var features:Array;
 		private var feature:Feature;
-		private var featureHolder:MovieClip;
-		
-		private var scrollBar:Scrollbar;
-		
+		private var featureHolder:FeatureHolder;		
+		private var featureScrollBar:Scroller;
+		private var textScrollBar:Scroller;
 
 		public function ArticleView()
 		{
@@ -58,10 +58,8 @@ package org.tizianoproject.view
 		
 		private function initFeatures():void
 		{
-			//Collect all the Features in an Array
-			initFeaturesHolder();
+			initFeatureHolder();
 			
-			features = new Array();
 			var columns:Number = 1;
 			for( var i:Number = 0; i < 10; i++ ){
 				var xx:Number = i%columns;
@@ -71,29 +69,36 @@ package org.tizianoproject.view
 				feature.name = "feature" + i;
 				//I am overriding y property in order to add DEFAULT_Y_POS
 				feature.y = (i * feature.height);
-				features.push( feature );
-				ShowHideManager.addContent( featureHolder, feature );
-			}			
+				ShowHideManager.addContent( featureHolder, feature );				
+			}
 			
-			//Create the Features Holder
-			scrollBar = new Scrollbar( featureHolder );
-			scrollBar.name = "scrollBar";
-			ShowHideManager.addContent( (this as ArticleView), scrollBar );
+			//Once Feature holder is populated, load the Scroller
+			initFeatureScrollBar();
 		}
 		
-		private function initFeaturesHolder():void
+		private function initFeatureHolder():void
 		{
-			featureHolder = new MovieClip();
-			featureHolder.tabEnabled = false;
+			//Collect all the Features in an Array
+			featureHolder = new FeatureHolder();			
 			featureHolder.name = "featureHolder";
-			featureHolder.graphics.beginFill( 0xff00ff, 1 );
-			featureHolder.graphics.drawRect( 0, 0, 360, 500 );
-			featureHolder.graphics.endFill();
-			featureHolder.x = 530;
-			featureHolder.y = 73;
-			ShowHideManager.addContent( (this as ArticleView), featureHolder );
+			ShowHideManager.addContent( (this as ArticleView), featureHolder );			
 		}
 		
+		private function initFeatureScrollBar():void
+		{
+			//Create the Features Holder
+			featureScrollBar = new Scroller( featureHolder );
+			featureScrollBar.name = "featureScrollBar";
+			ShowHideManager.addContent( (this as ArticleView), featureScrollBar );
+		}
+		
+		private function initTextScrollBar():void
+		{
+			textScrollBar = new Scroller( text );
+			textScrollBar.name = "textScrollBar";
+			
+			ShowHideManager.addContent( (this as ArticleView), textScrollBar );
+		}
 		
 		/**********************************
 		 * Event Handlers
@@ -109,22 +114,21 @@ package org.tizianoproject.view
 			var random:uint = NumberUtil.randomWithinRange( 1, 3 );
 			authorType_mc.gotoAndStop( random );
 			
-			/*
 			text = new Text();
 			text.name = "text";
 			ShowHideManager.addContent( (this as ArticleView), text );
-			*/
+			//initTextScrollBar();
+
 			/*
 			slideshow = new Slideshow();
 			slideshow.name = "slideshow";
 			ShowHideManager.addContent( (this as ArticleView), slideshow );
 			*/
 			
-			video = new Video();
+/*			video = new Video();
 			video.name = "video";
 			ShowHideManager.addContent( (this as ArticleView), video );
-			
-
+*/
 			prev_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
 			prev_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
 			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
@@ -136,6 +140,9 @@ package org.tizianoproject.view
 			baseView_mc.eDispatcher.addEventListener( Event.CLOSE, onEventCloseHandler );
 		}
 		
+		/**********************************
+		 * Event Handlers
+		 **********************************/
 		private function onRemovedFromStageHandler( e:Event ):void
 		{
 			//trace( "ArticleView::onRemovedFromStageHandler:" );
