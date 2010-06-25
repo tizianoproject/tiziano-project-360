@@ -1,3 +1,4 @@
+
 package org.tizianoproject.view
 {
 	import com.chrisaiv.utils.ShowHideManager;
@@ -43,7 +44,6 @@ package org.tizianoproject.view
 		private var feature:Feature;
 		private var featureHolder:FeatureHolder;		
 		private var featureScrollBar:Scroller;
-		private var textScrollBar:Scroller;
 
 		public function ArticleView()
 		{
@@ -51,17 +51,83 @@ package org.tizianoproject.view
 			y = DEFAULT_Y_POS;
 											
 			eDispatcher = new EventDispatcher();
-			
+
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
 		
-		private function initFeatures():void
+		private function initNewStory():void
 		{
-			initFeatureHolder();
+			title_txt.text = DEFAULT_TITLE;
+			author_txt.text = DEFAULT_AUTHOR;
 			
+			/***** Temporary Code Starts *****/
+			//Features Holder holds the features
+			initFeatureHolder();
+
+			//Add new Related Features
+			initFeatures( NumberUtil.randomWithinRange( 1, 10 ) );
+
+			var random:uint = NumberUtil.randomWithinRange( 1, 3 );
+			
+			//Switch the Author
+			showAuthorType( random );
+			
+			switch( random ){
+				case 1:
+					initText();
+					break;
+				case 2:
+					initSlideshow();
+					break;
+				case 3:
+					initVideo();
+					break;
+			}
+			/***** Temporary Code Ends *****/			
+		}
+		
+		/**********************************
+		 * Story Types
+		 **********************************/
+		private function initText():void
+		{
+			text = new Text();
+			text.name = "text";
+			ShowHideManager.addContent( (this as ArticleView), text );
+		}
+		
+		private function initSlideshow():void
+		{
+			slideshow = new Slideshow();
+			slideshow.name = "slideshow";
+			ShowHideManager.addContent( (this as ArticleView), slideshow );			
+		}
+		
+		private function initVideo():void
+		{
+			video = new Video();
+			video.name = "video";
+			ShowHideManager.addContent( (this as ArticleView), video );
+		}
+		
+		/**********************************
+		 * Features
+		 **********************************/
+		private function initFeatureHolder():void
+		{
+			//Collect all the Features in an Array
+			featureHolder = new FeatureHolder();			
+			featureHolder.name = "featureHolder";
+			featureHolder.addEventListener(Event.REMOVED, onFeatureHolderRemovedHandler, false, 0, true );
+			ShowHideManager.addContent( (this as ArticleView), featureHolder );			
+		}
+		
+		private function initFeatures( number:Number ):void
+		{			
+			var totalFeatures:Number = number;
 			var columns:Number = 1;
-			for( var i:Number = 0; i < 10; i++ ){
+			for( var i:Number = 0; i < totalFeatures; i++ ){
 				var xx:Number = i%columns;
 				var yy:Number = Math.floor(i/columns);
 				
@@ -73,15 +139,7 @@ package org.tizianoproject.view
 			}
 			
 			//Once Feature holder is populated, load the Scroller
-			initFeatureScrollBar();
-		}
-		
-		private function initFeatureHolder():void
-		{
-			//Collect all the Features in an Array
-			featureHolder = new FeatureHolder();			
-			featureHolder.name = "featureHolder";
-			ShowHideManager.addContent( (this as ArticleView), featureHolder );			
+			if( featureHolder.numChildren > 5 ) initFeatureScrollBar();
 		}
 		
 		private function initFeatureScrollBar():void
@@ -92,34 +150,38 @@ package org.tizianoproject.view
 			ShowHideManager.addContent( (this as ArticleView), featureScrollBar );
 		}
 		
+		private function showAuthorType( number:Number ):void
+		{
+			if( number == 1 ) authorType_mc.gotoAndStop( "mentor" );
+			else if( number == 2 ) authorType_mc.gotoAndStop( "student" );
+		}
+		
+		/**********************************
+		 * Clean Up
+		 **********************************/
+		private function unloadStory():void
+		{
+			//Delete any Story on the stage
+			ShowHideManager.removeContent( (this as ArticleView), "text" );
+			ShowHideManager.removeContent( (this as ArticleView), "slideshow" );
+			ShowHideManager.removeContent( (this as ArticleView), "video" );
+			ShowHideManager.removeContent( (this as ArticleView), "featureScrollBar" );
+			
+			//Delete any feature in the featureHolder
+			ShowHideManager.unloadContent( featureHolder );
+			ShowHideManager.removeContent( (this as ArticleView), "featureHolder" );	
+			
+			initNewStory();
+		}
+		
 		/**********************************
 		 * Event Handlers
 		 **********************************/
 		private function onAddedToStageHandler( e:Event ):void
 		{
-			//Add new Related Features
-			initFeatures();
-
-			title_txt.text = DEFAULT_TITLE;
-			author_txt.text = DEFAULT_AUTHOR;
+			//Load a new Story
+			initNewStory();
 			
-			var random:uint = NumberUtil.randomWithinRange( 1, 3 );
-			authorType_mc.gotoAndStop( random );
-			
-			text = new Text();
-			text.name = "text";
-			ShowHideManager.addContent( (this as ArticleView), text );
-
-			/*
-			slideshow = new Slideshow();
-			slideshow.name = "slideshow";
-			ShowHideManager.addContent( (this as ArticleView), slideshow );
-			*/
-			
-/*			video = new Video();
-			video.name = "video";
-			ShowHideManager.addContent( (this as ArticleView), video );
-*/
 			prev_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
 			prev_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
 			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
@@ -130,15 +192,16 @@ package org.tizianoproject.view
 			
 			baseView_mc.eDispatcher.addEventListener( Event.CLOSE, onEventCloseHandler );
 		}
-		
-		/**********************************
-		 * Event Handlers
-		 **********************************/
+
 		private function onRemovedFromStageHandler( e:Event ):void
 		{
-			//trace( "ArticleView::onRemovedFromStageHandler:" );
-			//Remove everything from the ArticleView, it cuts down on Memory
+			trace( "ArticleView::onRemovedFromStageHandler:" );
 			ShowHideManager.unloadContent( (this as ArticleView ) );
+		}
+		
+		private function onFeatureHolderRemovedHandler( e:Event ):void
+		{
+			//trace( "ArticleView::onFeatureHolderRemovedHandler:", featureHolder.numChildren );
 		}
 		
 		private function onEventCloseHandler( e:Event ):void
@@ -160,6 +223,7 @@ package org.tizianoproject.view
 		private function onMouseClickHandler( e:MouseEvent ):void
 		{
 			//trace( "ArticleView:onMouseClickHandler", e.currentTarget.name );
+			unloadStory();
 		}
 	}
 }
