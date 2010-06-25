@@ -56,7 +56,6 @@ package org.tizianoproject.view.components.article
 			ratio = (targetMC.height - range ) / range;
 			var yPos:Number = (dragHandleMC.y * ratio ) - ctrl;
 			
-//			TweenLite.to( targetMC, TWEEN_SPEED,  );
 			var tweenLite = new TweenLite( targetMC, TWEEN_SPEED, { y: -yPos, ease: Strong.easeOut } );
 			
 			//use updateAfterEvent() so that Flash doesn't have to rely on the 
