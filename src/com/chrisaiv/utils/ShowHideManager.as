@@ -28,7 +28,7 @@ package com.chrisaiv.utils
 		public static function unloadContent( mc:MovieClip, baseline:Number=0 ):void
 		{
 			//The Baseline param is meant for some movieclips to have a Background Shape object as the base layer.  I don't want to delete it so I avoid it with baseline
-			trace( "ShowHideManager::unloadContent:", mc.numChildren, baseline );
+			//trace( "ShowHideManager::unloadContent:", mc.numChildren, baseline );
 			for ( var z:Number = ( mc.numChildren -1 ); z >= baseline; z-- ) {
 				//When you remove items, Flash automatically resorts the Indecies so you have to count backwards
 				mc.removeChild( mc.getChildAt(z) );
