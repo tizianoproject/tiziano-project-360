@@ -43,7 +43,7 @@ package org.tizianoproject.view.components
 		private function onRemovedFromStageHandler( e:Event ):void
 		{
 			//trace( "Feature::onRemovedFromStageHandler:" );
-			ShowHideManager.unloadContent( (this as Feature ) );
+			//ShowHideManager.unloadContent( (this as Feature ) );
 		}
 		
 		private function onMouseClickHandler( e:MouseEvent ):void
