@@ -18,6 +18,7 @@ package
 	import nl.demonsters.debugger.MonsterDebugger;
 	
 	import org.tizianoproject.view.ArticleView;
+	import org.tizianoproject.view.*;
 	import org.tizianoproject.view.components.FullScreen;
 	import org.tizianoproject.view.components.Overlay;
 	
@@ -44,6 +45,8 @@ package
 		private var overlay:Overlay;
 		
 		private var articleView:ArticleView;
+		private var studentsView:StudentsView;
+		private var mentorsView:MentorsView;		
 		
 		private var monster:MonsterDebugger;
 
@@ -69,6 +72,8 @@ package
 				loader.load( new URLRequest( SWF_PATH ), context );
 				wall_mc.addChild(loader);	
 			}
+			
+			//showStudentsView();
 			
 			showArticleView();
 		}
@@ -132,9 +137,22 @@ package
 		
 		private function hideArticleView( e:Event ):void
 		{
-			trace( "Main::hideArticleView" );
 			ShowHideManager.removeContent( appStage, "articleView" );
 		}
+		
+		private function showStudentsView():void
+		{
+			studentsView = new StudentsView();
+			studentsView.name = "studentsView";
+			articleView.eDispatcher.addEventListener( Event.CLOSE, hideStudentsView, false, 0, true );
+			ShowHideManager.addContent( appStage, studentsView );
+		}
+		
+		private function hideStudentsView( e:Event ):void
+		{
+			trace( 'hideStudentsView', e.currentTarget );
+		}
+		
 		
 		private function showOverlay():void
 		{
