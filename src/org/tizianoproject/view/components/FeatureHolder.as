@@ -10,6 +10,8 @@ package org.tizianoproject.view.components
 		private static const WIDTH:Number = 320;
 		private static const HEIGHT:Number = 500;
 		
+		public var useSmallTrack:Boolean = false;
+		
 		public function FeatureHolder()
 		{
 			tabEnabled = false;
