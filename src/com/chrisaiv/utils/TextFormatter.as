@@ -28,13 +28,14 @@ package com.chrisaiv.utils
 			return css;			
 		}
 		
-		public static function returnTextFormat( family:String="Georgia", color:Number=0xffffff, size:Number=13  ):TextFormat
+		public static function returnTextFormat( family:String="Georgia", color:Number=0xffffff, size:Number=12, leading:Number = 2  ):TextFormat
 		{
 			var tFormat:TextFormat = new TextFormat()
 				tFormat.color = color;
 				tFormat.size = size;
 				tFormat.align = TextFormatAlign.LEFT;
 				tFormat.font = family;
+				tFormat.leading = leading;
 				
 				return tFormat;
 		}
