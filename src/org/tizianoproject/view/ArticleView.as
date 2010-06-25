@@ -92,14 +92,6 @@ package org.tizianoproject.view
 			ShowHideManager.addContent( (this as ArticleView), featureScrollBar );
 		}
 		
-		private function initTextScrollBar():void
-		{
-			textScrollBar = new Scroller( text );
-			textScrollBar.name = "textScrollBar";
-			
-			ShowHideManager.addContent( (this as ArticleView), textScrollBar );
-		}
-		
 		/**********************************
 		 * Event Handlers
 		 **********************************/
@@ -117,7 +109,6 @@ package org.tizianoproject.view
 			text = new Text();
 			text.name = "text";
 			ShowHideManager.addContent( (this as ArticleView), text );
-			//initTextScrollBar();
 
 			/*
 			slideshow = new Slideshow();
