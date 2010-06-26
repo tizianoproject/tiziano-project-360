@@ -1,3 +1,18 @@
+/** -----------------------------------------------------------
+ * Tiziano Project 360 Main Class  
+ * -----------------------------------------------------------
+ * Description: Central Nervous System
+ * - ---------------------------------------------------------
+ * Created by: cmendez@tizianoproject.org
+ * Modified by: 
+ * Date Modified: Always
+ * - ---------------------------------------------------------
+ * Copyright ©2010
+ * - ---------------------------------------------------------
+ *
+ *
+ */
+
 package 
 {
 	import com.chrisaiv.utils.ShowHideManager;
@@ -45,9 +60,10 @@ package
 		private var overlay:Overlay;
 		
 		private var articleView:ArticleView;
-		private var studentsView:StudentsView;
-		private var mentorsView:MentorsView;		
+		private var studentsView:ListingBrickView;
+		private var mentorsView:ListingPillarView;		
 		
+		//MonsterDebugger is like Firebug but for Flash
 		private var monster:MonsterDebugger;
 
 		public function Main()
@@ -73,9 +89,8 @@ package
 				wall_mc.addChild(loader);	
 			}
 			
-			//showStudentsView();
-			
-			showArticleView();
+			showStudentsView();			
+			//showArticleView();
 		}
 
 		/**********************************
@@ -142,9 +157,9 @@ package
 		
 		private function showStudentsView():void
 		{
-			studentsView = new StudentsView();
+			studentsView = new ListingBrickView();
 			studentsView.name = "studentsView";
-			articleView.eDispatcher.addEventListener( Event.CLOSE, hideStudentsView, false, 0, true );
+			//articleView.eDispatcher.addEventListener( Event.CLOSE, hidehorizontalView, false, 0, true );
 			ShowHideManager.addContent( appStage, studentsView );
 		}
 		
