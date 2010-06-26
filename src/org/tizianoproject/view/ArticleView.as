@@ -1,3 +1,17 @@
+/** -----------------------------------------------------------
+ * Article View
+ * -----------------------------------------------------------
+ * Description: Display either a Text-based story, a Photogallery, or Video 
+ * - ---------------------------------------------------------
+ * Created by: cmendez@tizianoproject.org
+ * Modified by: 
+ * Date Modified: June 22, 2010
+ * - ---------------------------------------------------------
+ * Copyright ©2010
+ * - ---------------------------------------------------------
+ *
+ *
+ */
 
 package org.tizianoproject.view
 {
@@ -49,7 +63,7 @@ package org.tizianoproject.view
 		{
 			x = DEFAULT_X_POS;
 			y = DEFAULT_Y_POS;
-											
+		
 			eDispatcher = new EventDispatcher();
 
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );

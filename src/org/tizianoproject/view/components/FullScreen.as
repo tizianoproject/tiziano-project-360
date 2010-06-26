@@ -1,3 +1,18 @@
+/** -----------------------------------------------------------
+ * Full Screen
+ * -----------------------------------------------------------
+ * Description: Full Screeen Functionality 
+ * - ---------------------------------------------------------
+ * Created by: cmendez@tizianoproject.org
+ * Modified by: 
+ * Date Modified: June 22, 2010
+ * - ---------------------------------------------------------
+ * Copyright ©2010
+ * - ---------------------------------------------------------
+ *
+ *
+ */
+
 package org.tizianoproject.view.components
 {
 	import flash.display.SimpleButton;

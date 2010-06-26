@@ -1,3 +1,20 @@
+/** -----------------------------------------------------------
+ * Feature Holder
+ * -----------------------------------------------------------
+ * Description: Hold the feature:Feature clips
+ * - ---------------------------------------------------------
+ * Created by: cmendez@tizianoproject.org
+ * Modified by: 
+ * Date Modified: June 22, 2010
+ * - ---------------------------------------------------------
+ * Copyright ©2010
+ * - ---------------------------------------------------------
+ *
+ * The purpose of FeatureHolder is to collect all the features 
+ * and pass them through Scroller.
+ *  
+ */
+
 package org.tizianoproject.view.components
 {
 	import flash.display.MovieClip;

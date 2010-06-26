@@ -1,3 +1,19 @@
+/** -----------------------------------------------------------
+ * Feature
+ * -----------------------------------------------------------
+ * Description: A Single 360 Feature 
+ * - ---------------------------------------------------------
+ * Created by: cmendez@tizianoproject.org
+ * Modified by: 
+ * Date Modified: June 22, 2010
+ * - ---------------------------------------------------------
+ * Copyright ©2010
+ * - ---------------------------------------------------------
+ *
+ * Features are responses to Articles [ Text, Photo, Video ] and appear on the right hand column
+ *
+ */
+
 package org.tizianoproject.view.components
 {
 	import com.chrisaiv.utils.ShowHideManager;

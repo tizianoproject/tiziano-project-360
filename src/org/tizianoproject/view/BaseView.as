@@ -1,3 +1,18 @@
+/** -----------------------------------------------------------
+ * BaseView
+ * -----------------------------------------------------------
+ * Description: BaseView is the base background for all views 
+ * - ---------------------------------------------------------
+ * Created by: cmendez@tizianoproject.org
+ * Modified by: 
+ * Date Modified: June 22, 2010
+ * - ---------------------------------------------------------
+ * Copyright ©2010
+ * - ---------------------------------------------------------
+ *
+ *
+ */
+
 package org.tizianoproject.view
 {
 	import com.chrisaiv.utils.ShowHideManager;
@@ -7,6 +22,8 @@ package org.tizianoproject.view
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.MouseEvent;
+	
+	import org.tizianoproject.events.BaseViewEvent;
 	
 	public class BaseView extends MovieClip
 	{
@@ -20,10 +37,6 @@ package org.tizianoproject.view
 			
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
-		}
-		
-		private function closeView():void
-		{
 		}
 		
 		private function onAddedToStageHandler( e:Event ):void
@@ -41,7 +54,7 @@ package org.tizianoproject.view
 		private function onMouseClickHandler( e:MouseEvent ):void
 		{
 			//trace( "BaseView::onMouseClickHandler" );
-			eDispatcher.dispatchEvent( new Event( Event.CLOSE ) );
+			eDispatcher.dispatchEvent( new BaseViewEvent( BaseViewEvent.CLOSE ) );
 		}
 	}
 }
