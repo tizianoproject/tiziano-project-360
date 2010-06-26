@@ -82,19 +82,19 @@ package org.tizianoproject.view
 			//Add new Related Features
 			initFeatures( NumberUtil.randomWithinRange( 1, 10 ) );
 
-			var random:uint = NumberUtil.randomWithinRange( 1, 3 );
+			var random:uint = NumberUtil.randomWithinRange( 0, 3 );
 			
 			//Switch the Author
 			showAuthorType( random );
 			
 			switch( random ){
-				case 1:
+				case 0:
 					initText();
 					break;
-				case 2:
+				case 1:
 					initSlideshow();
 					break;
-				case 3:
+				case 2:
 					initVideo();
 					break;
 			}
