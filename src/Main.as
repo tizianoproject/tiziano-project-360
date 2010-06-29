@@ -119,7 +119,7 @@ package
 			//Views
 			compositeView = new CompositeView( model, controller );			
 			//showStudentsView();			
-			//initArticleView();
+			initArticleView();
 			//initSWFFit();
 		}
 		
@@ -172,7 +172,8 @@ package
 		
 		public function onPressThumb( param1:*, param2:* ):void
 		{
-			trace( "Main::onPressThumb:" );
+			trace( "Main::onPressThumb:", param1, param2 );
+			wall_mc.mouseEnabled = false;
 			showView( articleView );
 		}
 
@@ -205,7 +206,6 @@ package
 			articleView.name = "articleView";
 			articleView.addEventListener( BaseViewEvent.CLOSE, hideView );
 			compositeView.add( articleView );
-			showView( articleView );
 		}
 		
 		private function showStudentsView():void
@@ -230,7 +230,7 @@ package
 		{
 			//BaseView.results will pass the name of the view to hide.
 			//trace( "Main::hideView:", e.results.viewName );
-			ShowHideManager.removeContent( (this as Main), e.results.viewName );
+			ShowHideManager.removeContent( (this as Main), e.results.viewName );			
 		}
 		
 		/**********************************
