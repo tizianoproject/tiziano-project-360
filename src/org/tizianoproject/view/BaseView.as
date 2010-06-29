@@ -49,8 +49,8 @@ package org.tizianoproject.view
 		
 		private function onRemovedFromStageHandler( e:Event ):void
 		{
+			close_btn.removeEventListener(MouseEvent.CLICK, onMouseClickHandler );
 			//trace( "Feature::onRemovedFromStageHandler:" );
-			ShowHideManager.unloadContent( (this as BaseView ) );
 		}	
 		
 		private function onMouseClickHandler( e:MouseEvent ):void

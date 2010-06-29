@@ -66,9 +66,10 @@ package org.tizianoproject.view
 
 			x = DEFAULT_X_POS;
 			y = DEFAULT_Y_POS;
-
+			
 			addEventListener( Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
 			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
+			//Listen for when the user clicks on the [ X ] button
 			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
 		}
 		
@@ -211,8 +212,8 @@ package org.tizianoproject.view
 
 		private function onRemovedFromStageHandler( e:Event ):void
 		{
-			trace( "ArticleView::onRemovedFromStageHandler:" );
-			ShowHideManager.unloadContent( (this as ArticleView ) );
+			//trace( "ArticleView::onRemovedFromStageHandler:" );
+			unloadStory();
 		}
 		
 		private function onFeatureHolderRemovedHandler( e:Event ):void
