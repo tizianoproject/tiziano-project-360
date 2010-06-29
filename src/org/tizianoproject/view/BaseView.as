@@ -31,10 +31,12 @@ package org.tizianoproject.view
 		
 		public var eDispatcher:EventDispatcher;
 		
+		private var baseViewArgs:Object;
+		
 		public function BaseView()
 		{			
-			eDispatcher = new EventDispatcher();
-			
+			baseViewArgs = new Object();			
+
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
@@ -53,8 +55,10 @@ package org.tizianoproject.view
 		
 		private function onMouseClickHandler( e:MouseEvent ):void
 		{
-			//trace( "BaseView::onMouseClickHandler" );
-			eDispatcher.dispatchEvent( new BaseViewEvent( BaseViewEvent.CLOSE ) );
+			//trace( "BaseView::onMouseClickHandler", e.currentTarget.parent.parent.name );
+			baseViewArgs.viewName = e.currentTarget.parent.parent.name;
+			
+			dispatchEvent( new BaseViewEvent( BaseViewEvent.CLOSE, baseViewArgs ) );
 		}
 	}
 }
