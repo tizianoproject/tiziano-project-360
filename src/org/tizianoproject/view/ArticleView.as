@@ -26,6 +26,9 @@ package org.tizianoproject.view
 	import flash.text.TextField;
 	
 	import org.casalib.util.NumberUtil;
+	import org.tizianoproject.controller.IController;
+	import org.tizianoproject.events.BaseViewEvent;
+	import org.tizianoproject.model.IModel;
 	import org.tizianoproject.view.components.Feature;
 	import org.tizianoproject.view.components.FeatureHolder;
 	import org.tizianoproject.view.components.article.Scroller;
@@ -33,15 +36,13 @@ package org.tizianoproject.view
 	import org.tizianoproject.view.components.article.Text;
 	import org.tizianoproject.view.components.article.Video;
 	
-	public class ArticleView extends MovieClip
+	public class ArticleView extends CompositeView
 	{
 		private static const DEFAULT_TITLE:String = "DEFAULT_TITLE";
 		private static const DEFAULT_AUTHOR:String = "DEFAULT_AUTHOR";
 		private static const DEFAULT_X_POS:Number = 65;
 		private static const DEFAULT_Y_POS:Number = 71;
 
-		public var eDispatcher:EventDispatcher;
-		
 		//Views
 		public var title_txt:TextField;
 		public var author_txt:TextField;
@@ -59,15 +60,16 @@ package org.tizianoproject.view
 		private var featureHolder:FeatureHolder;		
 		private var featureScrollBar:Scroller;
 
-		public function ArticleView()
+		public function ArticleView( m:IModel, c:IController=null )
 		{
+			super( m, c );
+
 			x = DEFAULT_X_POS;
 			y = DEFAULT_Y_POS;
-		
-			eDispatcher = new EventDispatcher();
 
-			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
-			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
+			addEventListener( Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
+			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
+			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
 		}
 		
 		private function initNewStory():void
@@ -204,7 +206,7 @@ package org.tizianoproject.view
 			next_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
 			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 			
-			baseView_mc.eDispatcher.addEventListener( Event.CLOSE, onEventCloseHandler );
+			//baseView_mc.eDispatcher.addEventListener( BaseViewEvent.CLOSE, onEventCloseHandler );
 		}
 
 		private function onRemovedFromStageHandler( e:Event ):void
@@ -218,10 +220,10 @@ package org.tizianoproject.view
 			//trace( "ArticleView::onFeatureHolderRemovedHandler:", featureHolder.numChildren );
 		}
 		
-		private function onEventCloseHandler( e:Event ):void
+		private function onBaseCloseHandler( e:BaseViewEvent ):void
 		{
-			//trace( "ArticleView::onEventCloseHandler:" );
-			eDispatcher.dispatchEvent( e );
+			//trace( e.results.viewName, "::onBaseCloseHandler:" );
+			dispatchEvent( e );
 		}
 		
 		private function onRollOverHandler( e:MouseEvent ):void
