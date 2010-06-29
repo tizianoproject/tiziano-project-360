@@ -17,6 +17,7 @@ package
 {
 
 	import com.chrisaiv.utils.ShowHideManager;
+	import com.greensock.TweenLite;
 	import com.gskinner.utils.SWFBridgeAS3;
 	import com.millermedeiros.swffit.SWFFit;
 	import com.millermedeiros.swffit.SWFFitEvent;
@@ -173,8 +174,7 @@ package
 		public function onPressThumb( param1:*, param2:* ):void
 		{
 			trace( "Main::onPressThumb:", param1, param2 );
-			wall_mc.mouseEnabled = false;
-			showView( articleView );
+			showView( articleView );			
 		}
 
 		public function onRollOverThumb( param1:*, param2:* ):void
@@ -223,6 +223,8 @@ package
 		private function showView( view:DisplayObject ):void
 		{
 			ShowHideManager.addContent( (this as Main), view );
+			//Hide the Wall
+			TweenLite.to( wall_mc, 0.5, { alpha: 0 } );
 		}
 		
 		//Generic view hider
@@ -230,7 +232,9 @@ package
 		{
 			//BaseView.results will pass the name of the view to hide.
 			//trace( "Main::hideView:", e.results.viewName );
-			ShowHideManager.removeContent( (this as Main), e.results.viewName );			
+			ShowHideManager.removeContent( (this as Main), e.results.viewName );
+			//Show The Wall
+			TweenLite.to( wall_mc, 0.5, { alpha: 1 } );
 		}
 		
 		/**********************************
