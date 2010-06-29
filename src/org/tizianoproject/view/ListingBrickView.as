@@ -17,15 +17,19 @@ package org.tizianoproject.view
 {
 	import flash.display.MovieClip;
 	
+	import org.tizianoproject.controller.IController;
 	import org.tizianoproject.events.BaseViewEvent;
+	import org.tizianoproject.model.IModel;
 	
 	public class ListingBrickView extends CompositeView
 	{
 		private static const DEFAULT_X_POS:Number = 65;
 		private static const DEFAULT_Y_POS:Number = 71;
 		
-		public function ListingBrickView()
+		public function ListingBrickView( m:IModel, c:IController=null )
 		{
+			super( m, c );
+			
 			x = DEFAULT_X_POS;
 			y = DEFAULT_Y_POS;
 		}
