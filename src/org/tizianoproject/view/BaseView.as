@@ -28,8 +28,7 @@ package org.tizianoproject.view
 	public class BaseView extends MovieClip
 	{
 		public var close_btn:SimpleButton;
-		
-		public var eDispatcher:EventDispatcher;
+		public var bgMc:MovieClip;
 		
 		private var baseViewArgs:Object;
 		
@@ -41,8 +40,16 @@ package org.tizianoproject.view
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
 		
+		private function initBg():void
+		{
+			graphics.beginFill( 0x000000, 0 );
+			graphics.drawRect( -parent.x, -parent.y, stage.stageWidth, stage.stageHeight );
+			graphics.endFill();			
+		}
+		
 		private function onAddedToStageHandler( e:Event ):void
 		{
+			initBg();
 			close_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 			//trace( "Feature::onAddedToStageHandler:" );
 		}
@@ -56,8 +63,7 @@ package org.tizianoproject.view
 		private function onMouseClickHandler( e:MouseEvent ):void
 		{
 			//trace( "BaseView::onMouseClickHandler", e.currentTarget.parent.parent.name );
-			baseViewArgs.viewName = e.currentTarget.parent.parent.name;
-			
+			baseViewArgs.viewName = e.currentTarget.parent.parent.name;			
 			dispatchEvent( new BaseViewEvent( BaseViewEvent.CLOSE, baseViewArgs ) );
 		}
 	}
