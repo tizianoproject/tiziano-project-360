@@ -43,6 +43,9 @@ package org.tizianoproject.view.components.article
 			vimeoPlayer.y = DEFAULT_Y_POS;
 			vimeoPlayer.addEventListener( Event.COMPLETE, videoLoadedHandler, false, 0, true );
 			ShowHideManager.addContent( (this as Video), vimeoPlayer );
+
+			addEventListener( Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
+			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}		
 		
 		public function loadVideo( id:Number ):void
@@ -53,6 +56,16 @@ package org.tizianoproject.view.components.article
 		private function videoLoadedHandler( e:Event ):void
 		{
 			trace( "videoLoadedHandler:" );
+		}
+		
+		private function onAddedToStageHandler( e:Event ):void
+		{
+			trace( "Video::onAddedToStageHandler:" );
+		}
+		
+		private function onRemovedFromStageHandler( e:Event ):void
+		{
+			trace( "Video::onRemovedFromStageHandler:" );
 		}
 	}
 }
