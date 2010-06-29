@@ -3,13 +3,17 @@ SWF Bridge
 ****************************/
 import com.gskinner.utils.SWFBridgeAS2;
 
+Stage.scaleMode="noScale";
+//Align the stage to the top left
+Stage.align = "TL";
+
 var swfBridge = new SWFBridgeAS2("swfBridge", this);
-	swfBridge.addEventListener("connect",onConnectHandler);
+	swfBridge.addEventListener("connect", onConnectHandler);
 
 function swfMessage(message:String):Void {
 	switch (message) {
 		case "connect" :
-			swfBridge.send("swfBridgeConnect","Sent From:",_url.substr(_url.lastIndexOf("/")));
+			swfBridge.send( "swfBridgeConnect", "Sent From:",_url.substr(_url.lastIndexOf("/")) );
 			break;
 		case "fullScreen" :
 			break;
@@ -22,10 +26,6 @@ function onConnectHandler(e):Void {
 	swfMessage("connect");
 	//Load the XML Data
 	loadXML();
-}
-
-function sbTest(param1, param2):Void {
-	trace("wall::sbTest: "+param1+" : "+param2);
 }
 
 function onScreenResize(param1):Void {
@@ -65,7 +65,7 @@ listener.onLoadXml = function(success:Boolean):Void  {
 };
 
 listener.onLoadProgress = function(imagesLoaded:Number, totalImages:Number) {
-	trace("onLoadProgress: "+imagesLoaded+" "+totalImages);
+	//trace("onLoadProgress: "+imagesLoaded+" "+totalImages);
 };
 
 /****************************

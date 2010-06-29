@@ -15,7 +15,7 @@
 
 package 
 {
-	import com.chrisaiv.utils.AssetLoader;
+
 	import com.chrisaiv.utils.ShowHideManager;
 	import com.gskinner.utils.SWFBridgeAS3;
 	import com.millermedeiros.swffit.SWFFit;
@@ -39,6 +39,7 @@ package
 	import nl.demonsters.debugger.MonsterDebugger;
 	
 	import org.adm.runtime.ModeCheck;
+	import org.casalib.util.LoadUtil;
 	import org.casalib.util.LocationUtil;
 	import org.tizianoproject.controller.Controller;
 	import org.tizianoproject.controller.IController;
@@ -51,8 +52,9 @@ package
 	import org.tizianoproject.view.components.Overlay;
 	
 	public class Main extends Sprite
-	{		
+	{
 		private static const SWF_PATH:String = "http://demo.chrisaiv.com/swf/tiziano/wall.swf";
+		private static const SWF_LOCAL_PATH:String = "wall.swf";
 
 		private static const SWF_BRIDGE:String = "swfBridge";
 		private static const SWF_BRIDGE_ON_SCREEN_RESIZE:String = "onScreenResize";
@@ -71,51 +73,54 @@ package
 		public var header_mc:MovieClip;
 		public var footer_mc:MovieClip;
 		
-		private var appStage:Stage;
-		
-		
+		private var appStage:Stage;		
 		private var compositeView:CompositeView;
 		private var articleView:ArticleView;
 		private var studentsView:ListingBrickView;
-		private var mentorsView:ListingPillarView;		
+		private var mentorsView:ListingBrickView;
 		
 		//MonsterDebugger is like Firebug but for Flash
 		private var monster:MonsterDebugger;
 
 		public function Main()
 		{		
+			//Debugger
 			monster = new MonsterDebugger( this );
-			
-			appStage = stage;
-			appStage.align = StageAlign.TOP_LEFT;
-			appStage.scaleMode = StageScaleMode.NO_SCALE;
-			appStage.addEventListener( Event.RESIZE, onStageResizeHandler, false, 0, true );
-
-			var online:Boolean = false;
-			if( online ){				
-			swfBridge = new SWFBridgeAS3( SWF_BRIDGE, this )
-			swfBridge.addEventListener( Event.CONNECT, onConnectHandler );
-
-			context = new LoaderContext( true );
-			loader = new Loader();
-			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true ); 
-			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true ); 
-			loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
-			loader.load( new URLRequest( SWF_PATH ), context );
-			ShowHideManager.addContent( wall_mc, loader );
-			}
-
-				
-//			initSWFFit();
 
 			//Model
 			model = new Model();
 			//Controller
 			controller = new Controller( model );
+
+			//Views
+			appStage = stage;
+			appStage.align = StageAlign.TOP_LEFT;
+			appStage.scaleMode = StageScaleMode.NO_SCALE;
+			appStage.addEventListener( Event.RESIZE, onStageResizeHandler, false, 0, true );
+
+			var online:Boolean = true;
+			if( online ){				
+				//Determine whether to run locally or from the live server
+				var path:String = ( LocationUtil.isIde() ) ? SWF_LOCAL_PATH : SWF_PATH;  
+				
+				swfBridge = new SWFBridgeAS3( SWF_BRIDGE, this )
+				swfBridge.addEventListener( Event.CONNECT, onConnectHandler );
+	
+				context = new LoaderContext( true );
+				loader = new Loader();
+				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true ); 
+				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true ); 
+				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
+				loader.load( new URLRequest( path ), context );
+				ShowHideManager.addContent( wall_mc, loader );
+			}
+				
+
 			//Views
 			compositeView = new CompositeView( model, controller );			
 			//showStudentsView();			
-			initArticleView();
+			//initArticleView();
+			//initSWFFit();
 		}
 		
 		private function onErrorHandler( e:Event ):void
@@ -167,24 +172,27 @@ package
 		
 		public function onPressThumb( param1:*, param2:* ):void
 		{
+			trace( "Main::onPressThumb:" );
 			showView( articleView );
 		}
 
 		public function onRollOverThumb( param1:*, param2:* ):void
 		{
-			trace( "onRollOverThumb:", param1.description, param2 );
-			footer_mc.title_txt.text = param1.description;
+			//trace( "Main::onRollOverThumb:", param1.description, param2 );
+			updateFooterText( param1.description );
+
 		}
 
 		public function onRollOutThumb( param1:*, param2:* ):void
 		{
-			trace( "onRollOutThumb:", param1.description, param2 );	
-			footer_mc.title_txt.text = "";
+			//trace( "Main::onRollOutThumb:", param1.description, param2 );	
+			updateFooterText( "" );
 		}
 
+		//This indicates that the AS2 wall is connected
 		public function swfBridgeConnect( param1:String, param2:String ):void
 		{
-			trace( "main::swfBridgeConnect: ", param1, param2 );
+			trace( "Main::swfBridgeConnect: ", param1, param2 );
 		}		
 		
 		/**********************************
@@ -202,11 +210,12 @@ package
 		
 		private function showStudentsView():void
 		{
-/*			studentsView = new ListingBrickView();
+			studentsView = new ListingBrickView( model, controller );
 			studentsView.name = "studentsView";
-			articleView.eDispatcher.addEventListener( BaseViewEvent.CLOSE, hideView, false, 0, true );
-			ShowHideManager.addContent( appStage, studentsView );
-*/		}
+			articleView.addEventListener( BaseViewEvent.CLOSE, hideView );
+			compositeView.add( articleView );
+			showView( studentsView );
+		}
 				
 		/**********************************
 		 * Show | Hide
@@ -247,11 +256,6 @@ package
 			}
 		}
 		
-		private function repositionFooter():void
-		{
-			footer_mc.y = appStage.stageHeight - footer_mc.height;
-		}
-		
 		private function ioErrorHandler( e:Event ):void
 		{
 			trace( "Main::ioErrorHandler" );
@@ -260,6 +264,19 @@ package
 		private function onCompleteHandler( e:Event ):void
 		{
 			trace( "Main::onCompleteHandler: The Wall has been loaded" );
+		}
+		
+		/**********************************
+		 * Footer Update
+		 **********************************/
+		private function repositionFooter():void
+		{
+			footer_mc.y = appStage.stageHeight - footer_mc.height;
+		}
+		
+		private function updateFooterText( value:String ):void
+		{
+			footer_mc.title_txt.text = value;		
 		}
 
 	}
