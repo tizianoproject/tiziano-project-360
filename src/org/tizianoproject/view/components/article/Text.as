@@ -87,7 +87,7 @@ package org.tizianoproject.view.components.article
 		
 		private function initTextField():void
 		{
-			font = new AGaramondSmallCaps();			
+			font = new AGaramondSmallCaps();
 
 			textField = new TextField();
 			textField.name = "textField";
