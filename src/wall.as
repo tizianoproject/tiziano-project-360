@@ -39,7 +39,6 @@ function onScreenResize(param1):Void {
 	}
 }
 
-
 /****************************
 ThumbnailList Event Listeners
 ****************************/
@@ -84,7 +83,7 @@ matrix_mc.backgroundColor = 0x000000;
 matrix_mc.keepScrollButtonSize = false;
 matrix_mc.setSize(Stage.width,Stage.height);
 matrix_mc.displayEffect = "ordered show";
-matrix_mc.matrix = {lines:5, columns:4};
+matrix_mc.matrix = {lines:8, columns:5};
 matrix_mc.rollOverEffect = "black&white";
 matrix_mc.border = 0;
 matrix_mc.preloader = "circle";
@@ -95,7 +94,7 @@ matrix_mc.thumbBorderSize = 0;
 matrix_mc.thumbWidth = 201;
 matrix_mc.thumbHeight = 139;
 matrix_mc.thumbResizeType = "borderscale";
-matrix_mc.thumbSpacing = 40;
+matrix_mc.thumbSpacing = 30;
 matrix_mc.remainActiveOnPress = true;
 // load the xml file and display the thumbs
 matrix_mc.addListener(listener);
