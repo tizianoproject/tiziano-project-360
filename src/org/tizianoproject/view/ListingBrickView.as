@@ -17,7 +17,9 @@ package org.tizianoproject.view
 {
 	import flash.display.MovieClip;
 	
-	public class ListingBrickView extends MovieClip
+	import org.tizianoproject.events.BaseViewEvent;
+	
+	public class ListingBrickView extends CompositeView
 	{
 		private static const DEFAULT_X_POS:Number = 65;
 		private static const DEFAULT_Y_POS:Number = 71;
@@ -36,5 +38,12 @@ package org.tizianoproject.view
 				var yy:Number = Math.floor(i/columns);				
 			}
 		}
+
+		private function onBaseCloseHandler( e:BaseViewEvent ):void
+		{
+			trace( e.results.name, "::onBaseCloseHandler:" );
+			dispatchEvent( e );
+		}	
+
 	}
 }
