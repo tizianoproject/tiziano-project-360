@@ -29,13 +29,11 @@ package org.tizianoproject.view.components
 		
 		public function FullScreen()
 		{
-			
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
 			addEventListener(MouseEvent.CLICK, goScaledFullScreen);
 			addEventListener(MouseEvent.CLICK, toggleButtonHandler, false, 0, true );
 			addEventListener(MouseEvent.MOUSE_OVER, toggleButtonHandler, false, 0, true );
 			addEventListener(MouseEvent.MOUSE_OUT, toggleButtonHandler, false, 0, true );
-			
 		}
 		
 		private function onAddedToStageHandler( e:Event ):void
@@ -45,14 +43,14 @@ package org.tizianoproject.view.components
 
 		private function goScaledFullScreen( e:MouseEvent ):void
 		{
-			trace("appStage.displayState: " + appStage.displayState );
+			trace("FullScreen::goScaledFullScreen:", appStage.displayState );
 			if(appStage.displayState == StageDisplayState.NORMAL) appStage.displayState = StageDisplayState.FULL_SCREEN;
 			else appStage.displayState = StageDisplayState.NORMAL;
 		}	
 		
 		private function toggleButtonHandler( e:MouseEvent ):void
 		{
-			trace(e.type);
+			trace( "FullScreen::toggleButtonHandler:", e.type);
 			//trace(e.type, e.currentTarget.overState), e.currentTarget.downState, e.currentTarget.upState, e.currentTarget.hitTestState );
 			/*
 			if(e.type == "mouseOver")
