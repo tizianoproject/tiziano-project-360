@@ -43,14 +43,14 @@ package org.tizianoproject.view.components
 
 		private function goScaledFullScreen( e:MouseEvent ):void
 		{
-			trace("FullScreen::goScaledFullScreen:", appStage.displayState );
+			//trace("FullScreen::goScaledFullScreen:", appStage.displayState );
 			if(appStage.displayState == StageDisplayState.NORMAL) appStage.displayState = StageDisplayState.FULL_SCREEN;
 			else appStage.displayState = StageDisplayState.NORMAL;
 		}	
 		
 		private function toggleButtonHandler( e:MouseEvent ):void
 		{
-			trace( "FullScreen::toggleButtonHandler:", e.type);
+			//trace( "FullScreen::toggleButtonHandler:", e.type);
 			//trace(e.type, e.currentTarget.overState), e.currentTarget.downState, e.currentTarget.upState, e.currentTarget.hitTestState );
 			/*
 			if(e.type == "mouseOver")
