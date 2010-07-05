@@ -11,6 +11,7 @@ package org.tizianoproject.view
 	
 	public class HeaderView extends MovieClip
 	{
+		private static const MIN_WIDTH:Number = 450;
 		private static const DEFAULT_HEIGHT:Number = 70;
 		
 		private var bg:Sprite;
@@ -23,7 +24,7 @@ package org.tizianoproject.view
 		{
 			addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler, false, 0, true );
 			addEventListener(Event.REMOVED_FROM_STAGE, removedFromStageHandler, false, 0, true );
-			stage.addEventListener(Event.RESIZE, onResizeHandler, false, 0, true );
+			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
 		}
 
 		/**********************************
@@ -37,19 +38,25 @@ package org.tizianoproject.view
 		
 		private function updatePosition( value:Number ):void
 		{
-			headerRight_mc.x = value - marginRight;
+			if( value > MIN_WIDTH ){
+				headerRight_mc.x = value - marginRight;				
+			}
 		}
 		
-		private function onResizeHandler( e:Event ):void
+		private function onFullScreenHandler( e:FullScreenEvent ):void
 		{
-			if( stage.displayState == FullScreenEvent.FULL_SCREEN ){
+			var w:Number = stage.stageWidth;
+			var h:Number = stage.stageHeight;
+			trace( "Background::onFullScreenHandler:", e.fullScreen, w, h );
+			
+			if( e.fullScreen ){
 				updatePosition( stage.stageWidth - headerRight_mc.width );
 				updateBackground( stage.stageWidth );
 			} else {
 				updatePosition( browserWindowWidth - headerRight_mc.width );
 				updateBackground( browserWindowWidth );
 			}
-		}
+		}		
 		
 		/**********************************
 		 * 
