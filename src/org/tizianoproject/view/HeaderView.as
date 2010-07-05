@@ -4,10 +4,13 @@ package org.tizianoproject.view
 	import com.chrisaiv.utils.ShowHideManager;
 	
 	import flash.display.MovieClip;
+	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.FullScreenEvent;
+	
+	import org.tizianoproject.view.components.global.MentorsButton;
 	
 	public class HeaderView extends MovieClip
 	{
@@ -15,10 +18,11 @@ package org.tizianoproject.view
 		private static const DEFAULT_HEIGHT:Number = 70;
 		
 		private var bg:Sprite;
-		private var browserWindowWidth:Number;
+		private var browserWidth:Number;
 		private var marginRight:Number = 20;
 
 		public var headerRight_mc:MovieClip;
+		public var mentorsView:MentorsButton;
 		
 		public function HeaderView(  )
 		{
@@ -53,8 +57,8 @@ package org.tizianoproject.view
 				updatePosition( stage.stageWidth - headerRight_mc.width );
 				updateBackground( stage.stageWidth );
 			} else {
-				updatePosition( browserWindowWidth - headerRight_mc.width );
-				updateBackground( browserWindowWidth );
+				updatePosition( browserWidth - headerRight_mc.width );
+				updateBackground( browserWidth );
 			}
 		}		
 		
@@ -85,10 +89,10 @@ package org.tizianoproject.view
 		public function swfSizerHandler( e:SWFSizeEvent ):void
 		{
 			//trace( "HeaderView::swfSizerHandler:", e.topY, e.bottomY, e.leftX, e.rightX, e.windowWidth, e.windowHeight );
-			browserWindowWidth = e.rightX;
+			browserWidth = e.rightX;
 			
-			updatePosition( browserWindowWidth - headerRight_mc.width );
-			updateBackground( browserWindowWidth );
+			updatePosition( browserWidth - headerRight_mc.width );
+			updateBackground( browserWidth );
 		}
 		
 		private function addedToStageHandler( e:Event ):void
