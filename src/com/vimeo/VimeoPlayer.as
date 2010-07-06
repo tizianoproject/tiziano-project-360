@@ -171,5 +171,18 @@ package com.vimeo{
 			moogaloop.api_setSize(w, h);
 			this.redrawMask();
 		}
+		
+		public function stopVideo ( ) : void
+		{
+			if(moogaloop){
+				moogaloop.api_unload( );
+			}
+		}
+
+		public function close():void
+		{
+			if(moogaloop) moogaloop.api_unload();
+		}
+
 	}
 }
