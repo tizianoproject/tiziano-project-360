@@ -10,6 +10,8 @@
  * Copyright ©2010
  * - ---------------------------------------------------------
  *
+ * 
+ * var students:Array = new Array("ashna-lg.jpg", "dilpak-lg.jpg", "mohamad-lg.jpg", "mustafa-lg.jpg", "rasi-lg.jpg", "rebin-lg.jpg", "sevina-lg.jpg", "shivan-lg.jpg", "zana-lg.jpg");
  *
  */
 
@@ -63,14 +65,30 @@ package org.tizianoproject.view
 		public function ArticleView( m:IModel, c:IController=null )
 		{
 			super( m, c );
-
-			x = DEFAULT_X_POS;
-			y = DEFAULT_Y_POS;
-			
+						
 			addEventListener( Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
 			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 			//Listen for when the user clicks on the [ X ] button
 			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
+		}
+		
+		private function init():void
+		{
+			if( stage.displayState == "normal" ){
+				x = DEFAULT_X_POS;
+				y = DEFAULT_Y_POS;				
+			} else {
+				(this as ArticleView).x = stage.fullScreenWidth / 2 - ( (this as ArticleView).width / 2 );
+				(this as ArticleView).y = stage.fullScreenHeight / 2 - ( (this as ArticleView).height / 2 );
+			}
+			
+			prev_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
+			prev_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
+			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
+			
+			next_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
+			next_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
+			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );			
 		}
 		
 		private function initNewStory():void
@@ -181,6 +199,7 @@ package org.tizianoproject.view
 			//Delete any Story on the stage
 			ShowHideManager.removeContent( (this as ArticleView), "text" );
 			ShowHideManager.removeContent( (this as ArticleView), "slideshow" );
+			
 			ShowHideManager.removeContent( (this as ArticleView), "video" );
 			ShowHideManager.removeContent( (this as ArticleView), "featureScrollBar" );
 			
@@ -196,18 +215,10 @@ package org.tizianoproject.view
 		 **********************************/
 		private function onAddedToStageHandler( e:Event ):void
 		{
+			init();
+			
 			//Load a new Story
-			initNewStory();
-			
-			prev_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
-			prev_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
-			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
-			
-			next_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
-			next_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
-			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
-			
-			//baseView_mc.eDispatcher.addEventListener( BaseViewEvent.CLOSE, onEventCloseHandler );
+			initNewStory();			
 		}
 
 		private function onRemovedFromStageHandler( e:Event ):void
