@@ -10,7 +10,8 @@
  * Copyright ©2010
  * - ---------------------------------------------------------
  *
- *
+ * var students:Array = new Array("ashna-sm.jpg", "dilpak-sm.jpg", "mohamad-sm.jpg", "mustafa-sm.jpg", "rasi-sm.jpg", "rebin-sm.jpg", "sevina-sm.jpg", "shivan-sm.jpg", "zana-sm.jpg");
+ * 
  */
 
 package org.tizianoproject.view
