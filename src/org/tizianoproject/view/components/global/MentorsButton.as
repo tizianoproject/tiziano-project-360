@@ -16,7 +16,7 @@ package org.tizianoproject.view.components.global
 		
 		private function onAddedToStageHandler( e:Event ):void
 		{
-			trace( "Mentors::onAddedToStageHandler:" );
+			//trace( "Mentors::onAddedToStageHandler:" );
 			addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 		}
 		
