@@ -17,6 +17,7 @@
 
 package org.tizianoproject.view
 {
+	import com.chargedweb.swfsize.SWFSizeEvent;
 	import com.chrisaiv.utils.ShowHideManager;
 	import com.tis.utils.components.Scrollbar;
 	
@@ -24,6 +25,7 @@ package org.tizianoproject.view
 	import flash.display.SimpleButton;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.FullScreenEvent;
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	
@@ -42,8 +44,16 @@ package org.tizianoproject.view
 	{
 		private static const DEFAULT_TITLE:String = "DEFAULT_TITLE";
 		private static const DEFAULT_AUTHOR:String = "DEFAULT_AUTHOR";
-		private static const DEFAULT_X_POS:Number = 65;
-		private static const DEFAULT_Y_POS:Number = 71;
+
+		//This is the height of the Top Header
+		private static const DEFAULT_Y_POS:Number = 71;		
+		
+		//1/2 Close_btn is 20px.  Use the negative in order to adjust centering
+		private static const CLOSE_BTN_WIDTH:Number = -20;
+		//This is the Default Width + Close Button
+		private static const MIN_WIDTH:Number = 920 + CLOSE_BTN_WIDTH;
+		//This is the Default Height
+		private static const MIN_HEIGHT:Number = 616;
 
 		//Views
 		public var title_txt:TextField;
@@ -61,11 +71,17 @@ package org.tizianoproject.view
 		private var feature:Feature;
 		private var featureHolder:FeatureHolder;		
 		private var featureScrollBar:Scroller;
+		
+		private var xPos:Number;
+		private var yPos:Number;
+		private var fullscreenXPos:Number;
+		private var fullscreenYPos:Number;
 
 		public function ArticleView( m:IModel, c:IController=null )
 		{
 			super( m, c );
-
+			
+			
 			prev_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
 			prev_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
 			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
@@ -75,15 +91,27 @@ package org.tizianoproject.view
 			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );			
 
 			addEventListener( Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
+			addEventListener( Event.ADDED, onAddedHandler, false, 0, true );
 			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 			//Listen for when the user clicks on the [ X ] button
-			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
+			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );			
 		}
 		
-		private function init():void
+		private function recordPosition( w:Number, h:Number ):void
 		{
-			x = centerHorizontal();
-			y = centerVertical();							
+			if( stage ){
+				if( stage.displayState == "normal" || stage.displayState == null ){
+					var browserWidth:Number = ( w > MIN_WIDTH ) ? w : MIN_WIDTH;
+					xPos =  ( browserWidth / 2) - ( MIN_WIDTH / 2 );
+					yPos = DEFAULT_Y_POS;
+				}			
+			}
+		}
+		
+		private function updatePosition( xx:Number, yy:Number ):void
+		{
+			x = xx;
+			y = yy;						
 		}
 		
 		private function initNewStory():void
@@ -115,29 +143,6 @@ package org.tizianoproject.view
 					break;
 			}
 			/***** Temporary Code Ends *****/			
-		}
-		
-		private function centerHorizontal():Number
-		{
-			var xPos:Number;
-			if( stage.displayState == "normal" || stage.displayState == null ){
-				xPos =  stage.stageWidth / 2 - ( (this as ArticleView).width / 2 );
-			} else {
-				xPos =  (this as ArticleView).x = stage.fullScreenWidth / 2 - ( (this as ArticleView).width / 2 );					
-			}
-			return xPos;
-		}
-		
-		private function centerVertical():Number
-		{
-			var yPos:Number;
-			
-			if( stage.displayState == "normal" || stage.displayState == null ){
-				yPos = DEFAULT_Y_POS;
-			} else {
-				yPos = (this as ArticleView).y = stage.fullScreenHeight / 2 - ( (this as ArticleView).height / 2 );
-			}	
-			return yPos;
 		}
 		
 		/**********************************
@@ -233,10 +238,37 @@ package org.tizianoproject.view
 		 **********************************/
 		private function onAddedToStageHandler( e:Event ):void
 		{
-			init();
+			//Mainly done for Local Testing
+			recordPosition( stage.stageWidth, stage.stageHeight )
+			updatePosition( xPos, DEFAULT_Y_POS );
+			
+			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
+			trace( "ArticleView::onAddedToStageHandler:" );
 			
 			//Load a new Story
-			initNewStory();			
+			initNewStory();				
+		}
+		
+		private function onFullScreenHandler( e:FullScreenEvent ):void
+		{
+			trace( "ArticleView::onFullScreenHandler:", stage.fullScreenWidth, stage.fullScreenHeight );
+			if( e.fullScreen ){
+				updatePosition( stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 ), stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 ) );
+			} else {
+				updatePosition( xPos, DEFAULT_Y_POS );				
+			}
+		}
+
+		public function swfSizerHandler( e:SWFSizeEvent ):void
+		{
+			trace( "ArticleView::swfSizerHandler:", e.type, e.windowWidth, e.windowHeight );
+			recordPosition( e.windowWidth, e.windowHeight );
+			updatePosition( xPos, DEFAULT_Y_POS );				
+		}
+
+		private function onAddedHandler( e:Event ):void
+		{
+			//trace( "ArticleView::onAddedHandler:", e.target );
 		}
 
 		private function onRemovedFromStageHandler( e:Event ):void
