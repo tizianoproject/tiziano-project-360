@@ -14,12 +14,15 @@ package org.tizianoproject.view
 	
 	public class HeaderView extends MovieClip
 	{
-		private static const MIN_WIDTH:Number = 450;
+		private static const DEFAULT_BG_COLOR:Number = 0x000000;
+		private static const DEFAULT_BG_ALPHA:Number = 0.5;
 		private static const DEFAULT_HEIGHT:Number = 70;
+
+		private static const MIN_WIDTH:Number = 450;
+		private static const MARGIN_RIGHT:Number = 20;
 		
 		private var bg:Sprite;
 		private var browserWidth:Number;
-		private var marginRight:Number = 20;
 
 		public var headerRight_mc:MovieClip;
 		public var mentorsView:MentorsButton;
@@ -43,7 +46,7 @@ package org.tizianoproject.view
 		private function updatePosition( value:Number ):void
 		{
 			if( value > MIN_WIDTH ){
-				headerRight_mc.x = value - marginRight;				
+				headerRight_mc.x = value - MARGIN_RIGHT;
 			}
 		}
 		
@@ -51,7 +54,8 @@ package org.tizianoproject.view
 		{
 			var w:Number = stage.stageWidth;
 			var h:Number = stage.stageHeight;
-			trace( "Background::onFullScreenHandler:", e.fullScreen, w, h );
+			
+			//trace( "Background::onFullScreenHandler:", e.fullScreen, w, h );
 			
 			if( e.fullScreen ){
 				updatePosition( stage.stageWidth - headerRight_mc.width );
@@ -72,7 +76,7 @@ package org.tizianoproject.view
 			bg.mouseChildren = true;
 			bg.mouseEnabled = false;
 			
-			bg.graphics.beginFill( 0x000000, 1 );
+			bg.graphics.beginFill( DEFAULT_BG_COLOR, DEFAULT_BG_ALPHA );
 			bg.graphics.drawRect( 0, 0, stage.stageWidth, DEFAULT_HEIGHT );
 			bg.graphics.endFill();
 			
