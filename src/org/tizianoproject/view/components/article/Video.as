@@ -72,7 +72,7 @@ package org.tizianoproject.view.components.article
 		private function onAddedToStageHandler( e:Event ):void
 		{
 			init();
-			trace( "Video::onAddedToStageHandler:" );
+			//trace( "Video::onAddedToStageHandler:" );
 		}
 		
 		private function onRemovedFromStageHandler( e:Event ):void
