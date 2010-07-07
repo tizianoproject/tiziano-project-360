@@ -7,6 +7,7 @@ package org.tizianoproject.view
 	import flash.events.FullScreenEvent;
 	import flash.printing.PrintJob;
 	
+	import org.casalib.util.LocationUtil;
 	import org.casalib.util.ValidationUtil;
 	
 	public class WallView extends MovieClip
@@ -25,7 +26,8 @@ package org.tizianoproject.view
 		
 		private function init():void
 		{
-			graphics.beginFill( 0xffcc00, 0.5 );
+			var alph:Number = ( LocationUtil.isIde() ) ? 0.5 : 0;
+			graphics.beginFill( 0xffcc00, alph );
 			graphics.drawRect( 0, 0, stage.stageWidth, stage.stageHeight );
 			graphics.endFill();
 			
@@ -33,10 +35,10 @@ package org.tizianoproject.view
 			browserHeight = height;
 		}
 		
-		private function updatePosition( value:Number ):void
+		private function updatePosition( w:Number, h:Number ):void
 		{
-			if( value > MIN_WIDTH ){
-				width = value;
+			if( w > MIN_WIDTH ){
+				width = w;
 			}
 		}
 		
@@ -47,8 +49,9 @@ package org.tizianoproject.view
 		{
 			//trace( "HeaderView::swfSizerHandler:", e.topY, e.bottomY, e.leftX, e.rightX, e.windowWidth, e.windowHeight );
 			browserWidth = e.rightX;
+			browserHeight = e.bottomY;
 			
-			updatePosition( browserWidth );
+			updatePosition( browserWidth, browserHeight );
 		}
 		
 		private function onFullScreenHandler( e:FullScreenEvent ):void
