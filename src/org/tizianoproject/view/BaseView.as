@@ -42,8 +42,8 @@ package org.tizianoproject.view
 		
 		private function initBg():void
 		{
-			graphics.beginFill( 0x000000, 0 );
-			graphics.drawRect( -parent.x, -parent.y, stage.stageWidth, stage.stageHeight );
+			graphics.beginFill( 0x00FF00, 0 );
+			graphics.drawRect( -parent.x, 0, stage.stageWidth, stage.stageHeight );
 			graphics.endFill();			
 		}
 		
