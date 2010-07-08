@@ -56,7 +56,7 @@ package org.tizianoproject.view.components.article
 			ratio = (targetMC.height - range ) / range;
 			var yPos:Number = (dragHandleMC.y * ratio ) - ctrl;
 			
-			var tweenLite = new TweenLite( targetMC, TWEEN_SPEED, { y: -yPos, ease: Strong.easeOut } );
+			var tweenLite:TweenLite = new TweenLite( targetMC, TWEEN_SPEED, { y: -yPos, ease: Strong.easeOut } );
 			
 			//use updateAfterEvent() so that Flash doesn't have to rely on the 
 			//frame rate to make on  MOUSE_MOVE.  Otherwise it's sluggish
