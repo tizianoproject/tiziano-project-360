@@ -21,7 +21,7 @@ package com.chrisaiv.utils
 			var aHover:Object = new Object();
 				aHover.textDecoration = "underline";	
 			
-			var css = new StyleSheet();
+			var css:StyleSheet = new StyleSheet();
 				css.setStyle("a", a);
 				css.setStyle("a:hover", aHover);
 			
