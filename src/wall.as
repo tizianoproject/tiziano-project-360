@@ -29,6 +29,7 @@ function onConnectHandler(e):Void {
 }
 
 function onScreenResize(param1):Void {
+	trace( "WALL::onScreenResize: " );
 	if (param1 == "fullScreen") {
 		trace("wall::onFullScreenHandler: fullScreen");
 		this._x = (Stage.width)/2-(this._width/2);
@@ -71,7 +72,7 @@ listener.onLoadProgress = function(imagesLoaded:Number, totalImages:Number) {
 ThumbnailList Component
 ****************************/
 var matrixProps:Object = new Object();
-	matrixProps._x = 40;
+	matrixProps._x = 0;
 	matrixProps._y = 0;
 	matrixProps._width = Stage.width;
 	matrixProps._height = Stage.height;
@@ -81,9 +82,9 @@ var main:MovieClip = this;
 	
 matrix_mc.backgroundColor = 0x000000;
 matrix_mc.keepScrollButtonSize = false;
-matrix_mc.setSize(Stage.width,Stage.height);
+matrix_mc.setSize( Stage.width,Stage.height );
 matrix_mc.displayEffect = "ordered show";
-matrix_mc.matrix = {lines:8, columns:5};
+matrix_mc.matrix = { lines:10, columns:10 };
 matrix_mc.rollOverEffect = "black&white";
 matrix_mc.border = 0;
 matrix_mc.preloader = "circle";
@@ -101,6 +102,6 @@ matrix_mc.addListener(listener);
 matrix_mc._visible = false;
 
 function loadXML() {
-	matrix_mc._visible = true;
-	matrix_mc.load("http://demo.chrisaiv.com/xml/tiziano/jumpeye.xml");
 }
+matrix_mc._visible = true;
+matrix_mc.load("http://demo.chrisaiv.com/xml/tiziano/jumpeye.xml");
