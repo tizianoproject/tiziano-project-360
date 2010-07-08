@@ -15,7 +15,7 @@ function swfMessage(message:String):Void {
 		case "connect" :
 			swfBridge.send( "swfBridgeConnect", "Sent From:",_url.substr(_url.lastIndexOf("/")) );
 			break;
-		case "fullScreen" :
+		case "fullScreen":
 			break;
 		case "normal" :
 			break;
@@ -29,11 +29,10 @@ function onConnectHandler(e):Void {
 }
 
 function onScreenResize(param1):Void {
-	trace( "WALL::onScreenResize: " );
+	trace( "WALL::onScreenResize: " + param1 );
 	if (param1 == "fullScreen") {
-		trace("wall::onFullScreenHandler: fullScreen");
-		this._x = (Stage.width)/2-(this._width/2);
-		this._y = (Stage.height)/2-(this._height/2);
+		this._x = ( Stage.width ) / 2 - ( this._width / 2 );
+		this._y = ( Stage.height ) / 2- ( this._height / 2 );
 	} else {
 		this._x = 0;
 		this._y = 0;
@@ -84,7 +83,7 @@ matrix_mc.backgroundColor = 0x000000;
 matrix_mc.keepScrollButtonSize = false;
 matrix_mc.setSize( Stage.width,Stage.height );
 matrix_mc.displayEffect = "ordered show";
-matrix_mc.matrix = { lines:10, columns:10 };
+matrix_mc.matrix = { lines: 8, columns: 8 };
 matrix_mc.rollOverEffect = "black&white";
 matrix_mc.border = 0;
 matrix_mc.preloader = "circle";
@@ -102,6 +101,6 @@ matrix_mc.addListener(listener);
 matrix_mc._visible = false;
 
 function loadXML() {
+	matrix_mc._visible = true;
+	matrix_mc.load("http://demo.chrisaiv.com/xml/tiziano/jumpeye.xml");
 }
-matrix_mc._visible = true;
-matrix_mc.load("http://demo.chrisaiv.com/xml/tiziano/jumpeye.xml");
