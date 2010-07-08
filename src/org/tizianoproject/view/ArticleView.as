@@ -246,7 +246,7 @@ package org.tizianoproject.view
 			trace( "ArticleView::onAddedToStageHandler:" );
 			
 			//Load a new Story
-			initNewStory();				
+			//initNewStory();				
 		}
 		
 		private function onFullScreenHandler( e:FullScreenEvent ):void
@@ -302,6 +302,11 @@ package org.tizianoproject.view
 		{
 			//trace( "ArticleView:onMouseClickHandler", e.currentTarget.name );
 			unloadStories();
+		}
+		
+		override public function update(e:Event=null):void
+		{
+			
 		}
 	}
 }
