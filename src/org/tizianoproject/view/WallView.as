@@ -26,6 +26,7 @@ package org.tizianoproject.view
 		
 		private function init():void
 		{
+			
 			var alph:Number = ( LocationUtil.isIde() ) ? 0.5 : 0;
 			graphics.beginFill( 0xffcc00, alph );
 			graphics.drawRect( 0, 0, stage.stageWidth, stage.stageHeight );
@@ -37,9 +38,8 @@ package org.tizianoproject.view
 		
 		private function updatePosition( w:Number, h:Number ):void
 		{
-			if( w > MIN_WIDTH ){
-				width = w;
-			}
+		//	if( w > MIN_WIDTH ) width = w;
+		//	height = h;
 		}
 		
 		/**********************************
@@ -61,11 +61,9 @@ package org.tizianoproject.view
 			
 			trace( "WallView::onFullScreenHandler:" );
 			if( e.fullScreen ){
-				width = w;
-				height = h;
+				updatePosition( w, h );
 			} else {
-				width = browserWidth;
-				height = browserHeight;
+				updatePosition( browserWidth, browserHeight );
 			}	
 		}
 		

@@ -49,11 +49,10 @@ package org.tizianoproject.view
 		private static const DEFAULT_Y_POS:Number = 71;		
 		
 		//1/2 Close_btn is 20px.  Use the negative in order to adjust centering
-		private static const CLOSE_BTN_WIDTH:Number = -20;
 		//This is the Default Width + Close Button
-		private static const MIN_WIDTH:Number = 920 + CLOSE_BTN_WIDTH;
+		private static const MIN_WIDTH:Number = 900;
 		//This is the Default Height
-		private static const MIN_HEIGHT:Number = 616;
+		private static const MIN_HEIGHT:Number = 600;
 
 		//Views
 		public var title_txt:TextField;
@@ -102,16 +101,17 @@ package org.tizianoproject.view
 			if( stage ){
 				if( stage.displayState == "normal" || stage.displayState == null ){
 					var browserWidth:Number = ( w > MIN_WIDTH ) ? w : MIN_WIDTH;
-					xPos =  ( browserWidth / 2) - ( MIN_WIDTH / 2 );
-					yPos = DEFAULT_Y_POS;
-				}			
+					var browserHeight:Number = ( h > MIN_HEIGHT ) ? h : MIN_HEIGHT ;
+					xPos = ( browserWidth / 2) - ( MIN_WIDTH / 2 );
+					yPos = ( browserHeight / 2 ) - ( MIN_HEIGHT / 2 );
+				}
 			}
 		}
 		
 		private function updatePosition( xx:Number, yy:Number ):void
 		{
 			x = xx;
-			y = yy;						
+			y = ( yy > + DEFAULT_Y_POS ) ? yy : DEFAULT_Y_POS;
 		}
 		
 		private function initNewStory():void
@@ -240,7 +240,7 @@ package org.tizianoproject.view
 		{
 			//Mainly done for Local Testing
 			recordPosition( stage.stageWidth, stage.stageHeight )
-			updatePosition( xPos, DEFAULT_Y_POS );
+			updatePosition( xPos, yPos );
 			
 			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
 			trace( "ArticleView::onAddedToStageHandler:" );
@@ -255,7 +255,7 @@ package org.tizianoproject.view
 			if( e.fullScreen ){
 				updatePosition( stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 ), stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 ) );
 			} else {
-				updatePosition( xPos, DEFAULT_Y_POS );				
+				updatePosition( xPos, yPos );				
 			}
 		}
 
@@ -263,7 +263,7 @@ package org.tizianoproject.view
 		{
 			trace( "ArticleView::swfSizerHandler:", e.type, e.windowWidth, e.windowHeight );
 			recordPosition( e.windowWidth, e.windowHeight );
-			updatePosition( xPos, DEFAULT_Y_POS );				
+			updatePosition( xPos, yPos );				
 		}
 
 		private function onAddedHandler( e:Event ):void

@@ -42,7 +42,7 @@ package org.tizianoproject.view
 		
 		private function initBg():void
 		{
-			graphics.beginFill( 0x00FF00, 0 );
+			graphics.beginFill( 0x00FF00, 0.2 );
 			graphics.drawRect( -parent.x, 0, stage.stageWidth, stage.stageHeight );
 			graphics.endFill();			
 		}
