@@ -15,6 +15,8 @@ package org.tizianoproject.view
 	
 	public class WallView extends MovieClip
 	{
+		private static const DEFAULT_X_POS:Number = 0;
+		private static const DEFAULT_Y_POS:Number = 0;
 		private static const MIN_WIDTH:Number = 800;
 
 		private static const TWEEN_SPEED:Number = 0.5;
@@ -24,6 +26,7 @@ package org.tizianoproject.view
 		
 		public function WallView( )
 		{
+			addEventListener(Event.ADDED, onAddedHandler, false, 0, true );
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 			stage.addEventListener( FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
@@ -31,13 +34,17 @@ package org.tizianoproject.view
 		
 		private function init():void
 		{			
+			var w:Number = stage.stageWidth;
+			var h:Number = stage.stageHeight;
+			
 			var alph:Number = ( LocationUtil.isIde() ) ? 0.5 : 0;
+			
 			graphics.beginFill( 0xffcc00, alph );
-			graphics.drawRect( 0, 0, stage.stageWidth, stage.stageHeight );
+			graphics.drawRect( DEFAULT_X_POS, DEFAULT_Y_POS, w, h );
 			graphics.endFill();
 			
-			browserWidth = width;
-			browserHeight = height;
+			browserWidth = w;
+			browserHeight = h;
 		}
 		
 		public function showWall( duration:Number=TWEEN_SPEED ):void
@@ -54,10 +61,11 @@ package org.tizianoproject.view
 		
 		private function updatePosition( w:Number, h:Number ):void
 		{
-		//	if( w > MIN_WIDTH ) width = w;
-		//	height = h;
+			/*
+			if( w > MIN_WIDTH ) width = w;
+			height = h;
+			*/
 		}
-		//http://reports.tizianoproject.org/multimedia/soundslides/iraq-sdawood-noel/soundslider.swf?size=2&format=xml
 		
 		/**********************************
 		 * Event
@@ -82,6 +90,13 @@ package org.tizianoproject.view
 			} else {
 				updatePosition( browserWidth, browserHeight );
 			}	
+		}
+		
+		private function onAddedHandler( e:Event ):void
+		{
+			if( e.target.name == "swfLoader"){
+				trace( "WallView::onAddedHandler:", e.target.name );				
+			}
 		}
 		
 		private function onAddedToStageHandler( e:Event ):void
