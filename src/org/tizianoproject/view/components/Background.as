@@ -3,6 +3,7 @@ package org.tizianoproject.view.components
 {
 	import com.chargedweb.swfsize.SWFSizeEvent;
 	import com.chrisaiv.utils.ShowHideManager;
+	import com.greensock.TweenLite;
 	import com.greensock.easing.Back;
 	
 	import flash.display.Bitmap;
@@ -24,7 +25,6 @@ package org.tizianoproject.view.components
 	public class Background extends MovieClip
 	{
 		private static const DEFAULT_BG_IMAGE:String = "http://demo.chrisaiv.com/images/tiziano/360/wall/Wall-Bg.jpg"
-		
 		private static const MIN_WIDTH:Number = 800;
 		private static const MIN_HEIGHT:Number = 600;
 		
@@ -66,7 +66,34 @@ package org.tizianoproject.view.components
 			bgLoader.load( new URLRequest( DEFAULT_BG_IMAGE ), loaderContext );
 			ShowHideManager.addContent( (this as Background), bgLoader );
 		}
+		
+		private function showBitmap( e:Event ):void
+		{
+			var assetLoader:Loader = e.currentTarget.loader as Loader;
+				assetLoader.alpha = 0;
+			var asset:LoaderInfo = e.currentTarget as LoaderInfo;
+			//Assign the background image
+			bitmap = asset.content as Bitmap;
+			//Create an Aspect Ratio for the Background IMage
+			aspectRatio = bitmap.width / bitmap.height;
+			//Resize the Bitmap to fit either the browser or Theatre Mode (Full Screen)
+			resizeBitmap();
+			//Tween in the image
+			TweenLite.to( assetLoader, 1, { alpha: 1 } ); 			
+		}
+		
+		private function resizeBitmap( ):void
+		{
+			//Adjust the image to the browser window
+			if( stage.displayState == "fullScreen" ){
+				adjustSize( stage.stageWidth, (stage.stageHeight / aspectRatio) );				
+			} else {
+				//Adjust the Background to match the size of the browser
+				adjustSize( browserWidth, browserHeight );				
+			}			
+		}
 
+		//Not in use
 		private function removeBitmap( name:String ) :void
 		{
 			var childName:String = name;
@@ -84,24 +111,19 @@ package org.tizianoproject.view.components
 		
 		private function adjustSize( w:Number, h:Number ):void
 		{
-			//MonsterDebugger.trace( (this as Background), { "aspectRatio": aspectRatio, "w": w, "h": h } );
+			//The Bitmap Image is loaded
 			if( bitmapIsLoaded() ){
+				//Browser window is larger than the default Bitmap image
 				if( w > MIN_WIDTH ){
 					width = w;
 					height = w / aspectRatio;
-				} else {					
-					/*
+				} 
+				//The Browswer window is smaller than the minimum width
+				else {
 					width = MIN_WIDTH;
-					height = MIN_HEIGHT / aspectRatio;
-					
-					browserWidth = MIN_WIDTH;
-					browserHeight = MIN_HEIGHT;
-					*/
-				}				
+					height = MIN_WIDTH / aspectRatio;
+				}
 			}
-			//Keep track of the Browser Window
-			browserWidth = w;
-			browserHeight = h;
 		}
 		
 		/**********************************
@@ -110,24 +132,17 @@ package org.tizianoproject.view.components
 		
 		public function swfSizerHandler( e:SWFSizeEvent ):void
 		{
+			//Keep track of the Browser Window
+			browserWidth = e.windowWidth;
+			browserHeight = e.windowHeight;
+			
 			//trace( "Background::swfSizerHandler:", e.type, e.windowWidth, e.windowHeight );
-			adjustSize( e.windowWidth, e.windowHeight );
+			adjustSize( browserWidth, browserHeight );	
 		}
 		
 		private function onCompleteHandler( e:Event ):void
 		{
-			var asset:LoaderInfo = e.currentTarget as LoaderInfo;
-			//Assign the background image
-			bitmap = asset.content as Bitmap;
-			//Create an Aspect Ratio for the Background IMage
-			aspectRatio = bitmap.width / bitmap.height;
-			
-			if( stage.displayState == "fullScreen" ){
-				adjustSize( stage.stageWidth, (stage.stageHeight / aspectRatio) );				
-			} else {
-				//Adjust the Background to match the size of the browser
-				adjustSize( browserWidth, browserHeight );				
-			}
+			showBitmap( e );
 		}
 		
 		private function onErrorHandler( e:Event ):void
@@ -138,11 +153,7 @@ package org.tizianoproject.view.components
 		private function onFullScreenHandler( e:FullScreenEvent ):void
 		{
 			trace( "Background::onFullScreenHandler:", e.fullScreen, stage.stageWidth, stage.stageHeight );			
-			if( e.fullScreen ){
-				adjustSize( stage.stageWidth, (stage.stageHeight / aspectRatio) );
-			} else {
-				adjustSize( browserWidth, browserHeight );
-			}
+			resizeBitmap();
 		}
 				
 		private function addedToStageHandler( e:Event ):void
