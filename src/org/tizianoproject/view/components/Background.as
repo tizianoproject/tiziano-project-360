@@ -84,6 +84,7 @@ package org.tizianoproject.view.components
 			TweenLite.to( assetLoader, 1, { alpha: 1 } ); 			
 		}
 		
+		//Resize Bitmap handles fullScreen and normalScreen so that you only need to update from one place
 		private function resizeBitmap( ):void
 		{
 			//Adjust the image to the browser window
@@ -92,6 +93,7 @@ package org.tizianoproject.view.components
 			} else {
 				//Adjust the Background to match the size of the browser
 				if( browserWidth && browserHeight ) adjustSize( browserWidth, browserHeight );
+				//SWF is being loaded from IDE
 				else adjustSize( defaultWidth, defaultHeight );
 			}			
 		}
@@ -140,7 +142,7 @@ package org.tizianoproject.view.components
 			browserHeight = e.windowHeight;
 			
 			//trace( "Background::swfSizerHandler:", e.type, e.windowWidth, e.windowHeight );
-			adjustSize( browserWidth, browserHeight );	
+			resizeBitmap();
 		}
 		
 		private function onCompleteHandler( e:Event ):void
