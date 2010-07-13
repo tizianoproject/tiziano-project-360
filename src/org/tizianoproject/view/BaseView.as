@@ -23,6 +23,7 @@ package org.tizianoproject.view
 	import flash.events.EventDispatcher;
 	import flash.events.MouseEvent;
 	
+	import org.casalib.util.LocationUtil;
 	import org.tizianoproject.events.BaseViewEvent;
 	
 	public class BaseView extends MovieClip
@@ -40,17 +41,24 @@ package org.tizianoproject.view
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
 		
+		private function init():void
+		{
+			close_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );	
+			
+			initBg();
+		}
+		
 		private function initBg():void
 		{
-			graphics.beginFill( 0x00FF00, 0.2 );
+			var tmpAlpha:Number = ( LocationUtil.isIde() ) ? 0.2 : 0;			
+			graphics.beginFill( 0x00FF00, tmpAlpha );
 			graphics.drawRect( -parent.x, 0, stage.stageWidth, stage.stageHeight );
 			graphics.endFill();			
 		}
 		
 		private function onAddedToStageHandler( e:Event ):void
 		{
-			initBg();
-			close_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
+			init();
 			//trace( "Feature::onAddedToStageHandler:" );
 		}
 		
