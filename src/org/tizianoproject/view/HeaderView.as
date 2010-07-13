@@ -47,6 +47,8 @@ package org.tizianoproject.view
 		{
 			if( value > MIN_WIDTH ){
 				headerRight_mc.x = value - MARGIN_RIGHT;
+			} else {
+				headerRight_mc.x = MIN_WIDTH - MARGIN_RIGHT;				
 			}
 		}
 		
