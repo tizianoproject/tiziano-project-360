@@ -29,6 +29,8 @@ package org.tizianoproject.view
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	
+	import nl.demonsters.debugger.MonsterDebugger;
+	
 	import org.casalib.util.NumberUtil;
 	import org.tizianoproject.controller.IController;
 	import org.tizianoproject.events.BaseViewEvent;
@@ -37,18 +39,19 @@ package org.tizianoproject.view
 	import org.tizianoproject.view.components.FeatureHolder;
 	import org.tizianoproject.view.components.article.Scroller;
 	import org.tizianoproject.view.components.article.Slideshow;
+	import org.tizianoproject.view.components.article.SoundSlide;
 	import org.tizianoproject.view.components.article.Text;
 	import org.tizianoproject.view.components.article.Video;
 	
 	public class ArticleView extends CompositeView
 	{
+		private static const STORY_TYPE:Array = new Array( "text", "video", "slideshow", "soundslide" );
 		private static const DEFAULT_TITLE:String = "DEFAULT_TITLE";
 		private static const DEFAULT_AUTHOR:String = "DEFAULT_AUTHOR";
 
 		//This is the height of the Top Header
-		private static const DEFAULT_Y_POS:Number = 71;		
-		
-		//1/2 Close_btn is 20px.  Use the negative in order to adjust centering
+		private static const DEFAULT_Y_POS:Number = 71;	
+
 		//This is the Default Width + Close Button
 		private static const MIN_WIDTH:Number = 900;
 		//This is the Default Height
@@ -66,20 +69,23 @@ package org.tizianoproject.view
 		private var text:Text;
 		private var slideshow:Slideshow;
 		private var video:Video;
+		private var soundslide:SoundSlide;
 
 		private var feature:Feature;
 		private var featureHolder:FeatureHolder;		
 		private var featureScrollBar:Scroller;
 		
-		private var xPos:Number;
-		private var yPos:Number;
-		private var fullscreenXPos:Number;
-		private var fullscreenYPos:Number;
+		private var _xPos:Number;
+		private var _yPos:Number;
+		
+		private var browserWidth:Number;
+		private var browserHeight:Number;
+		private var defaultWidth:Number;
+		private var defaultHeight:Number;
 
 		public function ArticleView( m:IModel, c:IController=null )
 		{
 			super( m, c );
-			
 			
 			prev_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
 			prev_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
@@ -96,22 +102,37 @@ package org.tizianoproject.view
 			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );			
 		}
 		
-		private function recordPosition( w:Number, h:Number ):void
+		private function init():void
 		{
-			if( stage ){
-				if( stage.displayState == "normal" || stage.displayState == null ){
-					var browserWidth:Number = ( w > MIN_WIDTH ) ? w : MIN_WIDTH;
-					var browserHeight:Number = ( h > MIN_HEIGHT ) ? h : MIN_HEIGHT ;
-					xPos = ( browserWidth / 2) - ( MIN_WIDTH / 2 );
-					yPos = ( browserHeight / 2 ) - ( MIN_HEIGHT / 2 );
-				}
-			}
+			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
+			defaultWidth  = stage.stageWidth;
+			defaultHeight = stage.stageHeight;
+			updatePosition( );
+
+			initNewStory();
 		}
 		
-		private function updatePosition( xx:Number, yy:Number ):void
+		private function updatePosition( xWidth:Number=0, yWidth:Number=0 ):void
 		{
-			x = xx;
-			y = ( yy > + DEFAULT_Y_POS ) ? yy : DEFAULT_Y_POS;
+			if( stage ){
+				if( stage.displayState == "fullScreen" ){
+					x = stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 );
+					y = stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 );
+				} else {
+					if( browserWidth && browserHeight ){
+						var dynWidth:Number = ( browserWidth > MIN_WIDTH) ? browserWidth : MIN_WIDTH;
+						var dynHeight:Number = ( browserHeight > MIN_HEIGHT ) ? browserHeight : MIN_HEIGHT ;
+						var yPos:Number = ( dynHeight / 2) - ( MIN_HEIGHT / 2 );
+						x = ( dynWidth / 2) - ( MIN_WIDTH / 2 );
+						y = ( yPos > + DEFAULT_Y_POS ) ? yPos : DEFAULT_Y_POS;
+					}
+					//App is loading without a browser
+					else {
+						x = (defaultWidth / 2) - ( MIN_WIDTH / 2 );
+						y = ( (defaultHeight - DEFAULT_Y_POS) / 2) - ( MIN_HEIGHT / 2 ) + DEFAULT_Y_POS;
+					}
+				}
+			}
 		}
 		
 		private function initNewStory():void
@@ -126,20 +147,23 @@ package org.tizianoproject.view
 			//Add new Related Features
 			initFeatures( NumberUtil.randomWithinRange( 1, 10 ) );
 
-			var random:uint = NumberUtil.randomWithinRange( 0, 3 );
+			var random:uint = NumberUtil.randomWithinRange( 0, 4 );
 			
 			//Switch the Author
 			showAuthorType( random );
 			
-			switch( random ){
-				case 0:
+			switch( "soundslide" ){
+				case "text":
 					initText();
 					break;
-				case 1:
+				case "slideshow":
 					initSlideshow();
 					break;
-				case 2:
+				case "video":
 					initVideo();
+					break;
+				case "soundslide":
+					initSoundSlide();
 					break;
 			}
 			/***** Temporary Code Ends *****/			
@@ -167,6 +191,15 @@ package org.tizianoproject.view
 			video = new Video();
 			video.name = "video";
 			ShowHideManager.addContent( (this as ArticleView), video );
+		}
+		
+		private function initSoundSlide():void
+		{
+			var file:String = "http://demo.chrisaiv.com/swf/tiziano/360/Iraq-sdawood-noel/soundslider.swf?size=2&format=xml";
+			soundslide = new SoundSlide();
+			soundslide.name = "soundslide";
+			soundslide.load( file );
+			ShowHideManager.addContent( (this as ArticleView), soundslide );
 		}
 		
 		/**********************************
@@ -227,7 +260,7 @@ package org.tizianoproject.view
 			ShowHideManager.removeContent( (this as ArticleView), "featureScrollBar" );
 			
 			//Delete any feature in the featureHolder
-			ShowHideManager.unloadContent( featureHolder );
+			//ShowHideManager.unloadContent( featureHolder );
 			ShowHideManager.removeContent( (this as ArticleView), "featureHolder" );	
 			
 			initNewStory();
@@ -236,34 +269,25 @@ package org.tizianoproject.view
 		/**********************************
 		 * Event Handlers
 		 **********************************/
+		public function swfSizerHandler( e:SWFSizeEvent ):void
+		{
+			browserWidth = e.windowWidth;
+			browserHeight = e.bottomY;
+			
+			trace( "ArticleView::swfSizerHandler:" );
+			updatePosition( );
+		}
+		
+
 		private function onAddedToStageHandler( e:Event ):void
 		{
-			//Mainly done for Local Testing
-			recordPosition( stage.stageWidth, stage.stageHeight )
-			updatePosition( xPos, yPos );
-			
-			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
-			trace( "ArticleView::onAddedToStageHandler:" );
-			
-			//Load a new Story
-			//initNewStory();				
+			init();
 		}
 		
 		private function onFullScreenHandler( e:FullScreenEvent ):void
 		{
 			trace( "ArticleView::onFullScreenHandler:", stage.fullScreenWidth, stage.fullScreenHeight );
-			if( e.fullScreen ){
-				updatePosition( stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 ), stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 ) );
-			} else {
-				updatePosition( xPos, yPos );				
-			}
-		}
-
-		public function swfSizerHandler( e:SWFSizeEvent ):void
-		{
-			trace( "ArticleView::swfSizerHandler:", e.type, e.windowWidth, e.windowHeight );
-			recordPosition( e.windowWidth, e.windowHeight );
-			updatePosition( xPos, yPos );				
+			updatePosition();
 		}
 
 		private function onAddedHandler( e:Event ):void
