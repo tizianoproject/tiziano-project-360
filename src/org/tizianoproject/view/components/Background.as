@@ -74,8 +74,10 @@ package org.tizianoproject.view.components
 			var asset:LoaderInfo = e.currentTarget as LoaderInfo;
 			//Assign the background image
 			bitmap = asset.content as Bitmap;
+			defaultWidth = bitmap.width;
+			defaultHeight = bitmap.height;
 			//Create an Aspect Ratio for the Background IMage
-			aspectRatio = bitmap.width / bitmap.height;
+			aspectRatio = defaultWidth / defaultHeight;
 			//Resize the Bitmap to fit either the browser or Theatre Mode (Full Screen)
 			resizeBitmap();
 			//Tween in the image
@@ -89,7 +91,8 @@ package org.tizianoproject.view.components
 				adjustSize( stage.stageWidth, (stage.stageHeight / aspectRatio) );				
 			} else {
 				//Adjust the Background to match the size of the browser
-				adjustSize( browserWidth, browserHeight );				
+				if( browserWidth && browserHeight ) adjustSize( browserWidth, browserHeight );
+				else adjustSize( defaultWidth, defaultHeight );
 			}			
 		}
 
