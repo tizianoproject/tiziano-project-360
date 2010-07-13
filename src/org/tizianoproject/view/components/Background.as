@@ -7,16 +7,26 @@ package org.tizianoproject.view.components
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.Loader;
+	import flash.display.LoaderInfo;
 	import flash.display.MovieClip;
 	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.events.FullScreenEvent;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.net.URLRequest;
 	import flash.profiler.showRedrawRegions;
+	import flash.system.LoaderContext;
+	
+	import nl.demonsters.debugger.MonsterDebugger;
 	
 	public class Background extends MovieClip
 	{
-		private static const MIN_WIDTH:Number = 1024;
-		private static const MIN_HEIGHT:Number = 768;
+		private static const DEFAULT_BG_IMAGE:String = "http://demo.chrisaiv.com/images/tiziano/360/wall/Wall-Bg.jpg"
+		
+		private static const MIN_WIDTH:Number = 800;
+		private static const MIN_HEIGHT:Number = 600;
 		
 		private var defaultWidth:Number;
 		private var defaultHeight:Number;
@@ -24,11 +34,9 @@ package org.tizianoproject.view.components
 		private var browserHeight:Number;
 		private var aspectRatio:Number;
 				
-		private var defaultBitmap:Bitmap;
-		private var regularBitmap:Bitmap;
-		private var largeBitmap:Bitmap;
-
-		private var bmpData:BitmapData;
+		private var loaderContext:LoaderContext;
+		private var bitmap:Bitmap;
+		private var bgLoader:Loader;		
 		
 		public function Background()
 		{
@@ -39,27 +47,26 @@ package org.tizianoproject.view.components
 		
 		private function init( ):void
 		{
-			defaultBitmap = getChildAt( 0 ) as Bitmap;
-			defaultWidth = defaultBitmap.width;
-			defaultHeight = defaultBitmap.height;
-			aspectRatio = defaultWidth / defaultHeight;
+			loadBackground();
 		}
 
-		private function createBitmap( newBitmap:Bitmap, bmpName:String, w:Number, h:Number, visible:Boolean=false, smooth:Boolean=false ):void
-		{			
-			bmpData = new BitmapData( defaultWidth, defaultHeight );
-			bmpData.draw( defaultBitmap );
-			
-			newBitmap = new Bitmap( bmpData );
-			newBitmap.name = bmpName;
-			newBitmap.width = w;
-			newBitmap.height = h;
-			newBitmap.smoothing = smooth;
-			//trace( newBitmap, bmpName, w, h , defaultWidth, defaultHeight);
-			newBitmap.visible = visible;
-			ShowHideManager.addContent( (this as Background), newBitmap );
+		private function bitmapIsLoaded():Boolean
+		{
+			return ( bitmap ) ? true : false;
 		}
 		
+		private function loadBackground():void
+		{
+			loaderContext = new LoaderContext( true );
+			bgLoader = new Loader();				
+			bgLoader.name = "bgLoader";
+			bgLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true ); 
+			bgLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true ); 
+			bgLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
+			bgLoader.load( new URLRequest( DEFAULT_BG_IMAGE ), loaderContext );
+			ShowHideManager.addContent( (this as Background), bgLoader );
+		}
+
 		private function removeBitmap( name:String ) :void
 		{
 			var childName:String = name;
@@ -77,41 +84,62 @@ package org.tizianoproject.view.components
 		
 		private function adjustSize( w:Number, h:Number ):void
 		{
-			if( w > MIN_WIDTH ){
-				width = w;
-				height = w / aspectRatio;
-				//Keep track of the Browser Window
-				browserWidth = w;
-				browserHeight = h;
-			} else {				
-				/*
-				width = MIN_WIDTH;
-				height = MIN_HEIGHT / aspectRatio;
-				
-				browserWidth = MIN_WIDTH;
-				browserHeight = MIN_HEIGHT;
-				*/
+			//MonsterDebugger.trace( (this as Background), { "aspectRatio": aspectRatio, "w": w, "h": h } );
+			if( bitmapIsLoaded() ){
+				if( w > MIN_WIDTH ){
+					width = w;
+					height = w / aspectRatio;
+				} else {					
+					/*
+					width = MIN_WIDTH;
+					height = MIN_HEIGHT / aspectRatio;
+					
+					browserWidth = MIN_WIDTH;
+					browserHeight = MIN_HEIGHT;
+					*/
+				}				
 			}
+			//Keep track of the Browser Window
+			browserWidth = w;
+			browserHeight = h;
 		}
-
+		
 		/**********************************
 		 * Event
-		 **********************************/		
+		 **********************************/	
+		
 		public function swfSizerHandler( e:SWFSizeEvent ):void
 		{
 			//trace( "Background::swfSizerHandler:", e.type, e.windowWidth, e.windowHeight );
 			adjustSize( e.windowWidth, e.windowHeight );
 		}
 		
+		private function onCompleteHandler( e:Event ):void
+		{
+			var asset:LoaderInfo = e.currentTarget as LoaderInfo;
+			//Assign the background image
+			bitmap = asset.content as Bitmap;
+			//Create an Aspect Ratio for the Background IMage
+			aspectRatio = bitmap.width / bitmap.height;
+			
+			if( stage.displayState == "fullScreen" ){
+				adjustSize( stage.stageWidth, (stage.stageHeight / aspectRatio) );				
+			} else {
+				//Adjust the Background to match the size of the browser
+				adjustSize( browserWidth, browserHeight );				
+			}
+		}
+		
+		private function onErrorHandler( e:Event ):void
+		{
+			trace( "Background::onErrorHandler:" );
+		}
+		
 		private function onFullScreenHandler( e:FullScreenEvent ):void
 		{
-			var w:Number = stage.stageWidth;
-			var h:Number = stage.stageHeight;
-			trace( "Background::onFullScreenHandler:", e.fullScreen, w, h );
-			
+			trace( "Background::onFullScreenHandler:", e.fullScreen, stage.stageWidth, stage.stageHeight );			
 			if( e.fullScreen ){
-				width = w;
-				height = w / aspectRatio;
+				adjustSize( stage.stageWidth, (stage.stageHeight / aspectRatio) );
 			} else {
 				adjustSize( browserWidth, browserHeight );
 			}
@@ -125,7 +153,7 @@ package org.tizianoproject.view.components
 		
 		private function removedFromStageHandler( e:Event ):void
 		{
-			trace( "HeaderView::removedFromStageHandler:" );
+			trace( "Background::removedFromStageHandler:" );
 		}
 		
 	}
