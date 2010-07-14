@@ -111,6 +111,8 @@ package org.tizianoproject.view
 			defaultWidth  = stage.stageWidth;
 			defaultHeight = stage.stageHeight;
 			updatePosition( );
+			
+			loadStory( )
 		}
 		
 		public function loadStory( ):void
