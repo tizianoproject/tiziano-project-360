@@ -247,7 +247,6 @@ package org.tizianoproject.view
 			//ShowHideManager.unloadContent( featureHolder );
 			ShowHideManager.removeContent( (this as ArticleView), "featureHolder" );
 			
-			
 			loadStory();
 		}
 
