@@ -48,11 +48,9 @@ package org.tizianoproject.view.components.article
 		
 		public function load( id:Number ):void
 		{
-			if( vimeoPlayer ){
-				vimeoPlayer.load( id );
-			} else {
-				initPlayer( id );
-			}
+			//A video player already exists
+			if( vimeoPlayer ) vimeoPlayer.load( id );
+			else initPlayer( id );
 		}
 		
 		private function initPlayer( id ):void
@@ -69,13 +67,7 @@ package org.tizianoproject.view.components.article
 		private function unload():void
 		{			
 			trace( "Video::unload:" );
-				/*
-				vimeoPlayer.stopVideo();
-				ShowHideManager.removeContent( (this as Video ), "vimeoPlayer" );
-				vimeoPlayer = null;
-				//Kill all available sounds
-				SoundMixer.stopAll();
-				*/
+			//Kill all available sounds
 		}
 		
 		/**********************************
