@@ -23,6 +23,7 @@ package com.vimeo{
 	import flash.display.Loader;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.IOErrorEvent;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.net.URLRequest;
@@ -66,13 +67,20 @@ package com.vimeo{
 				request.data = urlVars;
 				request.method = URLRequestMethod.GET;
 
-			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
+			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
+			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete, false, 0, true );
+			
 			loader.load(request); 
 		}
 		
 		private function setDimensions(w:int, h:int):void {
 			player_width  = w;
 			player_height = h;
+		}
+		
+		private function onErrorHandler( e:Event ):void
+		{
+			trace( "VimeoPlayer::onErrorHandler:" );
 		}
 		
 		private function onComplete(e:Event):void 
@@ -88,7 +96,7 @@ package com.vimeo{
 			
 			redrawMask();
 			
-			load_timer.addEventListener(TimerEvent.TIMER, playerLoadedCheck);
+			load_timer.addEventListener(TimerEvent.TIMER, playerLoadedCheck, false, 0, true );
 			load_timer.start();
 		}
 		
