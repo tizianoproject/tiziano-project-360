@@ -33,6 +33,7 @@ package com.vimeo{
 	import flash.events.MouseEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.TimerEvent;
+	import flash.media.SoundMixer;
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
 	import flash.net.URLVariables;
@@ -81,7 +82,10 @@ package com.vimeo{
 			vimeoLoader.addEventListener( IOErrorEvent.IO_ERROR, onIOErrorHandler, false, 0, true );
 			vimeoLoader.addEventListener( IOErrorEvent.NETWORK_ERROR, onIOErrorHandler, false, 0, true );
 			vimeoLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onSecurityHandler, false, 0, true );
-			vimeoLoader.load( request );			
+			vimeoLoader.load( request );		
+			
+			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
+			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
 		
 		/**********************************
@@ -91,9 +95,10 @@ package com.vimeo{
 		{
 			trace( "VimeoPlayer::loadVideo:" );
 
-			moogaPlayer.api_loadVideo(id);
+			moogaPlayer.api_loadVideo( id );
 			
-			timer.addEventListener(TimerEvent.TIMER, onTimerHandler, false, 0, true );
+			//Keep Track of when the player has properly loaded
+			timerStart();	
 		}
 		
 		//Kill the video and unload it
@@ -167,8 +172,37 @@ package com.vimeo{
 		
 		private function unload():void
 		{
-			trace( "VimeoPlayer::unload:" );
+			if( moogaPlayer ){
+				if( moogaPlayer.api_isPlaying ){
+					stop();
+					vimeoContainer.removeChild( DisplayObject(moogaPlayer) );
+					moogaPlayer = null;
+				}				
+				//Kill All Sounds
+				SoundMixer.stopAll();
+			}
 		}
+
+		/**********************************
+		 * Timer
+		 **********************************/
+		private function timerStart():void
+		{
+			timer = new Timer( 200 );
+			timer.addEventListener(TimerEvent.TIMER, onTimerHandler, false, 0, true );
+			timer.start();
+		}
+		
+		private function timerReset():void
+		{
+			timer.reset();
+		}
+		
+		private function timerStop():void
+		{
+			timer.removeEventListener(TimerEvent.TIMER, onTimerHandler );			
+			timer.stop();
+		}		
 
 		/**********************************
 		 * Event Handlers
@@ -186,6 +220,11 @@ package com.vimeo{
 			vimeoContainer.addChild( e.target.loader.content );
 			//Assign the player
 			moogaPlayer = e.target.loader.content;
+			moogaPlayer.addEventListener( IOErrorEvent.IO_ERROR, onIOErrorHandler, false, 0, true );
+			moogaPlayer.addEventListener( IOErrorEvent.NETWORK_ERROR, onIOErrorHandler, false, 0, true );
+			moogaPlayer.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onSecurityHandler, false, 0, true );
+			moogaPlayer.addEventListener( ErrorEvent.ERROR, onErrorHandler, false, 0, true );
+
 			//Create a Mask to fix some artifact issues
 			
 			//Add to Stage			
@@ -195,45 +234,43 @@ package com.vimeo{
 			redrawMask();
 			
 			//Keep track of when the video is properly loaded
-			timer = new Timer( 200 );
-			timer.addEventListener(TimerEvent.TIMER, onTimerHandler, false, 0, true );
+			timerStart();	
 		}
 		
 		private function onTimerHandler( e:TimerEvent ):void
 		{
-			trace( "VimeoPlayer::onTimerHandler:" );
+			//trace( "VimeoPlayer::onTimerHandler:" );
 			playerLoadedCheck();
 		}
 		
 		//Wait for Moogaloop to finish setting up
 		private function playerLoadedCheck():void
 		{
-			trace( "VimeoPlayer::playerLoadedCheck:", moogaPlayer.player_loaded );
-			if( moogaPlayer.player_loaded ){
-				
-				if( timer ){
-					timer.stop();
-					timer.removeEventListener(TimerEvent.TIMER, onTimerHandler );
-				}
-				
-				if( moogaPlayer ){
-					moogaPlayer.disableMouseMove();					
-				}
-				
-				stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
-				
-				dispatchEvent(new Event(Event.COMPLETE));				
+			trace( "VimeoPlayer::playerLoadedCheck:" );
+			if( moogaPlayer ){
+				if( moogaPlayer.player_loaded ){
+					
+					if( timer ) timerStop();
+					
+					if( moogaPlayer ) moogaPlayer.disableMouseMove();
+					
+					stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+					
+					dispatchEvent(new Event(Event.COMPLETE));				
+				}				
 			}
 		}
 		
 		//Fake the mouse move/out events for Moogaloop
 		private function mouseMove(e:MouseEvent):void 
 		{
-			if ( e.stageX >= this.x && e.stageX <= this.x + vimeoWidth &&
-				e.stageY >= this.y && e.stageY <= this.y + vimeoHeight ) {
-				moogaPlayer.mouseMove( e );
-			} else {
-				moogaPlayer.mouseOut();
+			if( moogaPlayer ){
+				if ( e.stageX >= this.x && e.stageX <= this.x + vimeoWidth &&
+					e.stageY >= this.y && e.stageY <= this.y + vimeoHeight ) {
+					moogaPlayer.mouseMove( e );
+				} else {
+					moogaPlayer.mouseOut();
+				}				
 			}
 		}
 		
@@ -249,8 +286,16 @@ package com.vimeo{
 		
 		private function onErrorHandler( e:Event ):void
 		{
-			unload();
 			trace( "VimeoPlayer::onErrorHandler:" );
+		}
+		
+		private function onAddedToStageHandler( e:Event ):void
+		{			
+		}
+		
+		private function onRemovedFromStageHandler( e:Event ):void
+		{
+			unload();	
 		}
 	}
 }
