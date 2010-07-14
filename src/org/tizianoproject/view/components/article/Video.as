@@ -19,15 +19,14 @@ package org.tizianoproject.view.components.article
 	
 	import flash.display.MovieClip;
 	import flash.events.Event;
+	import flash.media.SoundChannel;
+	import flash.media.SoundMixer;
 	import flash.media.Video;
 	import flash.text.TextField;
 	import flash.utils.describeType;
 	
 	public class Video extends MovieClip
 	{
-		private static const VIMEO_CONSUMER_KEY:String = "dba8f8dd0a80ed66b982ef862f75383d";
-
-		private static const DEFAULT_VIDEO_ID:Number = 12618396;
 		private static const DEFAULT_X_POS:Number = 35;
 		private static const DEFAULT_Y_POS:Number = 105;
 		private static const DEFAULT_WIDTH:Number = 451;
@@ -49,8 +48,15 @@ package org.tizianoproject.view.components.article
 		
 		public function load( id:Number ):void
 		{
-			//Unload any previous videos
-			unload();
+			if( vimeoPlayer ){
+				vimeoPlayer.load( id );
+			} else {
+				initPlayer( id );
+			}
+		}
+		
+		private function initPlayer( id ):void
+		{
 			//Load new video
 			vimeoPlayer = new VimeoPlayer( consumerKey, id, DEFAULT_WIDTH, DEFAULT_HEIGHT );
 			vimeoPlayer.name = "vimeoPlayer";
@@ -60,17 +66,16 @@ package org.tizianoproject.view.components.article
 			ShowHideManager.addContent( (this as Video), vimeoPlayer );
 		}
 		
-		public function loadNewVideo( id:Number ):void
-		{
-			vimeoPlayer.loadVideo( id );
-		}
-		
 		private function unload():void
 		{			
-			if( vimeoPlayer ){
-				vimeoPlayer.close();
+			trace( "Video::unload:" );
+				/*
+				vimeoPlayer.stopVideo();
+				ShowHideManager.removeContent( (this as Video ), "vimeoPlayer" );
 				vimeoPlayer = null;
-			}
+				//Kill all available sounds
+				SoundMixer.stopAll();
+				*/
 		}
 		
 		/**********************************
@@ -78,7 +83,7 @@ package org.tizianoproject.view.components.article
 		 **********************************/
 		private function videoLoadedHandler( e:Event ):void
 		{
-			trace( "videoLoadedHandler:" );
+			trace( "Video::videoLoadedHandler:" );
 		}
 		
 		private function onAddedToStageHandler( e:Event ):void
@@ -90,7 +95,6 @@ package org.tizianoproject.view.components.article
 		private function onRemovedFromStageHandler( e:Event ):void
 		{
 			unload();
-			trace( "Video::onRemovedFromStageHandler:" );
 		}
 		
 		/**********************************
