@@ -51,6 +51,16 @@ package org.tizianoproject.model.vo
 			return _title;
 		}
 		
+		public function set type( value:String ):void
+		{
+			_type = value;
+		}
+		
+		public function get type():String
+		{
+			return _type;
+		}
+		
 		public function set image( value:String ):void
 		{
 			_image = value;	
