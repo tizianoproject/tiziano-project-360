@@ -94,27 +94,27 @@ package com.vimeo{
 		public function load( id:uint ):void
 		{
 			trace( "VimeoPlayer::loadVideo:" );
-
-			moogaPlayer.api_loadVideo( id );
-			
-			//Keep Track of when the player has properly loaded
-			timerStart();	
+			if( moogaPlayer ) {
+				moogaPlayer.api_loadVideo( id );
+				//Keep Track of when the player has properly loaded
+				timerStart();				
+			}
 		}
 		
 		//Kill the video and unload it
 		public function close():void
 		{
-			moogaPlayer.api_unload();
+			if( moogaPlayer ) moogaPlayer.api_unload();
 		}
 		
 		public function play():void
 		{
-			moogaPlayer.api_play();
+			if( moogaPlayer ) moogaPlayer.api_play();
 		}
 		
 		public function pause():void
 		{
-			moogaPlayer.api_pause();
+			if( moogaPlayer ) moogaPlayer.api_pause();
 		}
 		
 		public function stop():void
@@ -131,8 +131,7 @@ package com.vimeo{
 		//Seek to specific loaded time in video (in seconds)
 		public function seekTo( time:int ):void
 		{
-			moogaPlayer.api_seekTo( time );
-			
+			moogaPlayer.api_seekTo( time );	
 		}
 		
 		//Change the primary color (i.e. 00ADEF)
@@ -188,8 +187,9 @@ package com.vimeo{
 		 **********************************/
 		private function timerStart():void
 		{
-			timer = new Timer( 200 );
+			timer = new Timer( 50 );
 			timer.addEventListener(TimerEvent.TIMER, onTimerHandler, false, 0, true );
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerCompleteHandler, false, 0, true );
 			timer.start();
 		}
 		
@@ -241,6 +241,11 @@ package com.vimeo{
 		{
 			//trace( "VimeoPlayer::onTimerHandler:" );
 			playerLoadedCheck();
+		}
+		
+		private function onTimerCompleteHandler( e:TimerEvent ):void
+		{
+			trace( "VideoPlayer::onTimerCompleteHandler:" );
 		}
 		
 		//Wait for Moogaloop to finish setting up
