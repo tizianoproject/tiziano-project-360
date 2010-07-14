@@ -35,6 +35,7 @@ package org.tizianoproject.view
 	import org.tizianoproject.controller.IController;
 	import org.tizianoproject.events.BaseViewEvent;
 	import org.tizianoproject.model.IModel;
+	import org.tizianoproject.model.vo.Story;
 	import org.tizianoproject.view.components.Feature;
 	import org.tizianoproject.view.components.FeatureHolder;
 	import org.tizianoproject.view.components.article.Scroller;
@@ -108,51 +109,26 @@ package org.tizianoproject.view
 			defaultWidth  = stage.stageWidth;
 			defaultHeight = stage.stageHeight;
 			updatePosition( );
-
-			initNewStory();
 		}
 		
-		private function updatePosition( xWidth:Number=0, yWidth:Number=0 ):void
-		{
-			if( stage ){
-				if( stage.displayState == "fullScreen" ){
-					x = stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 );
-					y = stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 );
-				} else {
-					if( browserWidth && browserHeight ){
-						var dynWidth:Number = ( browserWidth > MIN_WIDTH) ? browserWidth : MIN_WIDTH;
-						var dynHeight:Number = ( browserHeight > MIN_HEIGHT ) ? browserHeight : MIN_HEIGHT ;
-						var yPos:Number = ( dynHeight / 2) - ( MIN_HEIGHT / 2 );
-						x = ( dynWidth / 2) - ( MIN_WIDTH / 2 );
-						y = ( yPos > + DEFAULT_Y_POS ) ? yPos : DEFAULT_Y_POS;
-					}
-					//App is loading without a browser
-					else {
-						x = (defaultWidth / 2) - ( MIN_WIDTH / 2 );
-						y = ( (defaultHeight - DEFAULT_Y_POS) / 2) - ( MIN_HEIGHT / 2 ) + DEFAULT_Y_POS;
-					}
-				}
-			}
-		}
-		
-		private function initNewStory():void
-		{
+		public function loadStory( story:Story ):void
+		{						
 			title_txt.text = DEFAULT_TITLE;
 			author_txt.text = DEFAULT_AUTHOR;
 			
 			/***** Temporary Code Starts *****/
 			//Features Holder holds the features
-			initFeatureHolder();
+//			initFeatureHolder();
 
 			//Add new Related Features
-			initFeatures( NumberUtil.randomWithinRange( 1, 10 ) );
+//			initFeatures( NumberUtil.randomWithinRange( 1, 10 ) );
 
 			var random:uint = NumberUtil.randomWithinRange( 0, 4 );
 			
 			//Switch the Author
 			showAuthorType( random );
 			
-			switch( "soundslide" ){
+			switch( "video" ){
 				case "text":
 					initText();
 					break;
@@ -160,14 +136,15 @@ package org.tizianoproject.view
 					initSlideshow();
 					break;
 				case "video":
-					initVideo();
+					initVideo( story );
 					break;
 				case "soundslide":
-					initSoundSlide();
+					initSoundSlide( story );
 					break;
 			}
 			/***** Temporary Code Ends *****/			
 		}
+
 		
 		/**********************************
 		 * Story Types
@@ -186,19 +163,20 @@ package org.tizianoproject.view
 			ShowHideManager.addContent( (this as ArticleView), slideshow );			
 		}
 		
-		private function initVideo():void
+		private function initVideo( story:Story ):void
 		{
 			video = new Video();
 			video.name = "video";
+			video.consumerKey = story.vimeoConsumerKey;
+			video.load( story.vimeoID );
 			ShowHideManager.addContent( (this as ArticleView), video );
 		}
 		
-		private function initSoundSlide():void
+		private function initSoundSlide( story:Story ):void
 		{
-			var file:String = "http://demo.chrisaiv.com/swf/tiziano/360/Iraq-sdawood-noel/soundslider.swf?size=2&format=xml";
 			soundslide = new SoundSlide();
 			soundslide.name = "soundslide";
-			soundslide.load( file );
+			soundslide.load( story.path );
 			ShowHideManager.addContent( (this as ArticleView), soundslide );
 		}
 		
@@ -226,7 +204,7 @@ package org.tizianoproject.view
 				feature.name = "feature" + i;
 				//I am overriding y property in order to add DEFAULT_Y_POS
 				feature.y = (i * feature.height);
-				ShowHideManager.addContent( featureHolder, feature );				
+				ShowHideManager.addContent( featureHolder, feature );
 			}
 			
 			//Once Feature holder is populated, load the Scroller
@@ -262,8 +240,32 @@ package org.tizianoproject.view
 			//Delete any feature in the featureHolder
 			//ShowHideManager.unloadContent( featureHolder );
 			ShowHideManager.removeContent( (this as ArticleView), "featureHolder" );	
-			
-			initNewStory();
+		}
+
+		/**********************************
+		 * Update Position
+		 **********************************/
+		private function updatePosition( ):void
+		{
+			if( stage ){
+				if( stage.displayState == "fullScreen" ){
+					x = stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 );
+					y = stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 );
+				} else {
+					if( browserWidth && browserHeight ){
+						var dynWidth:Number = ( browserWidth > MIN_WIDTH) ? browserWidth : MIN_WIDTH;
+						var dynHeight:Number = ( browserHeight > MIN_HEIGHT ) ? browserHeight : MIN_HEIGHT ;
+						var yPos:Number = ( dynHeight / 2) - ( MIN_HEIGHT / 2 );
+						x = ( dynWidth / 2) - ( MIN_WIDTH / 2 );
+						y = ( yPos > + DEFAULT_Y_POS ) ? yPos : DEFAULT_Y_POS;
+					}
+						//App is loading without a browser
+					else {
+						x = (defaultWidth / 2) - ( MIN_WIDTH / 2 );
+						y = ( (defaultHeight - DEFAULT_Y_POS) / 2) - ( MIN_HEIGHT / 2 ) + DEFAULT_Y_POS;
+					}
+				}
+			}
 		}
 		
 		/**********************************
