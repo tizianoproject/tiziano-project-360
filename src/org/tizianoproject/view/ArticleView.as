@@ -76,13 +76,13 @@ package org.tizianoproject.view
 		private var featureHolder:FeatureHolder;		
 		private var featureScrollBar:Scroller;
 		
-		private var _xPos:Number;
-		private var _yPos:Number;
-		
 		private var browserWidth:Number;
 		private var browserHeight:Number;
 		private var defaultWidth:Number;
 		private var defaultHeight:Number;
+
+		private var _currentIndex:Number;		
+		private var _stories:Array;
 
 		public function ArticleView( m:IModel, c:IController=null )
 		{
@@ -105,14 +105,16 @@ package org.tizianoproject.view
 		
 		private function init():void
 		{
+			currentIndex = 0;
+			
 			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
 			defaultWidth  = stage.stageWidth;
 			defaultHeight = stage.stageHeight;
 			updatePosition( );
 		}
 		
-		public function loadStory( story:Story ):void
-		{						
+		public function loadStory( ):void
+		{					
 			title_txt.text = DEFAULT_TITLE;
 			author_txt.text = DEFAULT_AUTHOR;
 			
@@ -128,7 +130,9 @@ package org.tizianoproject.view
 			//Switch the Author
 			showAuthorType( random );
 			
-			switch( "video" ){
+			var story:Story = stories[currentIndex] as Story
+				
+			switch( story.type ){
 				case "text":
 					initText();
 					break;
@@ -176,6 +180,7 @@ package org.tizianoproject.view
 		{
 			soundslide = new SoundSlide();
 			soundslide.name = "soundslide";
+			trace( "ArticleView::initSoundSlide:", story.path );
 			soundslide.load( story.path );
 			ShowHideManager.addContent( (this as ArticleView), soundslide );
 		}
@@ -235,11 +240,15 @@ package org.tizianoproject.view
 			ShowHideManager.removeContent( (this as ArticleView), "slideshow" );
 			
 			ShowHideManager.removeContent( (this as ArticleView), "video" );
+			ShowHideManager.removeContent( (this as ArticleView), "soundslide" );
 			ShowHideManager.removeContent( (this as ArticleView), "featureScrollBar" );
 			
 			//Delete any feature in the featureHolder
 			//ShowHideManager.unloadContent( featureHolder );
-			ShowHideManager.removeContent( (this as ArticleView), "featureHolder" );	
+			ShowHideManager.removeContent( (this as ArticleView), "featureHolder" );
+			
+			
+			loadStory();
 		}
 
 		/**********************************
@@ -326,10 +335,44 @@ package org.tizianoproject.view
 		
 		private function onMouseClickHandler( e:MouseEvent ):void
 		{
-			//trace( "ArticleView:onMouseClickHandler", e.currentTarget.name );
+			trace( "ArticleView:onMouseClickHandler", e.currentTarget.name );
+			if( e.currentTarget.name == "next_btn" ){
+				if( currentIndex == stories.length - 1 ) currentIndex = 0;
+				else currentIndex++;
+				
+			} else if( e.currentTarget.name == "prev_btn" ){
+				if( currentIndex == 0 ) currentIndex = stories.length - 1;
+				else currentIndex--;
+			} 
 			unloadStories();
 		}
 		
+		/**********************************
+		 * Getters Setters
+		 **********************************/
+		public function set stories( value:Array ):void
+		{
+			_stories = value;	
+		}
+		
+		public function get stories():Array
+		{
+			return _stories;
+		}
+		
+		public function set currentIndex( value:Number ):void
+		{
+			_currentIndex = value;
+		}
+		
+		public function get currentIndex():Number
+		{
+			return _currentIndex;
+		}
+		
+		/**********************************
+		 * 
+		 **********************************/
 		override public function update(e:Event=null):void
 		{
 			
