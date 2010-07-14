@@ -3,8 +3,10 @@ package org.tizianoproject.view.components.article
 	import com.chrisaiv.utils.ShowHideManager;
 	
 	import flash.display.AVM1Movie;
+	import flash.display.DisplayObject;
 	import flash.display.Loader;
 	import flash.display.MovieClip;
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
@@ -20,10 +22,11 @@ package org.tizianoproject.view.components.article
 
 		private var loaderContext:LoaderContext;
 		private var ssLoader:Loader;
+		private var ssMask:Sprite
+		private var container:Sprite
 		
 		public function SoundSlide()
 		{
-			super();
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
@@ -31,19 +34,48 @@ package org.tizianoproject.view.components.article
 		private function init():void
 		{			
 			x = DEFAULT_X_POS;
-			y = DEFAULT_Y_POS;			
+			y = DEFAULT_Y_POS;
 		}
+		
+		private function initSoundSlide():void
+		{
+			/************
+			 * History:
+			 * When SoundSlides loads, it loads as a 640 x 550 file which covers up  
+			 * prev_btn && next_btn so give it a mask
+			************/
+			//Create a new Mask
+			ssMask = new Sprite();
+			ssMask.name = "ssMask";	
+			ShowHideManager.addContent( (this as SoundSlide), ssMask );
+			//Place the Soundslide in a container
+			container = new Sprite();
+			container.name = "container";
+			container.mask = ssMask;
+			ShowHideManager.addContent( container, ssLoader );
+			//Draw a mask for the container
+			redrawMask()
+			//Add the container to the stage
+			ShowHideManager.addContent( (this as SoundSlide), container );			
+		}
+		
+		private function redrawMask():void {
+			with ( ssMask.graphics ) {
+				beginFill( 0xffcc00, 1 );
+				drawRect( container.x, container.y, 451, 375 );
+				endFill();
+			}
+		}		
 		
 		public function load( path:String ):void
 		{
 			loaderContext = new LoaderContext( true );
-			ssLoader = new Loader();				
+			ssLoader = new Loader();
 			ssLoader.name = "ssLoader";
-			ssLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true ); 
-			ssLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true ); 
+			ssLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true );
+			ssLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
 			ssLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
 			ssLoader.load( new URLRequest( path ), loaderContext );
-			ShowHideManager.addContent( (this as SoundSlide), ssLoader );			
 		}
 		
 		private function unload():void
@@ -55,6 +87,9 @@ package org.tizianoproject.view.components.article
 			ssLoader.unload();
 			ShowHideManager.removeContent( (this as SoundSlide), "ssLoader" );
 			ssLoader = null;
+			
+			ShowHideManager.removeContent( (this as SoundSlide), "ssMask" );
+			ShowHideManager.removeContent( (this as SoundSlide), "container" );
 		}
 		
 		/**********************************
@@ -63,6 +98,7 @@ package org.tizianoproject.view.components.article
 		private function onCompleteHandler( e:Event ):void
 		{
 			trace( "SoundSlide::onCompleteHandler:" );
+			initSoundSlide();
 		}
 		
 		private function onErrorHandler( e:Event ):void
