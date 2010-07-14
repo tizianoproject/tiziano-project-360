@@ -33,37 +33,49 @@ package org.tizianoproject.view.components.article
 		private static const DEFAULT_WIDTH:Number = 451;
 		private static const DEFAULT_HEIGHT:Number = 256;
 		
-		private var vimeoPlayer:VimeoPlayer;
-		private var videoID:Number;
+		private var _consumerKey:String;
 		
-		public function Video( id:Number=DEFAULT_VIDEO_ID )
+		private var vimeoPlayer:VimeoPlayer;
+		
+		public function Video( )
 		{
-			videoID = id;
-			
 			addEventListener( Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
 			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
 		
 		private function init():void
 		{
-			vimeoPlayer = new VimeoPlayer( VIMEO_CONSUMER_KEY, videoID, DEFAULT_WIDTH, DEFAULT_HEIGHT );
+		}
+		
+		public function load( id:Number ):void
+		{
+			//Unload any previous videos
+			unload();
+			//Load new video
+			vimeoPlayer = new VimeoPlayer( consumerKey, id, DEFAULT_WIDTH, DEFAULT_HEIGHT );
 			vimeoPlayer.name = "vimeoPlayer";
 			vimeoPlayer.x = DEFAULT_X_POS;
 			vimeoPlayer.y = DEFAULT_Y_POS;
 			vimeoPlayer.addEventListener( Event.COMPLETE, videoLoadedHandler, false, 0, true );
-			ShowHideManager.addContent( (this as Video), vimeoPlayer );			
+			ShowHideManager.addContent( (this as Video), vimeoPlayer );
 		}
 		
-		public function loadVideo( id:Number ):void
+		public function loadNewVideo( id:Number ):void
 		{
 			vimeoPlayer.loadVideo( id );
 		}
 		
-		private function closeVideo():void
+		private function unload():void
 		{			
-			if( vimeoPlayer ) vimeoPlayer.close();
+			if( vimeoPlayer ){
+				vimeoPlayer.close();
+				vimeoPlayer = null;
+			}
 		}
 		
+		/**********************************
+		 * Event Handlers
+		 **********************************/
 		private function videoLoadedHandler( e:Event ):void
 		{
 			trace( "videoLoadedHandler:" );
@@ -77,8 +89,21 @@ package org.tizianoproject.view.components.article
 		
 		private function onRemovedFromStageHandler( e:Event ):void
 		{
-			closeVideo();
+			unload();
 			trace( "Video::onRemovedFromStageHandler:" );
+		}
+		
+		/**********************************
+		 * Read Write Accessors
+		 **********************************/
+		public function set consumerKey( value:String ):void
+		{
+			_consumerKey = value;
+		}
+		
+		public function get consumerKey():String
+		{
+			return _consumerKey;
 		}
 	}
 }
