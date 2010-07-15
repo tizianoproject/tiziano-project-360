@@ -39,6 +39,7 @@ package org.tizianoproject.view.components.article
 		
 		private function initSoundSlide():void
 		{
+			trace( "SoundSlide::initSoundSlide:" );
 			/************
 			 * History:
 			 * When SoundSlides loads, it loads as a 640 x 550 file which covers up  
@@ -56,7 +57,7 @@ package org.tizianoproject.view.components.article
 			//Draw a mask for the container
 			redrawMask()
 			//Add the container to the stage
-			ShowHideManager.addContent( (this as SoundSlide), container );			
+			ShowHideManager.addContent( (this as SoundSlide), container );
 		}
 		
 		private function redrawMask():void {
@@ -80,12 +81,14 @@ package org.tizianoproject.view.components.article
 		
 		private function unload():void
 		{
-			//trace( "SoundSlide::unload:", ssLoader.content );	
+			trace( "SoundSlide::unload:" );	
 			//Stop any possible sounds
 			SoundMixer.stopAll();
 			//Unload the Loader
-			ssLoader.unload();
-			ShowHideManager.removeContent( (this as SoundSlide), "ssLoader" );
+			if( ssLoader ){
+				ssLoader.unload();
+				ShowHideManager.removeContent( (this as SoundSlide), "ssLoader" );
+			}
 			ssLoader = null;
 			
 			ShowHideManager.removeContent( (this as SoundSlide), "ssMask" );
@@ -98,7 +101,7 @@ package org.tizianoproject.view.components.article
 		private function onCompleteHandler( e:Event ):void
 		{
 			trace( "SoundSlide::onCompleteHandler:" );
-			initSoundSlide();
+			if( stage ) initSoundSlide();
 		}
 		
 		private function onErrorHandler( e:Event ):void
@@ -109,13 +112,13 @@ package org.tizianoproject.view.components.article
 		private function onAddedToStageHandler( e:Event ):void
 		{
 			init();
-			trace( "SlideShow::onAddedToStageHandler:" );
+			trace( "SoundSlide::onAddedToStageHandler:" );
 		}
 		
 		private function onRemovedFromStageHandler( e:Event ):void
 		{
 			unload();
-			trace( "SlideShow::onRemovedFromStageHandler:" );
+			trace( "SoundSlide::onRemovedFromStageHandler:" );
 		}		
 		
 	}
