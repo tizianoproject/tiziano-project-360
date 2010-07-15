@@ -3,18 +3,25 @@ package org.tizianoproject.model.vo
 	public class Story extends Object
 	{
 		private var _id:Number;
-		private var _author:String;
-		private var _title:String;
-		private var _type:String;
+		private var _authorName:String;
+		private var _authorType:String;
+		private var _title:String;		
+		private var _storyType:String;		
 		private var _image:String;
 		private var _headline:String;
 		private var _subheadline:String;
 		private var _caption:String;
 		private var _perspectives:Array;
-		private var _flickrID:Number;
+		//Text Article
+		private var _content:String;
+		//SoundSlide
+		private var _path:String;
+		//Flickr
+		private var _flickrKey:String
+		private var _flickrPhotoset:String;
+		//Vimeo
 		private var _vimeoConsumerKey:String;
 		private var _vimeoID:Number;
-		private var _path:String;
 		
 		public function Story()
 		{
@@ -31,14 +38,24 @@ package org.tizianoproject.model.vo
 			return _id;	
 		}
 		
-		public function set author( value:String ):void
+		public function set authorName( value:String ):void
 		{
-			_author = value	
+			_authorName = value	
 		}
 		
-		public function get author():String
+		public function get authorName():String
 		{
-			return _author;
+			return _authorName;
+		}
+		
+		public function set authorType( value:String ):void
+		{
+			_authorType = value	
+		}
+		
+		public function get authorType():String
+		{
+			return _authorType;
 		}
 		
 		public function set title( value:String ):void
@@ -51,14 +68,14 @@ package org.tizianoproject.model.vo
 			return _title;
 		}
 		
-		public function set type( value:String ):void
+		public function set storyType( value:String ):void
 		{
-			_type = value;
+			_storyType = value;
 		}
 		
-		public function get type():String
+		public function get storyType():String
 		{
-			return _type;
+			return _storyType;
 		}
 		
 		public function set image( value:String ):void
@@ -111,6 +128,22 @@ package org.tizianoproject.model.vo
 			return _perspectives;	
 		}
 		
+		/**
+		 * Text Article		
+		 **/
+		public function set content( value:String ):void
+		{
+			_content = value;
+		}
+		
+		public function get content( ):String
+		{
+			return _content;
+		}
+		
+		/**
+		 * SoundSlide		
+		**/		
 		public function set path( value:String ):void
 		{
 			_path = value;
@@ -121,16 +154,32 @@ package org.tizianoproject.model.vo
 			return _path;
 		}
 		
-		public function set flickrID( value:Number ):void
+		/**
+		 * Flickr		
+		 **/		
+		public function set flickrKey( value:String ):void
 		{
-			_flickrID = value;	
+			_flickrKey = value;
 		}
 		
-		public function get flickrID():Number
+		public function get flickrKey():String
 		{
-			return _flickrID;	
+			return _flickrKey;
 		}
 		
+		public function set flickrPhotoset( value:String ):void
+		{
+			_flickrPhotoset = value;	
+		}
+		
+		public function get flickrPhotoset():String
+		{
+			return _flickrPhotoset;	
+		}
+		
+		/**
+		 * Vimeo		
+		 **/		
 		public function set vimeoConsumerKey( value:String ):void
 		{
 			_vimeoConsumerKey = value;
