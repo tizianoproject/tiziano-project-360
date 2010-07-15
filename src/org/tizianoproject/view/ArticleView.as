@@ -246,9 +246,7 @@ package org.tizianoproject.view
 			
 			//Delete any feature in the featureHolder
 			//ShowHideManager.unloadContent( featureHolder );
-			ShowHideManager.removeContent( (this as ArticleView), "featureHolder" );
-			
-			loadStory();
+			ShowHideManager.removeContent( (this as ArticleView), "featureHolder" );			
 		}
 
 		/**********************************
@@ -335,7 +333,7 @@ package org.tizianoproject.view
 		
 		private function onMouseClickHandler( e:MouseEvent ):void
 		{
-			trace( "ArticleView:onMouseClickHandler", e.currentTarget.name );
+			trace( "ArticleView:onMouseClickHandler", currentIndex );
 			if( e.currentTarget.name == "next_btn" ){
 				if( currentIndex == stories.length - 1 ) currentIndex = 0;
 				else currentIndex++;
@@ -343,8 +341,9 @@ package org.tizianoproject.view
 			} else if( e.currentTarget.name == "prev_btn" ){
 				if( currentIndex == 0 ) currentIndex = stories.length - 1;
 				else currentIndex--;
-			} 
+			}
 			unloadStories();
+			loadStory();
 		}
 		
 		/**********************************
