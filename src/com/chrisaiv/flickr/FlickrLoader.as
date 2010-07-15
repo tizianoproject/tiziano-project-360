@@ -90,12 +90,14 @@ package com.chrisaiv.flickr
 		//This generic FlickrRestRequest makes it easier to request both "getPhotos" and "getInfo" from the Flickr API
 		private function flickrRequest( restMethod:String, restParam:String, id:String, callBack:Function ):void
 		{
+			trace( "FlickrLoader::flickrRequest:" );
 			var flickrRestRequest:FlickrRestRequest = new FlickrRestRequest();
 			flickrRestRequest.load( apiKey, restMethod, restParam, id  );
 			flickrRestRequest.addEventListener( FlickrEvent.CUSTOM, callBack );
 			flickrRestRequest.addEventListener( HTTPStatusEvent.HTTP_STATUS, httpStatusHandler, false, 0, true);
 			flickrRestRequest.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler, false, 0, true);
-			flickrRestRequest.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler, false, 0, true);
+			flickrRestRequest.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler);
+			flickrRestRequest.addEventListener( IOErrorEvent.NETWORK_ERROR, ioErrorHandler, false, 0, true);
 			flickrRestRequest.addEventListener( ProgressEvent.PROGRESS, progressHandler, false, 0, true);        	
 		}
 		
@@ -206,12 +208,12 @@ package com.chrisaiv.flickr
 		
 		private function securityErrorHandler ( e:SecurityErrorEvent ):void
 		{
-			trace("FlickrLoader::securityErrorHandler:" + e);
+			trace("FlickrLoader::securityErrorHandler:" + e.text );
 		}
 		
 		private function ioErrorHandler( e:IOErrorEvent ):void
 		{
-			trace("FlickrLoader::ioErrorHandler: " + e);
+			trace("FlickrLoader::ioErrorHandler: " + e.text);
 		}
 		
 		private function progressHandler( e:ProgressEvent ):void
