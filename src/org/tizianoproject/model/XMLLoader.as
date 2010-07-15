@@ -1,8 +1,15 @@
 package org.tizianoproject.model
 {
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.HTTPStatusEvent;
 	import flash.events.IEventDispatcher;
+	import flash.events.IOErrorEvent;
+	import flash.events.ProgressEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.net.URLLoader;
+	import flash.net.URLRequest;
 	
 	public class XMLLoader extends EventDispatcher
 	{
@@ -15,9 +22,9 @@ package org.tizianoproject.model
 		}
 		
 		public function load( path:String ):void
-		{
+		{			
 			var urlLoader:URLLoader = new URLLoader();
-			urlLoader.addEventListener( Event.COMPLETE, onXMLLoaded );
+			urlLoader.addEventListener( Event.COMPLETE, onXMLLoaded, false, 0, true );
 			urlLoader.addEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler, false, 0, true);
 			urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler, false, 0, true);
 			urlLoader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler, false, 0, true);
@@ -32,19 +39,40 @@ package org.tizianoproject.model
 		{
 			return xmlData;
 		}
-
+		
+		public function getAuthorsByType( authorType:String ):XMLList
+		{
+			return xmlData.authors.author.(attribute("type") == authorType);
+		}
+		
+		public function getAuthorByFirstName( firstName:String ):XMLList
+		{
+			return xmlData.authors.author.profile.(first_name == firstName ).parent().children();
+		}
+		
+		public function getAuthorByArticleID( uniqueID:Number ):XMLList
+		{
+			return xmlData.authors.author.articles.article.( trace( @id ) );
+		}
+		
 		/**********************************
 		 * Event Handlers
 		 **********************************/
 		private function onXMLLoaded( e:Event ):void
 		{			
 			xmlData = new XMLList( e.currentTarget.data );
+			//Get all the "Reporters" or the "Mentors"
+			trace( getAuthorsByType( "reporter" ).profile.first_name );
+			//Get the data from the Reporter named "zana"
+			trace( getAuthorByFirstName( "Zana" ) ); 
+			trace( "Complete" );
 			
+			/*
 			_data = new Array();
-			for( var i:uint = 0; i < _xmlList.length(); i++ ){
-				_data.push( _xmlList[i] );
+			for( var i:uint = 0; i < xmlData.length(); i++ ){
+				_data.push( xmlData[i] );
 			}
-			
+			*/
 			//Fire once the XML has been converted into Image Objects
 			dispatchEvent( new Event( Event.COMPLETE ) );			
 		}
