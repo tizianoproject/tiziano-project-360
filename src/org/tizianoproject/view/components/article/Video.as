@@ -53,7 +53,7 @@ package org.tizianoproject.view.components.article
 			else initPlayer( id );
 		}
 		
-		private function initPlayer( id ):void
+		private function initPlayer( id:Number ):void
 		{
 			//Load new video
 			vimeoPlayer = new VimeoPlayer( consumerKey, id, DEFAULT_WIDTH, DEFAULT_HEIGHT );
