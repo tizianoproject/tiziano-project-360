@@ -111,14 +111,14 @@ package org.tizianoproject.view
 			defaultWidth  = stage.stageWidth;
 			defaultHeight = stage.stageHeight;
 			updatePosition( );
-			
-			loadStory( )
 		}
 		
 		public function loadStory( ):void
 		{					
-			title_txt.text = DEFAULT_TITLE;
-			author_txt.text = DEFAULT_AUTHOR;
+			var story:Story = stories[currentIndex] as Story
+				
+			title_txt.text = story.title;
+			author_txt.text = story.authorName;
 			
 			/***** Temporary Code Starts *****/
 			//Features Holder holds the features
@@ -130,16 +130,14 @@ package org.tizianoproject.view
 			var random:uint = NumberUtil.randomWithinRange( 0, 4 );
 			
 			//Switch the Author
-			showAuthorType( random );
-			
-			var story:Story = stories[currentIndex] as Story
-				
-			switch( story.type ){
+			showAuthorType( story.authorType );
+							
+			switch( story.storyType ){
 				case "text":
-					initText();
+					initText( story );
 					break;
 				case "slideshow":
-					initSlideshow();
+					initSlideshow( story );
 					break;
 				case "video":
 					initVideo( story );
@@ -155,17 +153,19 @@ package org.tizianoproject.view
 		/**********************************
 		 * Story Types
 		 **********************************/
-		private function initText():void
+		private function initText( story:Story ):void
 		{
 			text = new Text();
 			text.name = "text";
+			text.load( story.content );
 			ShowHideManager.addContent( (this as ArticleView), text );
 		}
 		
-		private function initSlideshow():void
+		private function initSlideshow( story:Story ):void
 		{
 			slideshow = new Slideshow();
 			slideshow.name = "slideshow";
+			slideshow.load( story.flickrKey, story.flickrPhotoset );
 			ShowHideManager.addContent( (this as ArticleView), slideshow );			
 		}
 		
@@ -180,9 +180,9 @@ package org.tizianoproject.view
 		
 		private function initSoundSlide( story:Story ):void
 		{
+			trace( "ArticleView::initSoundSlide:", story.path );
 			soundslide = new SoundSlide();
 			soundslide.name = "soundslide";
-			trace( "ArticleView::initSoundSlide:", story.path );
 			soundslide.load( story.path );
 			ShowHideManager.addContent( (this as ArticleView), soundslide );
 		}
@@ -226,10 +226,9 @@ package org.tizianoproject.view
 			ShowHideManager.addContent( (this as ArticleView), featureScrollBar );
 		}
 		
-		private function showAuthorType( number:Number ):void
+		private function showAuthorType( value:String ):void
 		{
-			if( number == 1 ) authorType_mc.gotoAndStop( "mentor" );
-			else if( number == 2 ) authorType_mc.gotoAndStop( "student" );
+			authorType_mc.gotoAndStop( value );
 		}
 		
 		/**********************************
@@ -241,7 +240,7 @@ package org.tizianoproject.view
 			ShowHideManager.removeContent( (this as ArticleView), "text" );
 			ShowHideManager.removeContent( (this as ArticleView), "slideshow" );
 			
-			ShowHideManager.removeContent( (this as ArticleView), "video" );
+//			ShowHideManager.removeContent( (this as ArticleView), "video" );
 			ShowHideManager.removeContent( (this as ArticleView), "soundslide" );
 			ShowHideManager.removeContent( (this as ArticleView), "featureScrollBar" );
 			
