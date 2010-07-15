@@ -87,12 +87,11 @@ package org.tizianoproject.view.components.article
 			//Unload the Loader
 			if( ssLoader ){
 				ssLoader.unload();
-				ShowHideManager.removeContent( (this as SoundSlide), "ssLoader" );
+				ShowHideManager.removeContent( container, "ssLoader" );
+				ssLoader = null;
 			}
-			ssLoader = null;
 			
-			ShowHideManager.removeContent( (this as SoundSlide), "ssMask" );
-			ShowHideManager.removeContent( (this as SoundSlide), "container" );
+			ShowHideManager.unloadContent( (this as SoundSlide ) );
 		}
 		
 		/**********************************
