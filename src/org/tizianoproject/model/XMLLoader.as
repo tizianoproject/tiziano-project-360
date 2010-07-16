@@ -47,24 +47,52 @@ package org.tizianoproject.model
 		
 		public function getAuthorByFirstName( firstName:String ):XMLList
 		{
-			return xmlData.authors.author.profile.(first_name == firstName ).parent().children();
+			return xmlData.authors.author.profile.(first_name == firstName ).parent();
 		}
 		
+		public function getArticlesByAuthor(  firstName:String ):XMLList
+		{
+			return xmlData.authors.author.profile.(first_name == firstName ).parent().child("articles").article;			
+		}
+		
+		//Provides <Profile> <Articles> <Associations>
+		public function getAllByArticleID( uniqueID:Number ):XMLList
+		{
+			return xmlData.authors..article.( attribute("id") == uniqueID ).parent().parent().children();
+		}
+		
+		//Provides <Profile> <Articles> <Associations>
 		public function getAuthorByArticleID( uniqueID:Number ):XMLList
 		{
-			return xmlData.authors.author.articles.article.( trace( @id ) );
+			return xmlData.authors..article.( attribute("id") == uniqueID ).parent().parent().child("profile");
 		}
 		
+		public function getResponsesByArticleID( uniqueID:Number ):XMLList
+		{
+			return xmlData.authors..article.( attribute("id") == uniqueID ).child("responses");
+		}
+
+		public function getArticlesByArticleID( uniqueID:Number ):XMLList
+		{
+			return xmlData.authors..article.( attribute("id") == uniqueID ).parent().parent().child("articles");
+		}		
+
+		public function getArticleByArticleID( uniqueID:Number ):XMLList
+		{
+			return xmlData.authors..article.( attribute("id") == uniqueID );
+		}		
+
 		/**********************************
 		 * Event Handlers
 		 **********************************/
 		private function onXMLLoaded( e:Event ):void
-		{			
+		{
 			xmlData = new XMLList( e.currentTarget.data );
 			//Get all the "Reporters" or the "Mentors"
 			trace( getAuthorsByType( "reporter" ).profile.first_name );
 			//Get the data from the Reporter named "zana"
-			trace( getAuthorByFirstName( "Zana" ) ); 
+			//trace( getAuthorByFirstName( "Zana" ) ); 
+			trace( getArticleByArticleID( 1 ) );
 			trace( "Complete" );
 			
 			/*
