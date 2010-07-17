@@ -83,6 +83,7 @@ package org.tizianoproject.view
 
 		private var _currentIndex:Number;		
 		private var _stories:Array;
+		private var _xmlStories:XMLList;
 
 		public function ArticleView( m:IModel, c:IController=null )
 		{
@@ -357,6 +358,16 @@ package org.tizianoproject.view
 		public function get stories():Array
 		{
 			return _stories;
+		}
+		
+		public function set xmlStories( value:XMLList ):void
+		{
+			_xmlStories = value	
+		}
+		
+		public function get xmlStories(  ):XMLList
+		{
+			return _xmlStories;
 		}
 		
 		public function set currentIndex( value:Number ):void
