@@ -46,12 +46,16 @@ package org.tizianoproject.model
 			return getAuthor().profile.(first_name == firstName ).parent();
 		}
 		
-		
 		public function getArticlesByAuthor(  firstName:String ):XMLList
 		{
 			return getAuthor().profile.(first_name == firstName ).parent().child("articles").article;			
 		}
-		
+
+		public function getArticlesByAuthorID(  uniqueID:Number ):XMLList
+		{
+			return getAuthor().(attribute("id") == uniqueID).child("articles").article;
+		}
+
 		//Provides <Profile> <Articles>
 		public function getAllByArticleID( uniqueID:Number ):XMLList
 		{
@@ -71,10 +75,21 @@ package org.tizianoproject.model
 		}
 
 		//Collect the other articles
-		public function getOtherArticlesByArticleID( uniqueID:Number ):XMLList
+		public function getAllArticlesByArticleID( uniqueID:Number ):XMLList
 		{
-			return getAllArticles().( attribute("id") == uniqueID ).parent().parent().child("articles");
-		}		
+			var articles:XMLList = getAllArticles().( attribute("id") == uniqueID ).parent().descendants("article");
+			var totalArticles:Number = articles.length();
+			trace( articles[0].title );
+
+			var stories = new Array();
+			for( var i:uint = 0; i < totalArticles; i++ ){
+				
+				//stories.push( xmlData[i] );
+			}
+			
+			trace( "\n++++++++++++++++++++++++++++++++++++++\n" );
+			return articles;
+		}
 
 		//Get Article Information + Responses
 		public function getArticleByArticleID( uniqueID:Number ):XMLList
@@ -109,9 +124,9 @@ package org.tizianoproject.model
 		{
 			xmlData = new XMLList( e.currentTarget.data );
 			//Get all the "Reporters" or the "Mentors"
-			trace( getAuthorsByType( "reporter" ) );
+			//trace( getAuthorsByType( "reporter" ) );
 			//Get the data from the Reporter named "zana"
-			trace( getAllByArticleID( 1 ) );
+			//trace( getAllByArticleID( 1 ) );
 			
 			/*
 			_data = new Array();
