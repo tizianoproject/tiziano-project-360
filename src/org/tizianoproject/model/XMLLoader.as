@@ -83,7 +83,6 @@ package org.tizianoproject.model
 
 			var stories = new Array();
 			for( var i:uint = 0; i < totalArticles; i++ ){
-				
 				//stories.push( xmlData[i] );
 			}
 			
