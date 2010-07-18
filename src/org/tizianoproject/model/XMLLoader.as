@@ -8,8 +8,12 @@ package org.tizianoproject.model
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.net.Responder;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
+	
+	import org.tizianoproject.model.vo.Response;
+	import org.tizianoproject.model.vo.Story;
 	
 	public class XMLLoader extends EventDispatcher
 	{
@@ -35,6 +39,16 @@ package org.tizianoproject.model
 		/**********************************
 		 * Public Methods
 		 **********************************/
+		public function getVimeoConsumerKey():String
+		{
+			return getConfig().child("vimeo_consumer_key").text();
+		}
+		
+		public function getFlickrAPIKey():String
+		{
+			return getConfig().child("flickr_key").text();			
+		}
+		
 		//Used for Directory LIstings
 		public function getAuthorsByType( authorType:String ):XMLList
 		{
@@ -73,27 +87,94 @@ package org.tizianoproject.model
 		{
 			return getAllArticles().( attribute("id") == uniqueID ).child("responses");
 		}
-
-		//Collect the other articles
-		public function getAllArticlesByArticleID( uniqueID:Number ):XMLList
+		
+		//Convert the XML into a Story Object
+		public function getStory( xml:* ):Story
 		{
-			var articles:XMLList = getAllArticles().( attribute("id") == uniqueID ).parent().descendants("article");
-			var totalArticles:Number = articles.length();
-			trace( articles[0].title );
-
-			var stories = new Array();
-			for( var i:uint = 0; i < totalArticles; i++ ){
-				//stories.push( xmlData[i] );
+			//Generic Story Information
+			var story:Story			= new Story();
+				story.id			= xml.attribute("id");
+				story.storyType		= xml.attribute("type");
+				story.title			= xml.title.text();
+				story.headline		= xml.headline.text();
+				story.subheadline	= xml.subheadline.text();
+				story.image			= xml.image_small.text();
+				story.authorName	= getFullName( getAuthorByArticleID( story.id ).first_name.text(), 
+									  getAuthorByArticleID( story.id ).last_name.text() );
+				story.authorType	= getAuthorByArticleID( story.id ).parent().attribute("type");
+			//trace( 	story.id, story.storyType, story.title, story.headline, story.subheadline, story.image, story.authorName, story.authorType );
+				
+			//Specific Story Information
+			switch( story.storyType ){
+				case "text":
+					story.content = xml.content.text();
+					break;
+				case "video":
+					story.vimeoConsumerKey = getVimeoConsumerKey();
+					story.vimeoID = xml.vimeo_id.text();
+					break;
+				case "slideshow":
+					story.flickrKey = getFlickrAPIKey();
+					story.flickrPhotoset = xml.flickr_photoset.text();
+					break;
+				case "soundslide":
+					story.path = xml.path.text();
+					break;
 			}
 			
-			trace( "\n++++++++++++++++++++++++++++++++++++++\n" );
-			return articles;
+			//Related Stories / Responses
+			var totalResponses:Number = xml.responses.children().length();
+			if( totalResponses > 0 ){
+				story.responses = new Array();
+				for( var j:uint = 0; j < totalResponses; j++ ){
+					var response:Response = new Response();
+						response.storyID = xml.child("responses").child("response")[j].attribute("id")
+					//trace( response.storyID );
+					story.responses.push( response );
+				} 
+			}
+			return story;
 		}
 
-		//Get Article Information + Responses
-		public function getArticleByArticleID( uniqueID:Number ):XMLList
+		//Collect the other articles
+		public function getOtherArticlesByArticleID( uniqueID:Number ):Array
 		{
-			return getAllArticles().( attribute("id") == uniqueID );
+			//Grab all the XMLLIst Stories
+			var articles:XMLList = getAllArticles().( attribute("id") == uniqueID ).parent().descendants("article");
+			
+			//Iterate through each XML Node and Create a Story Object, then Push an Array
+			var stories:Array = new Array();
+			for( var i:uint = 0; i < articles.length(); i++ ){
+				//Push the Stories!
+				var story:Story = getStory( articles[i] );
+				if( story.id != uniqueID ) stories.push( story );
+			}
+			return stories;
+		}
+		
+		//Collect the other articles
+		public function getAllArticlesByArticleID( uniqueID:Number ):Array
+		{
+			//Grab all the XMLLIst Stories
+			var articles:XMLList = getAllArticles().( attribute("id") == uniqueID ).parent().descendants("article");
+			
+			//Iterate through each XML Node and Create a Story Object, then Push an Array
+			var stories:Array = new Array();
+			for( var i:uint = 0; i < articles.length(); i++ ){
+				//Push the Stories!
+				var story:Story = getStory( articles[i] );
+				stories.push( story );
+			}
+			return stories;
+		}
+		
+
+		//Get Article Information + Responses
+		public function getArticleByArticleID( uniqueID:Number ):Story
+		{
+			var article:XMLList = getAllArticles().( attribute("id") == uniqueID );
+			var story:Story = getStory( article  ) as Story;
+			return story;
 		}		
 		
 		/**********************************
@@ -102,7 +183,12 @@ package org.tizianoproject.model
 		//Return all the Articles witin the XML
 		private function getAllArticles():XMLList
 		{
-			return xmlData.authors.descendants("article");
+			return getXMLData().authors.descendants("article");
+		}
+		
+		private function getConfig():XMLList
+		{
+			return getXMLData().config;
 		}
 		
 		//Private
@@ -114,6 +200,11 @@ package org.tizianoproject.model
 		private function getXMLData():XMLList
 		{
 			return xmlData;
+		}
+		
+		private function getFullName( firstName:String, lastName:String ):String
+		{
+			return firstName + " " + lastName;
 		}
 		
 		/**********************************
