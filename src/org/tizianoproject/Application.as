@@ -5,7 +5,7 @@
  * 
  * Version: 1
  * Created: chrisaiv@gmail.com
- * Modified: 5/31/2010
+ * Modified: 7/18/2010
  * 
  * -------------------------------------------------------
  * Notes:
@@ -142,7 +142,6 @@ package org.tizianoproject
 			} else {
 				showView( articleView );
 			}
-			
 		}
 		
 		private function loadXML( ):void
@@ -155,8 +154,14 @@ package org.tizianoproject
 		
 		private function onXMLCompleteHandler( e:Event ):void
 		{
-			trace( "Application::onXMLCompleteHandler:" );
-			xmlLoader.getAllArticlesByArticleID( 1 );
+			//trace( "Application::onXMLCompleteHandler:" )
+			//trace( xmlLoader.getOtherArticlesByArticleID( 1 ) );
+			//trace( xmlLoader.getArticleByArticleID( 1 ) );
+			var currentIndex:Number = 1;
+			var stories:Array = xmlLoader.getAllArticlesByArticleID( currentIndex );
+			
+			updateArticleView( currentIndex, stories );
+			showView( articleView );
 		}
 
 		private function initSwfBridge():void
@@ -200,8 +205,7 @@ package org.tizianoproject
 		{
 			trace( "Main::onPressThumb:", param1.id );
 			var currentIndex:Number = param1.id;
-			trace( xmlLoader.getAllArticlesByArticleID( currentIndex ) );
-			var stories:Array = new Array();
+			var stories:Array = xmlLoader.getAllArticlesByArticleID( currentIndex );
 			
 			updateArticleView( currentIndex, stories );
 			showView( articleView );
@@ -247,54 +251,52 @@ package org.tizianoproject
 			swfSizer.addEventListener(SWFSizeEvent.RESIZE, footerView.swfSizerHandler );
 		}
 		
-		private function initArticleView():void
+		private function initTempData():Array
 		{
 			var vimeoConsumerKey:String = "dba8f8dd0a80ed66b982ef862f75383d";
 			var vimeoID:Number = 12618396;
 			
 			var video:Story = new Story();
-			video.authorName = "Jon Vidar";
-			video.title = "Vimeo Video";
-			video.storyType = "video"
-			video.vimeoConsumerKey = vimeoConsumerKey;
-			video.vimeoID = vimeoID;
+				video.authorName = "Jon Vidar";
+				video.title = "Vimeo Video";
+				video.storyType = "video"
+				video.vimeoConsumerKey = vimeoConsumerKey;
+				video.vimeoID = vimeoID;
 			
 			var path:String = "http://demo.chrisaiv.com/swf/tiziano/360/Iraq-sdawood-noel/soundslider.swf?size=2&format=xml";
 			var soundslide:Story = new Story();
-			soundslide.authorName = "Tory Fine";
-			soundslide.title = "SoundSlide";
-			soundslide.storyType = "soundslide";
-			soundslide.path = path;
+				soundslide.authorName = "Tory Fine";
+				soundslide.title = "SoundSlide";
+				soundslide.storyType = "soundslide";
+				soundslide.path = path;
 			
 			var text:Story = new Story();
-			text.authorName = "chris mendez";
-			text.title = "Text Story";
-			text.authorType = "student"
-			text.storyType = "text";
-			text.content = "Soluta nobis eleifend option congue nihil imperdiet doming id " + 
-				"quod mazim. Zzril delenit augue duis dolore te feugait nulla facilisi nam liber. Decima et quinta " + 
-				"decima eodem modo typi qui nunc nobis videntur parum clari fiant sollemnes in. Feugiat nulla facilisis " + 
-				"at vero eros et accumsan et iusto odio dignissim! Amet consectetuer adipiscing elit sed diam nonummy " + 
-				"nibh euismod tincidunt ut. Insitam est usus legentis in iis qui facit eorum claritatem Investigationes. " + 
-				"Eum iriure dolor in hendrerit in vulputate velit esse molestie consequat vel illum dolore. Gothica quam " + 
-				"nunc putamus parum claram anteposuerit litterarum formas humanitatis per et sans seacula quarta. Soluta " + 
-				"nobis eleifend option congue nihil imperdiet doming id quod mazim. Zzril delenit augue duis dolore te " + 
-				"feugait nulla facilisi nam liber. Decima et quinta decima eodem modo typi qui nunc nobis videntur parum " + 
-				"clari fiant sollemnes in. Feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim! Amet " + 
-				"consectetuer adipiscing elit sed diam nonummy nibh euismod tincidunt ut. Insitam est usus legentis in iis " + 
-				"qui facit eorum claritatem Investigationes. Eum iriure dolor in hendrerit in vulputate velit esse molestie " + 
-				"consequat vel illum dolore. Gothica quam nunc putamus parum claram anteposuerit litterarum formas humanitatis " + 
-				"per et sans seacula quarta.";
+				text.authorName = "chris mendez";
+				text.title = "Text Story";
+				text.authorType = "student"
+				text.storyType = "text";
+				text.content = "Soluta nobis eleifend option congue nihil imperdiet doming id " + 
+					"feugait nulla facilisi nam liber. Decima et quinta decima eodem modo typi qui nunc nobis videntur parum " + 
+					"clari fiant sollemnes in. Feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim! Amet " + 
+					"consectetuer adipiscing elit sed diam nonummy nibh euismod tincidunt ut. Insitam est usus legentis in iis " + 
+					"qui facit eorum claritatem Investigationes. Eum iriure dolor in hendrerit in vulputate velit esse molestie " + 
+					"consequat vel illum dolore. Gothica quam nunc putamus parum claram anteposuerit litterarum formas humanitatis " + 
+					"per et sans seacula quarta.";
 			
 			var flickr:Story = new Story();
-			flickr.authorName = "Grant Slater";
-			flickr.authorType = "mentor";
-			flickr.title = "Flickr Story";
-			flickr.storyType = "slideshow";
-			flickr.flickrKey = "4415d421495d5b59d8537c0937fcce38";
-			flickr.flickrPhotoset = "72157624151203417";
+				flickr.authorName = "Grant Slater";
+				flickr.authorType = "mentor";
+				flickr.title = "Flickr Story";
+				flickr.storyType = "slideshow";
+				flickr.flickrKey = "4415d421495d5b59d8537c0937fcce38";
+				flickr.flickrPhotoset = "72157624151203417";
 			
-			var stories:Array = new Array( text, soundslide, flickr, video )
+			return new Array( soundslide, video, flickr, text );
+		}
+		
+		private function initArticleView():void
+		{			
+			var stories:Array = initTempData();
 			
 			//Add an Article Page
 			articleView = new ArticleView( model, controller );
@@ -307,6 +309,7 @@ package org.tizianoproject
 		
 		private function updateArticleView( id:Number, array:Array ):void
 		{
+			trace( "Application::updateArticleView:", id, array.length() );
 			articleView.stories = array;
 			articleView.currentIndex = id;
 			articleView.loadStory( );
