@@ -1,3 +1,18 @@
+/**
+ * -------------------------------------------------------
+ * Model: XMLLoader 
+ * -------------------------------------------------------
+ * 
+ * Version: 1
+ * Created: chrisaiv@gmail.com
+ * Modified: 7/18/2010
+ * 
+ * -------------------------------------------------------
+ * Notes:
+ * This is the main model
+ * 
+ * */
+
 package org.tizianoproject.model
 {
 	import flash.events.ErrorEvent;
@@ -12,17 +27,17 @@ package org.tizianoproject.model
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	
+	import org.casalib.util.ArrayUtil;
 	import org.tizianoproject.model.vo.Response;
 	import org.tizianoproject.model.vo.Story;
 	
-	public class XMLLoader extends EventDispatcher
+	public class XMLLoader extends EventDispatcher implements IModel
 	{
 		private var _data:Array;
 		private var _xmlData:XMLList;
 		
-		public function XMLLoader(target:IEventDispatcher=null)
+		public function XMLLoader()
 		{
-			super(target);
 		}
 		
 		public function load( path:String ):void
@@ -39,6 +54,9 @@ package org.tizianoproject.model
 		/**********************************
 		 * Public Methods
 		 **********************************/
+		////////////////////////////////
+		//Consumer KEYS
+		////////////////////////////////
 		public function getVimeoConsumerKey():String
 		{
 			return getConfig().child("vimeo_consumer_key").text();
@@ -49,7 +67,9 @@ package org.tizianoproject.model
 			return getConfig().child("flickr_key").text();			
 		}
 		
-		//Used for Directory LIstings
+		////////////////////////////////
+		//Authors
+		////////////////////////////////
 		public function getAuthorsByType( authorType:String ):XMLList
 		{
 			return getAuthor().(attribute("type") == authorType);
@@ -82,13 +102,11 @@ package org.tizianoproject.model
 			return getAllArticles().( attribute("id") == uniqueID ).parent().parent().child("profile");
 		}
 		
-		//Get the Responses from a particular Article
-		public function getResponsesByArticleID( uniqueID:Number ):XMLList
-		{
-			return getAllArticles().( attribute("id") == uniqueID ).child("responses");
-		}
+		////////////////////////////////
+		//Articles 
+		////////////////////////////////
 		
-		//Convert the XML into a Story Object
+		//Create a Story Object from XML Node
 		public function getStory( xml:* ):Story
 		{
 			//Generic Story Information
@@ -124,19 +142,27 @@ package org.tizianoproject.model
 			
 			//Related Stories / Responses
 			var totalResponses:Number = xml.responses.children().length();
+			//trace( "XMLLoader:getStory:", totalResponses );
 			if( totalResponses > 0 ){
 				story.responses = new Array();
 				for( var j:uint = 0; j < totalResponses; j++ ){
 					var response:Response = new Response();
 						response.storyID = xml.child("responses").child("response")[j].attribute("id")
-					//trace( response.storyID );
 					story.responses.push( response );
 				} 
 			}
 			return story;
 		}
 
-		//Collect the other articles
+		//Get Article By Article ID
+		public function getArticleByArticleID( uniqueID:Number ):Story
+		{
+			var article:XMLList = getAllArticles().( attribute("id") == uniqueID );
+			var story:Story = getStory( article  ) as Story;
+			return story;
+		}		
+		
+		//Get Other Articles By Article ID
 		public function getOtherArticlesByArticleID( uniqueID:Number ):Array
 		{
 			//Grab all the XMLLIst Stories
@@ -152,7 +178,7 @@ package org.tizianoproject.model
 			return stories;
 		}
 		
-		//Collect the other articles
+		//Get All Articles By Article ID
 		public function getAllArticlesByArticleID( uniqueID:Number ):Array
 		{
 			//Grab all the XMLLIst Stories
@@ -167,15 +193,6 @@ package org.tizianoproject.model
 			}
 			return stories;
 		}
-		
-
-		//Get Article Information + Responses
-		public function getArticleByArticleID( uniqueID:Number ):Story
-		{
-			var article:XMLList = getAllArticles().( attribute("id") == uniqueID );
-			var story:Story = getStory( article  ) as Story;
-			return story;
-		}		
 		
 		/**********************************
 		 * Private
