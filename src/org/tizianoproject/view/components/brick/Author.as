@@ -9,6 +9,7 @@ package org.tizianoproject.view.components.brick
 	import flash.display.LoaderInfo;
 	import flash.display.MovieClip;
 	import flash.display.SimpleButton;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
@@ -19,9 +20,8 @@ package org.tizianoproject.view.components.brick
 	import flash.system.LoaderContext;
 	import flash.text.TextField;
 	
-	public class Author extends SimpleButton
+	public class Author extends MovieClip
 	{
-		private static const DEFAULT_AVATAR:String = "../Assets/Student.jpg";
 		private static const DEFAULT_AVATAR_WIDTH:Number = 100;
 		private static const DEFAULT_AVATAR_HEIGHT:Number =100;
 		
@@ -29,13 +29,16 @@ package org.tizianoproject.view.components.brick
 		private var imageLoader:Loader;
 		private var loaderContext:LoaderContext;
 		
+		//Views
 		public var container_mc:MovieClip;
 		public var name_txt:TextField;
 		public var grade_txt:TextField;
 		
-		public function Author(upState:DisplayObject=null, overState:DisplayObject=null, downState:DisplayObject=null, hitTestState:DisplayObject=null)
+		public var _id:Number;
+		
+		public function Author()
 		{
-			//super(upState, overState, downState, hitTestState);
+			buttonMode = true;
 			loaderContext = new LoaderContext( true );
 			
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
@@ -43,26 +46,34 @@ package org.tizianoproject.view.components.brick
 			
 			addEventListener( MouseEvent.ROLL_OVER, onMouseRollOverHandler, false, 0, true );
 			addEventListener( MouseEvent.ROLL_OUT, onMouseOutHandler, false, 0, true );
-			addEventListener( MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 		}
 		
 		public function loadImage( url:String ):void
 		{
 			imageLoader = new Loader();
 			imageLoader.name = "imageLoader";
-			imageLoader.addEventListener( HTTPStatusEvent.HTTP_STATUS, httpStatusHandler, false, 0, true);
-			imageLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler, false, 0, true);	
-			imageLoader.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler, false, 0, true);
-			imageLoader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler, false, 0, true);
-			imageLoader.contentLoaderInfo.addEventListener( ProgressEvent.PROGRESS, progressHandler, false, 0, true);
+			imageLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true);	
+			imageLoader.addEventListener( IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true);
+			imageLoader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true);
 			imageLoader.contentLoaderInfo.addEventListener( Event.COMPLETE, onCompleteHandler, false, 0, true);
-			imageLoader.load( new URLRequest( url ), loaderContext );	
+			imageLoader.load( new URLRequest( url ), loaderContext );
 		}
 		
+		public function writeName( string:String ):void
+		{
+			name_txt.text = string;	
+		}
+		
+		public function writeGrade( string:String ):void
+		{
+			grade_txt.text = string;
+		}
+		
+		//Redraw the Image for a smaller size
 		private function drawImage( loaderInfo:LoaderInfo ):void
 		{
-			//width: 96, height: 120
 			bmp = loaderInfo.content as Bitmap;			
+			
 			var bmpData:BitmapData = new BitmapData( bmp.width, bmp.height );
 				bmpData.draw( bmp );
 
@@ -78,7 +89,6 @@ package org.tizianoproject.view.components.brick
 		
 		private function init():void
 		{
-			//loadImage( DEFAULT_AVATAR );
 		}		
 		
 		private function unload():void
@@ -114,30 +124,15 @@ package org.tizianoproject.view.components.brick
 			unload();
 		}
 		
-		private function httpStatusHandler( e:HTTPStatusEvent ):void
+		private function onErrorHandler( e:ErrorEvent ):void
 		{
-			//trace( "Author::httpStatusHandler:" );
-		}
-		
-		private function progressHandler( e:ProgressEvent ):void
-		{
-			trace( "Author::progressHandler:" );
-		}
-		
-		private function securityErrorHandler( e:SecurityErrorEvent ):void
-		{
-			trace( "Author::securityErrorHandler:" );
-		}
-		
-		private function ioErrorHandler( e:IOErrorEvent ):void
-		{
-			trace( "Author::ioErrorHandler:" );
+			//trace( "Author::onErrorHandler:", e.text );
 		}
 		
 		private function onCompleteHandler( e:Event ):void
 		{
+			//trace( "Author::onCompleteHandler:", e.currentTarget );
 			drawImage( e.currentTarget as LoaderInfo );
-			//trace( "Author::onCompleteHandler:" );
 		}
 		
 		private function onMouseRollOverHandler( e:MouseEvent ):void
@@ -150,9 +145,18 @@ package org.tizianoproject.view.components.brick
 			//trace( "Author::onMouseOutHandler:", e.currentTarget );
 		}
 		
-		private function onMouseClickHandler( e:MouseEvent ):void
+		/**********************************
+		 * Read Write Accessors
+		 **********************************/
+		public function set id( value:Number ):void
 		{
-			//trace( "Author::onMouseClickHandler:", e.currentTarget, e.target.name );
+			_id = value;
 		}
+		
+		public function get id():Number
+		{
+			return _id;
+		}
+			
 	}
 }
