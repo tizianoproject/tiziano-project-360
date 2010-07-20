@@ -1,3 +1,17 @@
+/**
+ * -------------------------------------------------------
+ * Story
+ * -------------------------------------------------------
+ * 
+ * Version: 1
+ * Created: chrisaiv@gmail.com
+ * Modified: 7/18/2010
+ * 
+ * -------------------------------------------------------
+ * Notes:
+ * 
+ * */
+
 package org.tizianoproject.model.vo
 {
 	public class Story extends Object
