@@ -16,8 +16,7 @@ package org.tizianoproject.view
 	
 	import org.casalib.util.LocationUtil;
 	import org.casalib.util.ValidationUtil;
-	import org.tizianoproject.controller.IController;
-	import org.tizianoproject.model.IModel;
+
 	
 	public class WallView extends MovieClip
 	{
