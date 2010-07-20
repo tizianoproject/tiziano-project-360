@@ -1,2 +1,1 @@
-﻿package org.tizianoproject.controller{		import org.tizianoproject.model.IModel;
-	public class Controller implements IController	{		private var iModel:IModel;				public function Controller( m:IModel )		{			iModel = m;			}	}}
+﻿package org.tizianoproject.controller{	public interface IController	{	}}
