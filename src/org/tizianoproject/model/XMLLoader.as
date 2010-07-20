@@ -28,6 +28,7 @@ package org.tizianoproject.model
 	import flash.net.URLRequest;
 	
 	import org.casalib.util.ArrayUtil;
+	import org.tizianoproject.model.vo.Author;
 	import org.tizianoproject.model.vo.Response;
 	import org.tizianoproject.model.vo.Story;
 	
@@ -70,9 +71,32 @@ package org.tizianoproject.model
 		////////////////////////////////
 		//Authors
 		////////////////////////////////
-		public function getAuthorsByType( authorType:String ):XMLList
+		public function getAuthorsByType( authorType:String ):Array
 		{
-			return getAuthor().(attribute("type") == authorType);
+//			trace( "XMLLoader::getAuthorsByType:", getAuthor().(attribute("type") == authorType) );
+			var xmlList:XMLList = getAuthor().(attribute("type") == authorType);
+			var authors:Array = new Array();
+			for (var i:uint = 0; i < xmlList.length(); i++){
+				var author:Author = createAuthor( xmlList[0] );
+				authors.push( author );
+			}			
+			return authors;
+		}
+		
+		private function createAuthor( xml:* ):Author
+		{
+			var author:Author = new Author();
+			var profile:XMLList		= xml.child("profile");
+			author.id			= profile.attribute("id");
+			author.avatar		= profile.child("avatar").text();
+			author.firstName	= profile.child("first_name").text();
+			author.lastName 	= profile.child("last_name").text();
+			author.city			= profile.child("city").text();
+			author.region		= profile.child("region").text();
+			author.grade		= profile.child("grader").text();
+			author.intro		= profile.child("intro").text();
+			
+			return author;
 		}
 		
 		public function getAuthorByFirstName( firstName:String ):XMLList
@@ -85,9 +109,17 @@ package org.tizianoproject.model
 			return getAuthor().profile.(first_name == firstName ).parent().child("articles").article;			
 		}
 
-		public function getArticlesByAuthorID(  uniqueID:Number ):XMLList
+		public function getArticlesByAuthorID(  uniqueID:Number ):Array
 		{
-			return getAuthor().(attribute("id") == uniqueID).child("articles").article;
+			//Find a Match
+			var articlesList:XMLList = getAuthor().(attribute("id") == uniqueID).child("articles").article;
+			//Generate Stories
+			var articles:Array = new Array();
+			for( var i:uint = 0; i < articlesList.length(); i++ ){
+				var story:Story = new Story();
+				articles.push( story );
+			}
+			return articles;
 		}
 
 		//Provides <Profile> <Articles>
@@ -107,7 +139,7 @@ package org.tizianoproject.model
 		////////////////////////////////
 		
 		//Create a Story Object from XML Node
-		public function getStory( xml:* ):Story
+		public function createStory( xml:* ):Story
 		{
 			//Generic Story Information
 			var story:Story			= new Story();
@@ -142,7 +174,7 @@ package org.tizianoproject.model
 			
 			//Related Stories / Responses
 			var totalResponses:Number = xml.responses.children().length();
-			//trace( "XMLLoader:getStory:", totalResponses );
+			//trace( "XMLLoader:createStory:", totalResponses );
 			if( totalResponses > 0 ){
 				story.responses = new Array();
 				for( var j:uint = 0; j < totalResponses; j++ ){
@@ -158,7 +190,7 @@ package org.tizianoproject.model
 		public function getArticleByArticleID( uniqueID:Number ):Story
 		{
 			var article:XMLList = getAllArticles().( attribute("id") == uniqueID );
-			var story:Story = getStory( article  ) as Story;
+			var story:Story = createStory( article  ) as Story;
 			return story;
 		}		
 		
@@ -172,7 +204,7 @@ package org.tizianoproject.model
 			var stories:Array = new Array();
 			for( var i:uint = 0; i < articles.length(); i++ ){
 				//Push the Stories!
-				var story:Story = getStory( articles[i] );
+				var story:Story = createStory( articles[i] );
 				if( story.id != uniqueID ) stories.push( story );
 			}
 			return stories;
@@ -188,7 +220,7 @@ package org.tizianoproject.model
 			var stories:Array = new Array();
 			for( var i:uint = 0; i < articles.length(); i++ ){
 				//Push the Stories!
-				var story:Story = getStory( articles[i] );
+				var story:Story = createStory( articles[i] );
 				stories.push( story );
 			}
 			return stories;
