@@ -12,6 +12,7 @@ package org.tizianoproject.view.components
 	import flash.display.LoaderInfo;
 	import flash.display.MovieClip;
 	import flash.display.Shape;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.FullScreenEvent;
 	import flash.events.IOErrorEvent;
@@ -63,6 +64,7 @@ package org.tizianoproject.view.components
 			bgLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true ); 
 			bgLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true ); 
 			bgLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
+			bgLoader.addEventListener( IOErrorEvent.NETWORK_ERROR, onErrorHandler, false, 0, true );
 			bgLoader.load( new URLRequest( DEFAULT_BG_IMAGE ), loaderContext );
 			ShowHideManager.addContent( (this as Background), bgLoader );
 		}
@@ -150,9 +152,9 @@ package org.tizianoproject.view.components
 			showBitmap( e );
 		}
 		
-		private function onErrorHandler( e:Event ):void
+		private function onErrorHandler( e:ErrorEvent ):void
 		{
-			trace( "Background::onErrorHandler:" );
+			trace( "Background::onErrorHandler:", e.text );
 		}
 		
 		private function onFullScreenHandler( e:FullScreenEvent ):void
