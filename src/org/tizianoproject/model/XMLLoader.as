@@ -74,10 +74,12 @@ package org.tizianoproject.model
 		public function getAuthorsByType( authorType:String ):Array
 		{
 //			trace( "XMLLoader::getAuthorsByType:", getAuthor().(attribute("type") == authorType) );
-			var xmlList:XMLList = getAuthor().(attribute("type") == authorType);
+//			var xmlList:XMLList = getAuthor().(attribute("type") == authorType);
+			//trace( "XMLLoader::getAuthorsByType:", getAuthor().child("profile").(child("author_type") == authorType) );
+			var profileList:XMLList = getAuthor().child("profile").(child("author_type") == authorType);
 			var authors:Array = new Array();
-			for (var i:uint = 0; i < xmlList.length(); i++){
-				var author:Author = createAuthor( xmlList[0] );
+			for (var i:uint = 0; i < profileList.length(); i++){
+				var author:Author = createAuthor( profileList[i] );
 				authors.push( author );
 			}			
 			return authors;
@@ -85,17 +87,16 @@ package org.tizianoproject.model
 		
 		private function createAuthor( xml:* ):Author
 		{
-			var author:Author = new Author();
-			var profile:XMLList		= xml.child("profile");
-			author.id			= profile.attribute("id");
+			var profile:XML	= xml;
+			var author:Author 	= new Author();
+			author.id			= profile.child("author_id");
 			author.avatar		= profile.child("avatar").text();
-			author.firstName	= profile.child("first_name").text();
-			author.lastName 	= profile.child("last_name").text();
+			author.name			= profile.child("name").text();
 			author.city			= profile.child("city").text();
-			author.region		= profile.child("region").text();
-			author.grade		= profile.child("grader").text();
+			author.region		= profile.child("country").text();
+			author.age			= profile.child("age").text();
 			author.intro		= profile.child("intro").text();
-			
+			//trace( author.id, author.avatar, author.name, author.city, author.region, author.age, author.intro );
 			return author;
 		}
 		
@@ -243,7 +244,7 @@ package org.tizianoproject.model
 		//Private
 		private function getAuthor():XMLList
 		{
-			return getXMLData().authors.author;
+			return getXMLData().child("authors").child("author");
 		}
 		
 		private function getXMLData():XMLList
