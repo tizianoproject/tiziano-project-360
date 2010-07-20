@@ -8,7 +8,11 @@ package org.tizianoproject.model
 	public interface IModel extends IEventDispatcher
 	{
 		function load( path:String ):void
+		//Author
+		function getAuthorsByType( authorType:String ):Array
+		function getArticlesByAuthorID(  uniqueID:Number ):Array
 			
+		//Articles
 		function getOtherArticlesByArticleID( uniqueID:Number ):Array
 		function getArticleByArticleID( uniqueID:Number ):Story
 	}
