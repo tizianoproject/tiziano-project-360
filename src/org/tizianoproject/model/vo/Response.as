@@ -1,3 +1,19 @@
+/**
+ * -------------------------------------------------------
+ * Response Object
+ * -------------------------------------------------------
+ * 
+ * Version: 1
+ * Created: chrisaiv@gmail.com
+ * Modified: 7/18/2010
+ * 
+ * -------------------------------------------------------
+ * Notes:
+ * Response object is an association.  It's simply meant to keep track
+ * of which stories are related to other stories
+ * 
+ * */
+
 package org.tizianoproject.model.vo
 {
 	public class Response extends Object
