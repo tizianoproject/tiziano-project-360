@@ -10,8 +10,9 @@
  * Copyright ©2010
  * - ---------------------------------------------------------
  *
- * 
- * var students:Array = new Array("ashna-lg.jpg", "dilpak-lg.jpg", "mohamad-lg.jpg", "mustafa-lg.jpg", "rasi-lg.jpg", "rebin-lg.jpg", "sevina-lg.jpg", "shivan-lg.jpg", "zana-lg.jpg");
+ * Notes: 
+ * var currentIndex:Number keeps track of all the stories:Array
+ * var story.id is the uniqueID of the story:Story
  *
  */
 
@@ -32,9 +33,10 @@ package org.tizianoproject.view
 	import nl.demonsters.debugger.MonsterDebugger;
 	
 	import org.casalib.util.NumberUtil;
-	import org.tizianoproject.controller.IController;
 	import org.tizianoproject.events.BaseViewEvent;
 	import org.tizianoproject.model.IModel;
+	import org.tizianoproject.model.XMLLoader;
+	import org.tizianoproject.model.vo.Response;
 	import org.tizianoproject.model.vo.Story;
 	import org.tizianoproject.view.components.Feature;
 	import org.tizianoproject.view.components.FeatureHolder;
@@ -46,7 +48,6 @@ package org.tizianoproject.view
 	
 	public class ArticleView extends CompositeView
 	{
-		private static const STORY_TYPE:Array = new Array( "text", "video", "slideshow", "soundslide" );
 		private static const DEFAULT_TITLE:String = "DEFAULT_TITLE";
 		private static const DEFAULT_AUTHOR:String = "DEFAULT_AUTHOR";
 
@@ -57,12 +58,14 @@ package org.tizianoproject.view
 		private static const MIN_WIDTH:Number = 900;
 		//This is the Default Height
 		private static const MIN_HEIGHT:Number = 600;
-
+		
+		private var iModel:IModel;
+		
 		//Views
+		public var baseView_mc:BaseView;
 		public var title_txt:TextField;
 		public var author_txt:TextField;
 		
-		public var baseView_mc:BaseView;
 		public var authorType_mc:MovieClip;
 		public var prev_btn:SimpleButton;
 		public var next_btn:SimpleButton;
@@ -81,75 +84,78 @@ package org.tizianoproject.view
 		private var defaultWidth:Number;
 		private var defaultHeight:Number;
 
+		private var _currentStory:Story;
 		private var _currentIndex:Number;		
 		private var _stories:Array;
-		private var _xmlStories:XMLList;
 
-		public function ArticleView( m:IModel, c:IController=null )
-		{
-			super( m, c );
-			
+		public function ArticleView( m:IModel )
+		{			
+			iModel = m;
+
+			//trace( "CHRIS:", iModel.getArticleByArticleID( 2 ) );
 			prev_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
 			prev_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
 			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 			
 			next_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
 			next_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
-			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );			
-
-			addEventListener( Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
-			addEventListener( Event.ADDED, onAddedHandler, false, 0, true );
-			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
-			//Listen for when the user clicks on the [ X ] button
-			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );			
+			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 		}
 		
-		private function init():void
+		override protected function init():void
 		{
-			currentIndex = 0;
-			
-			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
+			//Position the ArticleView
 			defaultWidth  = stage.stageWidth;
 			defaultHeight = stage.stageHeight;
-			updatePosition( );
+			updatePosition( );			
 		}
 		
+		override protected function unload():void{
+			unloadStories();
+		}		
+
 		public function loadStory( ):void
-		{					
-			var story:Story = stories[currentIndex] as Story
+		{	
+			currentStory = stories[currentIndex] as Story
 				
-			title_txt.text = story.title;
-			author_txt.text = story.authorName;
-			
-			/***** Temporary Code Starts *****/
-			//Features Holder holds the features
-//			initFeatureHolder();
-
-			//Add new Related Features
-//			initFeatures( NumberUtil.randomWithinRange( 1, 10 ) );
-
-			var random:uint = NumberUtil.randomWithinRange( 0, 4 );
-			
-			//Switch the Author
-			showAuthorType( story.authorType );
-							
-			switch( story.storyType ){
-				case "text":
-					initText( story );
-					break;
-				case "slideshow":
-					initSlideshow( story );
-					break;
-				case "video":
-					initVideo( story );
-					break;
-				case "soundslide":
-					initSoundSlide( story );
-					break;
+			if( currentStory ){
+				//Display Title
+				title_txt.text = currentStory.title;
+				//Display Author Name
+				author_txt.text = currentStory.authorName;
+				
+				//Display Author Type
+				showAuthorType( currentStory.authorType );
+				
+				//Display Story
+				switch( currentStory.storyType ){
+					case "text":
+						initText( currentStory );
+						break;
+					case "slideshow":
+						initSlideshow( currentStory );
+						break;
+					case "video":
+						if( video ){
+							video.load( currentStory.id );
+							video.visible = true;
+						} else {
+							initVideo( currentStory );						
+						}
+						break;
+					case "soundslide":
+						initSoundSlide( currentStory );
+						break;
+				}
+				
+				//Features Holder holds the features
+				initFeatureHolder();
+				
+				//Add new Related Features
+				//trace( "ArticleView::loadStory:responses:", currentStory.responses );
+				if( currentStory.responses.length > 0 ) initFeatures( currentStory.responses );
 			}
-			/***** Temporary Code Ends *****/			
 		}
-
 		
 		/**********************************
 		 * Story Types
@@ -200,27 +206,32 @@ package org.tizianoproject.view
 			ShowHideManager.addContent( (this as ArticleView), featureHolder );			
 		}
 		
-		private function initFeatures( number:Number ):void
+		private function initFeatures( array:Array ):void
 		{			
-			var totalFeatures:Number = number;
+			var totalFeatures:Number = array.length;
 			var columns:Number = 1;
 			for( var i:Number = 0; i < totalFeatures; i++ ){
 				var xx:Number = i%columns;
 				var yy:Number = Math.floor(i/columns);
 				
-				feature = new Feature();
+				//Get the Story based on the Response ID
+				var story:Story = iModel.getArticleByArticleID( Response(array[i]).storyID );
+				//Create a new Feature
+				feature = new Feature( story );
 				feature.name = "feature" + i;
-				//I am overriding y property in order to add DEFAULT_Y_POS
+				feature.addEventListener(MouseEvent.CLICK, onFeatureClickHandler, false, 0, true );
+				//Feature.y is overriden to include DEFAULT_Y_POS
 				feature.y = (i * feature.height);
 				ShowHideManager.addContent( featureHolder, feature );
 			}
 			
-			//Once Feature holder is populated, load the Scroller
+			//If there are more than 5 features, add a Scroll Bar
 			if( featureHolder.numChildren > 5 ) initFeatureScrollBar();
 		}
 		
 		private function initFeatureScrollBar():void
 		{
+			trace( "ArticleView::initFeatureScrollBar:" );
 			//Create the Features Holder
 			featureScrollBar = new Scroller( featureHolder );
 			featureScrollBar.name = "featureScrollBar";
@@ -231,20 +242,37 @@ package org.tizianoproject.view
 		{
 			authorType_mc.gotoAndStop( value );
 		}
-		
+
+		private function gatherStories( e:Event ):Array
+		{
+			var feature:Feature = e.currentTarget as Feature;
+			var primaryStory:Story = iModel.getArticleByArticleID( feature.storyID );
+			var otherStories:Array = iModel.getOtherArticlesByArticleID( feature.storyID );
+			otherStories.unshift( primaryStory );
+			
+			return otherStories;
+		}		
+
 		/**********************************
 		 * Clean Up
 		 **********************************/
-		private function unloadStories():void
+		private function cycleStories( ):void
+		{			
+			unloadStories();
+			loadStory();			
+		}
+		
+		private function unloadStories( ):void
 		{
 			//Delete any Story on the stage
 			ShowHideManager.removeContent( (this as ArticleView), "text" );
 			ShowHideManager.removeContent( (this as ArticleView), "slideshow" );
 			
 //			ShowHideManager.removeContent( (this as ArticleView), "video" );
+			if ( video ) video.visible = false;
 			ShowHideManager.removeContent( (this as ArticleView), "soundslide" );
 			ShowHideManager.removeContent( (this as ArticleView), "featureScrollBar" );
-			
+
 			//Delete any feature in the featureHolder
 			//ShowHideManager.unloadContent( featureHolder );
 			ShowHideManager.removeContent( (this as ArticleView), "featureHolder" );			
@@ -288,38 +316,56 @@ package org.tizianoproject.view
 			updatePosition( );
 		}
 		
-
-		private function onAddedToStageHandler( e:Event ):void
+		override protected function onAddedToStageHandler(e:Event):void
 		{
 			init();
-		}
-		
-		private function onFullScreenHandler( e:FullScreenEvent ):void
-		{
-			trace( "ArticleView::onFullScreenHandler:", stage.fullScreenWidth, stage.fullScreenHeight );
-			updatePosition();
-		}
-
-		private function onAddedHandler( e:Event ):void
-		{
-			//trace( "ArticleView::onAddedHandler:", e.target );
-		}
-
-		private function onRemovedFromStageHandler( e:Event ):void
-		{
-			//trace( "ArticleView::onRemovedFromStageHandler:" );
-			unloadStories();
-		}
-		
-		private function onFeatureHolderRemovedHandler( e:Event ):void
-		{
-			//trace( "ArticleView::onFeatureHolderRemovedHandler:", featureHolder.numChildren );
+			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
+			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
 		}
 		
 		private function onBaseCloseHandler( e:BaseViewEvent ):void
 		{
-			//trace( e.results.viewName, "::onBaseCloseHandler:" );
+			//trace( e.results.name, "::onBaseCloseHandler:" );
 			dispatchEvent( e );
+		}	
+
+		private function onFeatureClickHandler( e:MouseEvent ):void
+		{
+			trace( "ArticleView:onClickFeatureHandler" );
+			
+			//Assign New Stories
+			stories = gatherStories( e );
+			currentIndex = 0;
+			
+			cycleStories();
+		}
+		
+		private function onMouseClickHandler( e:MouseEvent ):void
+		{			
+			switch( e.currentTarget.name ){
+				case "next_btn":
+					if( currentIndex == stories.length - 1 ) currentIndex = 0;
+					else currentIndex++;
+					break;
+				case "prev_btn":
+					if( currentIndex == 0 ) currentIndex = stories.length - 1;
+					else currentIndex--;
+					break;
+			}
+			cycleStories();	
+		}
+		
+		private function onFullScreenHandler( e:FullScreenEvent ):void
+		{
+			//trace( "ArticleView::onFullScreenHandler:", stage.fullScreenWidth, stage.fullScreenHeight );
+			updatePosition();
+			//Stop LIsteningt o Full Screen
+			stage.removeEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler );
+		}
+
+		private function onFeatureHolderRemovedHandler( e:Event ):void
+		{
+			//trace( "ArticleView::onFeatureHolderRemovedHandler:", featureHolder.numChildren );
 		}
 		
 		private function onRollOverHandler( e:MouseEvent ):void
@@ -330,21 +376,6 @@ package org.tizianoproject.view
 		private function onRollOutHandler( e:MouseEvent ):void
 		{
 			//trace( "ArticleView::onRollOutHandler:", e.currentTarget.name );
-		}
-		
-		private function onMouseClickHandler( e:MouseEvent ):void
-		{
-			trace( "ArticleView:onMouseClickHandler", currentIndex );
-			if( e.currentTarget.name == "next_btn" ){
-				if( currentIndex == stories.length - 1 ) currentIndex = 0;
-				else currentIndex++;
-				
-			} else if( e.currentTarget.name == "prev_btn" ){
-				if( currentIndex == 0 ) currentIndex = stories.length - 1;
-				else currentIndex--;
-			}
-			unloadStories();
-			loadStory();
 		}
 		
 		/**********************************
@@ -360,16 +391,6 @@ package org.tizianoproject.view
 			return _stories;
 		}
 		
-		public function set xmlStories( value:XMLList ):void
-		{
-			_xmlStories = value	
-		}
-		
-		public function get xmlStories(  ):XMLList
-		{
-			return _xmlStories;
-		}
-		
 		public function set currentIndex( value:Number ):void
 		{
 			_currentIndex = value;
@@ -380,12 +401,15 @@ package org.tizianoproject.view
 			return _currentIndex;
 		}
 		
-		/**********************************
-		 * 
-		 **********************************/
-		override public function update(e:Event=null):void
+		private function set currentStory( story:Story ):void
 		{
-			
+			_currentStory = story;
 		}
+		
+		private function get currentStory():Story
+		{
+			return _currentStory;
+		}
+		
 	}
 }
