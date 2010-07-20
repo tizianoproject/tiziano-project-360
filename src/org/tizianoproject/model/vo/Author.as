@@ -4,11 +4,12 @@ package org.tizianoproject.model.vo
 	{
 		private var _id:Number;
 		private var _avatar:String;
+		private var _name:String;
 		private var _firstName:String;
 		private var _lastName:String;
 		private var _city:String;
 		private var _region:String;
-		private var _grade:String;
+		private var _age:String;
 		private var _intro:String;
 		private var _stories:Array;
 		
@@ -18,7 +19,7 @@ package org.tizianoproject.model.vo
 		
 		public function get fullName():String
 		{
-			return firstName + " " + lastName;
+			return name;
 		}
 		
 		/**********************************
@@ -42,6 +43,16 @@ package org.tizianoproject.model.vo
 		public function get avatar():String
 		{
 			return _avatar;
+		}
+		
+		public function set name( value:String ):void
+		{
+			_name = value;
+		}
+		
+		public function get name():String
+		{
+			return _name;
 		}
 		
 		public function set firstName( value:String ):void
@@ -84,14 +95,14 @@ package org.tizianoproject.model.vo
 			return _region;
 		}
 		
-		public function set grade( value:String ):void
+		public function set age( value:String ):void
 		{
-			_grade = value;
+			_age = value;
 		}
 		
-		public function get grade():String
+		public function get age():String
 		{
-			return _grade;
+			return _age;
 		}
 		
 		public function set intro( value:String ):void
