@@ -17,7 +17,6 @@ package org.tizianoproject.view.components.global
 		private function onAddedToStageHandler( e:Event ):void
 		{
 			trace( "Students::onAddedToStageHandler:" );
-			addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 		}
 		
 		private function onRemovedFromStageHandler( e:Event ):void
@@ -28,6 +27,7 @@ package org.tizianoproject.view.components.global
 		private function onMouseClickHandler( e:MouseEvent ):void
 		{
 			trace( "Students::onMouseClickHandler:" );
+			
 		}
 
 	}
