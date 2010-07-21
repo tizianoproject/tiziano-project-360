@@ -73,8 +73,6 @@ package org.tizianoproject.model
 		////////////////////////////////
 		public function getAuthorsByType( authorType:String ):Array
 		{
-//			trace( "XMLLoader::getAuthorsByType:", getAuthor().(attribute("type") == authorType) );
-//			var xmlList:XMLList = getAuthor().(attribute("type") == authorType);
 			//trace( "XMLLoader::getAuthorsByType:", getAuthor().child("profile").(child("author_type") == authorType) );
 			var profileList:XMLList = getAuthor().child("profile").(child("author_type") == authorType);
 			var authors:Array = new Array();
