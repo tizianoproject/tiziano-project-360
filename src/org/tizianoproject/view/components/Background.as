@@ -12,6 +12,7 @@ package org.tizianoproject.view.components
 	import flash.display.LoaderInfo;
 	import flash.display.MovieClip;
 	import flash.display.Shape;
+	import flash.display.StageDisplayState;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.FullScreenEvent;
@@ -23,7 +24,9 @@ package org.tizianoproject.view.components
 	
 	import nl.demonsters.debugger.MonsterDebugger;
 	
-	public class Background extends MovieClip
+	import org.tizianoproject.view.CompositeView;
+	
+	public class Background extends CompositeView
 	{
 		private static const DEFAULT_BG_IMAGE:String = "http://demo.chrisaiv.com/images/tiziano/360/wall/Wall-Bg.jpg"
 		private static const MIN_WIDTH:Number = 800;
@@ -41,12 +44,9 @@ package org.tizianoproject.view.components
 		
 		public function Background()
 		{
-			addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler, false, 0, true );
-			addEventListener(Event.REMOVED_FROM_STAGE, removedFromStageHandler, false, 0, true );
-			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
 		}
 		
-		private function init( ):void
+		override protected function init( ):void
 		{
 			loadBackground();
 		}
@@ -81,16 +81,16 @@ package org.tizianoproject.view.components
 			//Create an Aspect Ratio for the Background IMage
 			aspectRatio = defaultWidth / defaultHeight;
 			//Resize the Bitmap to fit either the browser or Theatre Mode (Full Screen)
-			resizeBitmap();
+			resize();
 			//Tween in the image
 			TweenLite.to( assetLoader, 1, { alpha: 1 } ); 			
 		}
 		
 		//Resize Bitmap handles fullScreen and normalScreen so that you only need to update from one place
-		private function resizeBitmap( ):void
+		override protected function resize( ):void
 		{
 			//Adjust the image to the browser window
-			if( stage.displayState == "fullScreen" ){
+			if( stage.displayState == StageDisplayState.FULL_SCREEN ){
 				adjustSize( stage.stageWidth, (stage.stageHeight / aspectRatio) );				
 			} else {
 				//Adjust the Background to match the size of the browser
@@ -136,7 +136,6 @@ package org.tizianoproject.view.components
 		/**********************************
 		 * Event
 		 **********************************/	
-		
 		public function swfSizerHandler( e:SWFSizeEvent ):void
 		{
 			//Keep track of the Browser Window
@@ -144,7 +143,7 @@ package org.tizianoproject.view.components
 			browserHeight = e.windowHeight;
 			
 			//trace( "Background::swfSizerHandler:", e.type, e.windowWidth, e.windowHeight );
-			resizeBitmap();
+			resize();
 		}
 		
 		private function onCompleteHandler( e:Event ):void
@@ -155,24 +154,6 @@ package org.tizianoproject.view.components
 		private function onErrorHandler( e:ErrorEvent ):void
 		{
 			trace( "Background::onErrorHandler:", e.text );
-		}
-		
-		private function onFullScreenHandler( e:FullScreenEvent ):void
-		{
-			trace( "Background::onFullScreenHandler:", e.fullScreen, stage.stageWidth, stage.stageHeight );			
-			resizeBitmap();
-		}
-				
-		private function addedToStageHandler( e:Event ):void
-		{
-			//trace( "HeaderView::addedToStageHandler:" );
-			init();
-		}
-		
-		private function removedFromStageHandler( e:Event ):void
-		{
-			trace( "Background::removedFromStageHandler:" );
-		}
-		
+		}		
 	}
 }
