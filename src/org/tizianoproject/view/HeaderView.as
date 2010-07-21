@@ -7,12 +7,15 @@ package org.tizianoproject.view
 	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.display.Stage;
+	import flash.display.StageDisplayState;
 	import flash.events.Event;
 	import flash.events.FullScreenEvent;
+	import flash.events.MouseEvent;
 	
 	import org.tizianoproject.view.components.global.MentorsButton;
+	import org.tizianoproject.view.components.global.StudentsButton;
 	
-	public class HeaderView extends MovieClip
+	public class HeaderView extends CompositeView
 	{
 		private static const DEFAULT_BG_COLOR:Number = 0x000000;
 		private static const DEFAULT_BG_ALPHA:Number = 0.5;
@@ -25,18 +28,31 @@ package org.tizianoproject.view
 		private var browserWidth:Number;
 
 		public var headerRight_mc:MovieClip;
-		public var mentorsView:MentorsButton;
+		private var studentsView:StudentsButton;
+		private var mentorsView:MentorsButton;
 		
 		public function HeaderView(  )
 		{
-			addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler, false, 0, true );
-			addEventListener(Event.REMOVED_FROM_STAGE, removedFromStageHandler, false, 0, true );
-			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
+			//Assign Target
+			mentorsView = headerRight_mc.mentorsView;
+			studentsView = headerRight_mc.studentsView;
 		}
 
 		/**********************************
 		 * 
 		 **********************************/
+		override protected function init():void
+		{
+			initBackground();
+			mentorsView.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
+			studentsView.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
+		}
+		
+		private function onMentorClickHandler( e:MouseEvent ):void
+		{
+			dispatchEvent( e );
+		}
+		
 		private function updateBackground( value:Number ):void
 		{
 			//trace( "HeaderView::resizeBackground:", value );
@@ -52,14 +68,13 @@ package org.tizianoproject.view
 			}
 		}
 		
-		private function onFullScreenHandler( e:FullScreenEvent ):void
+		override protected function resize( ):void
 		{
 			var w:Number = stage.stageWidth;
 			var h:Number = stage.stageHeight;
 			
-			//trace( "Background::onFullScreenHandler:", e.fullScreen, w, h );
-			
-			if( e.fullScreen ){
+			//trace( "Background::onFullScreenHandler:", w, h );			
+			if( stage.displayState == StageDisplayState.FULL_SCREEN ){
 				updatePosition( stage.stageWidth - headerRight_mc.width );
 				updateBackground( stage.stageWidth );
 			} else {
@@ -99,18 +114,6 @@ package org.tizianoproject.view
 			
 			updatePosition( browserWidth - headerRight_mc.width );
 			updateBackground( browserWidth );
-		}
-		
-		private function addedToStageHandler( e:Event ):void
-		{
-			//trace( "HeaderView::addedToStageHandler:" );			
-			initBackground();
-		}
-		
-		private function removedFromStageHandler( e:Event ):void
-		{
-			trace( "HeaderView::removedFromStageHandler:" );
-		}
-		
+		}		
 	}
 }
