@@ -1,7 +1,10 @@
 package org.tizianoproject.view
 {	
+	import com.chargedweb.swfsize.SWFSize;
+	
 	import flash.display.MovieClip;
 	import flash.events.Event;
+	import flash.events.FullScreenEvent;
 
 	public class CompositeView extends MovieClip
 	{		
@@ -16,6 +19,11 @@ package org.tizianoproject.view
 		{
 		}
 		
+		protected function resize( ):void
+		{
+			
+		}
+		
 		protected function unload():void
 		{
 			
@@ -24,6 +32,13 @@ package org.tizianoproject.view
 		/**********************************
 		 * Event Handlers
 		 **********************************/
+		/*
+		public function swfSizerHandler( e:SWFSize ):void
+		{
+			
+		}
+		*/
+		
 		protected function onAddedHandler( e:Event ):void
 		{
 			//trace( "CompositeView::onAddedHandler:", e.target );
@@ -32,12 +47,19 @@ package org.tizianoproject.view
 		protected function onAddedToStageHandler( e:Event ):void
 		{
 			init();
+			//You Must first wait for the View to be loaded before you can activate the stage listener
+			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
 		}
 		
 		protected function onRemovedFromStageHandler( e:Event ):void
 		{
 			unload();
 		}		
+		
+		protected function onFullScreenHandler( e:FullScreenEvent ):void
+		{
+			resize( );
+		}
 				
 	}
 }
