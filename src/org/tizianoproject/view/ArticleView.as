@@ -108,6 +108,7 @@ package org.tizianoproject.view
 			defaultWidth  = stage.stageWidth;
 			defaultHeight = stage.stageHeight;
 			updatePosition( );			
+			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
 		}
 		
 		override protected function unload():void{
@@ -316,13 +317,12 @@ package org.tizianoproject.view
 			updatePosition( );
 		}
 		
-		override protected function onAddedToStageHandler(e:Event):void
+		override protected function onFullScreenHandler( e:FullScreenEvent ):void
 		{
-			init();
-			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
-			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
-		}
-		
+			//trace( "ArticleView::onFullScreenHandler:", stage.fullScreenWidth, stage.fullScreenHeight );
+			updatePosition();
+		}		
+
 		private function onBaseCloseHandler( e:BaseViewEvent ):void
 		{
 			//trace( e.results.name, "::onBaseCloseHandler:" );
@@ -355,14 +355,6 @@ package org.tizianoproject.view
 			cycleStories();	
 		}
 		
-		private function onFullScreenHandler( e:FullScreenEvent ):void
-		{
-			//trace( "ArticleView::onFullScreenHandler:", stage.fullScreenWidth, stage.fullScreenHeight );
-			updatePosition();
-			//Stop LIsteningt o Full Screen
-			stage.removeEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenHandler );
-		}
-
 		private function onFeatureHolderRemovedHandler( e:Event ):void
 		{
 			//trace( "ArticleView::onFeatureHolderRemovedHandler:", featureHolder.numChildren );
