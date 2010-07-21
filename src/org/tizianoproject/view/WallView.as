@@ -10,6 +10,7 @@ package org.tizianoproject.view
 	import flash.events.FullScreenEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.geom.Point;
 	import flash.net.URLRequest;
 	import flash.printing.PrintJob;
 	import flash.system.LoaderContext;
@@ -18,11 +19,8 @@ package org.tizianoproject.view
 	import org.casalib.util.ValidationUtil;
 
 	
-	public class WallView extends MovieClip
+	public class WallView extends CompositeView
 	{
-		private static const DEFAULT_X_POS:Number = 0;
-		private static const DEFAULT_Y_POS:Number = 0;
-		
 		private static const MIN_WIDTH:Number = 800;
 
 		private static const TWEEN_SPEED:Number = 0.5;
@@ -37,11 +35,6 @@ package org.tizianoproject.view
 		{
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
-		}
-		
-		private function init():void
-		{			
-			stage.addEventListener( FullScreenEvent.FULL_SCREEN, onFullScreenHandler, false, 0, true );
 		}
 		
 		public function loadWall( path:String ):void
@@ -78,10 +71,6 @@ package org.tizianoproject.view
 			browserHeight = e.bottomY;
 		}
 		
-		private function onFullScreenHandler( e:FullScreenEvent ):void
-		{
-		}
-		
 		private function onCompleteHandler( e:Event ):void
 		{
 			trace( "WallView::onCompleteHandler:", "Wall is LOADED" );
@@ -90,16 +79,6 @@ package org.tizianoproject.view
 		private function onErrorHandler( e:Event ):void
 		{
 			trace( "WallView::onErrorHandler:", e );
-		}
-		
-		private function onAddedToStageHandler( e:Event ):void
-		{
-			init();
-		}
-		
-		private function onRemovedFromStageHandler( e:Event ):void
-		{
-			trace( "WallView::onRemovedFromStageHandler:" );
 		}
 	}
 }
