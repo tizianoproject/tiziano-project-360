@@ -39,7 +39,7 @@ package org.tizianoproject.view
 		
 		public function load( name:String ):void
 		{
-			trace( iModel.getAuthorByName( name ) );
+			//trace( "ProfileView::load:", iModel.getAuthorByName( name ) );
 		}
 
 		private function onBaseCloseHandler( e:BaseViewEvent ):void
