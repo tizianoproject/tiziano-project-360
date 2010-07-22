@@ -25,7 +25,8 @@ package org.tizianoproject.model.vo
 		private var _headline:String;
 		private var _subheadline:String;
 		private var _caption:String;
-		private var _responses:Array;
+		private var _related:Array;
+		
 		//Text Article
 		private var _content:String;
 		//SoundSlide
@@ -132,15 +133,15 @@ package org.tizianoproject.model.vo
 			return _caption;	
 		}
 		
-		//Responses are the Associations to Stories
-		public function set responses( value:Array ):void
+		//related are the Associations to Stories
+		public function set related( value:Array ):void
 		{
-			_responses = value;	
+			_related = value;	
 		}
 		
-		public function get responses():Array
+		public function get related():Array
 		{
-			return _responses;	
+			return _related;	
 		}
 		
 		/**

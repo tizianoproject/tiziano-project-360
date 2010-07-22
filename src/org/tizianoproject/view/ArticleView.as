@@ -36,7 +36,6 @@ package org.tizianoproject.view
 	import org.tizianoproject.events.BaseViewEvent;
 	import org.tizianoproject.model.IModel;
 	import org.tizianoproject.model.XMLLoader;
-	import org.tizianoproject.model.vo.Response;
 	import org.tizianoproject.model.vo.Story;
 	import org.tizianoproject.view.components.Feature;
 	import org.tizianoproject.view.components.FeatureHolder;
@@ -153,8 +152,8 @@ package org.tizianoproject.view
 				initFeatureHolder();
 				
 				//Add new Related Features
-				//trace( "ArticleView::loadStory:responses:", currentStory.responses );
-				if( currentStory.responses.length > 0 ) initFeatures( currentStory.responses );
+				//trace( "ArticleView::loadStory::", currentStory.related );
+				if( currentStory.related.length > 0 ) initFeatures( currentStory.related );
 			}
 		}
 		
@@ -215,8 +214,8 @@ package org.tizianoproject.view
 				var xx:Number = i%columns;
 				var yy:Number = Math.floor(i/columns);
 				
-				//Get the Story based on the Response ID
-				var story:Story = iModel.getArticleByArticleID( Response(array[i]).storyID );
+				//Get the Story based on the Reponse ID
+				var story:Story = iModel.getArticleByArticleID( array[i] );
 				//Create a new Feature
 				feature = new Feature( story );
 				feature.name = "feature" + i;

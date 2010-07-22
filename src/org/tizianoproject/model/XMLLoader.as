@@ -30,7 +30,6 @@ package org.tizianoproject.model
 	
 	import org.casalib.util.ArrayUtil;
 	import org.tizianoproject.model.vo.Author;
-	import org.tizianoproject.model.vo.Response;
 	import org.tizianoproject.model.vo.Story;
 	
 	public class XMLLoader extends EventDispatcher implements IModel
@@ -200,7 +199,7 @@ package org.tizianoproject.model
 			var relatedTags:XMLList = article.child("tags").children();
 			//If there are <tag>'s available, let's get this party started
 			if( relatedTags.length() > 0 ){
-				story.responses = getRelatedArticles( relatedTags );
+				story.related = getRelatedArticles( relatedTags );
 			}
 			return story;
 		}
@@ -225,7 +224,7 @@ package org.tizianoproject.model
 			}
 			//Now that you have an array full of <article><id>, find the unique stories
 			return ArrayUtil.removeDuplicates( IDs );
-			//trace( "All Stories:", IDs.length, "Unique Stories:", story.responses.length );			
+			//trace( "All Stories:", IDs.length, "Unique Stories:", story.related.length );			
 		}
 		
 		/**********************************
