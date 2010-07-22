@@ -16,18 +16,17 @@ package org.tizianoproject.view.components.global
 
 		private function onAddedToStageHandler( e:Event ):void
 		{
-			trace( "Students::onAddedToStageHandler:" );
+			//trace( "StudentsButton::onAddedToStageHandler:" );
 		}
 		
 		private function onRemovedFromStageHandler( e:Event ):void
 		{
-			trace( "Students::onAddedToStageHandler:" );
+			//trace( "StudentsButton::onAddedToStageHandler:" );
 		}
 		
 		private function onMouseClickHandler( e:MouseEvent ):void
 		{
-			trace( "Students::onMouseClickHandler:" );
-			
+			//trace( "StudentsButton::onMouseClickHandler:" );			
 		}
 
 	}
