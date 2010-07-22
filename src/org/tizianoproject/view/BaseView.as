@@ -50,7 +50,7 @@ package org.tizianoproject.view
 		
 		private function initBg():void
 		{
-			var tmpAlpha:Number = ( LocationUtil.isIde() ) ? 0.2 : 0;			
+			var tmpAlpha:Number = ( LocationUtil.isIde() ) ? 0.1 : 0;			
 			graphics.beginFill( 0x00FF00, tmpAlpha );
 			graphics.drawRect( -parent.x, 0, stage.stageWidth, stage.stageHeight );
 			graphics.endFill();			
