@@ -26,6 +26,7 @@ package org.tizianoproject.model
 	import flash.net.Responder;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
+	import flash.xml.XMLNode;
 	
 	import org.casalib.util.ArrayUtil;
 	import org.tizianoproject.model.vo.Author;
@@ -55,14 +56,24 @@ package org.tizianoproject.model
 		////////////////////////////////
 		//Consumer KEYS
 		////////////////////////////////
-		public function getVimeoConsumerKey():String
+		private function getVimeoConsumerKey():String
 		{
 			return getConfig().child("vimeo_consumer_key").text();
 		}
 		
-		public function getFlickrAPIKey():String
+		private function getFlickrAPIKey():String
 		{
 			return getConfig().child("flickr_key").text();			
+		}
+		
+		private function getSoundSlideURI():String
+		{
+			return getConfig().child("soundslide").child("uri").text();
+		}
+		
+		public function getSoundSlideParams():String
+		{
+			return getConfig().child("soundslide").child("params").text();
 		}
 		
 		////////////////////////////////
@@ -83,7 +94,7 @@ package org.tizianoproject.model
 
 		public function getAuthorByName( authorName:String ):XMLList
 		{
-			var profile:XMLList = getAuthor().profile.( child("name") == authorName );
+			var profile:XMLList = getAuthor().child("profile").( child("name") == authorName );
 			return profile;
 		}
 
@@ -139,7 +150,9 @@ package org.tizianoproject.model
 		//Get Article By Article ID
 		public function getArticleByArticleID( uniqueID:Number ):Story
 		{
+			//Find the <article> based on it's <article><id>
 			var article:XMLList = getAllArticles().( child("id") == uniqueID );
+			//Create A Story Object based on <article>
 			var story:Story = createStory( article ) as Story;
 			return story;
 		}
@@ -158,44 +171,63 @@ package org.tizianoproject.model
 				story.image			= article.child("image_small").text();
 				story.authorName	= article.child("author").text();
 				story.authorType	= getAuthorTypeByName( story.authorName );
-				
+
 				//trace( getOtherArticlesByAuthorName( story.authorName ) );
-				//trace( 	story.id, story.storyType, story.title, story.headline, story.subheadline, story.image, story.authorName, story.authorType );
+				trace( "XMLLoader::createStory:\n", story.id, story.storyType, story.title, story.headline, story.subheadline, story.image, story.authorName, story.authorType );
 
 			//Specific Story Information
 			switch( story.storyType ){
 				case "article":
-					story.content = xml.child("content").text();
+					story.content = article.child("content").text();
 					break;
 				case "video":
 					story.vimeoConsumerKey = getVimeoConsumerKey();
-					story.vimeoID = Number( xml.child("vimeo_id").text() );
+					story.vimeoID = Number( article.child("vimeo_id").text() );
 					break;
 				case "photo":
-					story.path = xml.child("path").text();
-					trace( story.path );
+					var uri:String = getSoundSlideURI();
+					var path:String = article.child("path").text();
+					var params:String = getSoundSlideParams();
+					story.path = (uri + path + params);
 					break;
 				case "slideshow":
 					story.flickrKey = getFlickrAPIKey();
-					story.flickrPhotoset = xml.child("flickr_photoset").text();
+					story.flickrPhotoset = article.child("flickr_photoset").text();
 					break;
 			}
-			/*
-			//Related Stories / Responses
-			var totalResponses:Number = xml.responses.children().length();
-			//trace( "XMLLoader:createStory:", totalResponses );
-			if( totalResponses > 0 ){
-				story.responses = new Array();
-				for( var j:uint = 0; j < totalResponses; j++ ){
-					var response:Response = new Response();
-						response.storyID = xml.child("responses").child("response")[j].attribute("id")
-					story.responses.push( response );
-				} 
+			
+			//Get this Story's related <tags>
+			var relatedTags:XMLList = article.child("tags").children();
+			//If there are <tag>'s available, let's get this party started
+			if( relatedTags.length() > 0 ){
+				story.responses = getRelatedArticles( relatedTags );
 			}
-			*/
 			return story;
 		}
 
+		private function getRelatedArticles( relatedTags:XMLList ):Array
+		{
+			//We're going to create an array filled with Story ID's
+			var IDs:Array = new Array();
+			//Iterate through each related <tag>
+			for( var j:uint = 0; j < relatedTags.length(); j++ ){
+				//First things first, let's collect every story's <tag>'s
+				var allTags:XMLList = getAllTags();
+				//Loop through every <tag>
+				for( var k:String in allTags ){
+					//If there is a match, find the <article><id>
+					if( allTags[k] == relatedTags[j].text() ){
+						var relatedArticle:XMLList = XMLList( allTags[k].parent().parent() );
+						var id:Number = relatedArticle.child("id").text();
+						IDs.push( id );
+					}
+				}
+			}
+			//Now that you have an array full of <article><id>, find the unique stories
+			return ArrayUtil.removeDuplicates( IDs );
+			//trace( "All Stories:", IDs.length, "Unique Stories:", story.responses.length );			
+		}
+		
 		/**********************************
 		 * Private
 		 **********************************/
@@ -203,6 +235,11 @@ package org.tizianoproject.model
 		private function getAllArticles():XMLList
 		{
 			return getXMLData().child("articles").descendants("article");
+		}
+		
+		private function getAllTags():XMLList
+		{
+			return getAllArticles().child("tags").children();
 		}
 		
 		private function getConfig():XMLList
