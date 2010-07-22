@@ -32,6 +32,6 @@ package org.tizianoproject.model.vo
 		public function get storyID():Number
 		{
 			return _storyID;
-		}		
+		}
 	}
 }
