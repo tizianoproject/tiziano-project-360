@@ -8,12 +8,20 @@ package org.tizianoproject.model
 	public interface IModel extends IEventDispatcher
 	{
 		function load( path:String ):void
-		//Author
+		function getVimeoConsumerKey():String
+		function getFlickrAPIKey():String
+			
+		//StudentView + MentorView
 		function getAuthorsByType( authorType:String ):Array
-		function getArticlesByAuthorID(  uniqueID:Number ):Array
+			
+		//Author
+		function getAuthorByName( authorName:String ):XMLList
+		function getAuthorTypeByName( authorName:String ):String
 			
 		//Articles
-		function getOtherArticlesByArticleID( uniqueID:Number ):Array
+		function getOtherArticlesByAuthorName( authorName:String, storyID:Number ):Array
+		function getAllArticlesByAuthorName( authorName:String ):Array			
+			
 		function getArticleByArticleID( uniqueID:Number ):Story
 	}
 }

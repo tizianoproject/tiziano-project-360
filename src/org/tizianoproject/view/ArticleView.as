@@ -107,7 +107,7 @@ package org.tizianoproject.view
 			//Position the ArticleView
 			defaultWidth  = stage.stageWidth;
 			defaultHeight = stage.stageHeight;
-			updatePosition( );			
+			updatePosition( );
 			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
 		}
 		
@@ -248,7 +248,7 @@ package org.tizianoproject.view
 		{
 			var feature:Feature = e.currentTarget as Feature;
 			var primaryStory:Story = iModel.getArticleByArticleID( feature.storyID );
-			var otherStories:Array = iModel.getOtherArticlesByArticleID( feature.storyID );
+			var otherStories:Array = iModel.getOtherArticlesByAuthorName( primaryStory.authorName, primaryStory.id );
 			otherStories.unshift( primaryStory );
 			
 			return otherStories;

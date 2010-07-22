@@ -34,7 +34,6 @@ package org.tizianoproject.model
 	
 	public class XMLLoader extends EventDispatcher implements IModel
 	{
-		private var _data:Array;
 		private var _xmlData:XMLList;
 		
 		public function XMLLoader()
@@ -45,10 +44,8 @@ package org.tizianoproject.model
 		{			
 			var urlLoader:URLLoader = new URLLoader();
 				urlLoader.addEventListener( Event.COMPLETE, onXMLLoaded, false, 0, true );
-				urlLoader.addEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler, false, 0, true);
 				urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler, false, 0, true);
 				urlLoader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler, false, 0, true);
-				urlLoader.addEventListener(ProgressEvent.PROGRESS, progressHandler, false, 0, true);
 				urlLoader.load( new URLRequest( path ) );			
 		}
 		
@@ -71,6 +68,7 @@ package org.tizianoproject.model
 		////////////////////////////////
 		//Authors
 		////////////////////////////////
+		//Used for ReportersView and AuthorsView
 		public function getAuthorsByType( authorType:String ):Array
 		{
 			//trace( "XMLLoader::getAuthorsByType:", getAuthor().child("profile").(child("author_type") == authorType) );
@@ -82,7 +80,18 @@ package org.tizianoproject.model
 			}			
 			return authors;
 		}
-		
+
+		public function getAuthorByName( authorName:String ):XMLList
+		{
+			var profile:XMLList = getAuthor().profile.( child("name") == authorName );
+			return profile;
+		}
+
+		public function getAuthorTypeByName( authorName:String ):String
+		{
+			return getAuthorByName( authorName ).child("author_type").text();
+		}		
+
 		private function createAuthor( xml:* ):Author
 		{
 			var profile:XML	= xml;
@@ -98,79 +107,80 @@ package org.tizianoproject.model
 			return author;
 		}
 		
-		public function getAuthorByFirstName( firstName:String ):XMLList
-		{
-			return getAuthor().profile.(first_name == firstName ).parent();
-		}
-		
-		public function getArticlesByAuthor(  firstName:String ):XMLList
-		{
-			return getAuthor().profile.(first_name == firstName ).parent().child("articles").article;			
-		}
-
-		public function getArticlesByAuthorID(  uniqueID:Number ):Array
-		{
-			//Find a Match
-			var articlesList:XMLList = getAuthor().(attribute("id") == uniqueID).child("articles").article;
-			//Generate Stories
-			var articles:Array = new Array();
-			for( var i:uint = 0; i < articlesList.length(); i++ ){
-				var story:Story = new Story();
-				articles.push( story );
-			}
-			return articles;
-		}
-
-		//Provides <Profile> <Articles>
-		public function getAllByArticleID( uniqueID:Number ):XMLList
-		{
-			return getAllArticles().( attribute("id") == uniqueID ).parent().parent().children();
-		}
-		
-		//Get Author Information based on their Article
-		public function getAuthorByArticleID( uniqueID:Number ):XMLList
-		{
-			return getAllArticles().( attribute("id") == uniqueID ).parent().parent().child("profile");
-		}
-		
 		////////////////////////////////
 		//Articles 
 		////////////////////////////////
+		public function getOtherArticlesByAuthorName( authorName:String, storyID:Number ):Array
+		{
+			var articles:XMLList = getAllArticles().( child("author") == authorName );
+			//Iterate through each XML Node and Create a Story Object, then Push an Array
+			var stories:Array = new Array();
+			for( var i:uint = 0; i < articles.length(); i++ ){
+				//Push the Stories!
+				var story:Story = createStory( XMLList(articles[i]) );
+				if( story.id != storyID ) stories.push( story );
+			}			
+			return stories;
+		}
+
+		public function getAllArticlesByAuthorName( authorName:String ):Array
+		{
+			var articles:XMLList = getAllArticles().( child("author") == authorName );
+			//Iterate through each XML Node and Create a Story Object, then Push an Array
+			var stories:Array = new Array();
+			for( var i:uint = 0; i < articles.length(); i++ ){
+				//Push the Stories!
+				var story:Story = createStory( XMLList(articles[i]) );
+				stories.push( story );
+			}
+			return stories;
+		}
+
+		//Get Article By Article ID
+		public function getArticleByArticleID( uniqueID:Number ):Story
+		{
+			var article:XMLList = getAllArticles().( child("id") == uniqueID );
+			var story:Story = createStory( article ) as Story;
+			return story;
+		}
 		
 		//Create a Story Object from XML Node
-		public function createStory( xml:* ):Story
+		private function createStory( xml:XMLList ):Story
 		{
+			var article:XMLList = xml;
 			//Generic Story Information
 			var story:Story			= new Story();
-				story.id			= xml.attribute("id");
-				story.storyType		= xml.attribute("type");
-				story.title			= xml.title.text();
-				story.headline		= xml.headline.text();
-				story.subheadline	= xml.subheadline.text();
-				story.image			= xml.image_small.text();
-				story.authorName	= getFullName( getAuthorByArticleID( story.id ).first_name.text(), 
-									  getAuthorByArticleID( story.id ).last_name.text() );
-				story.authorType	= getAuthorByArticleID( story.id ).parent().attribute("type");
-			//trace( 	story.id, story.storyType, story.title, story.headline, story.subheadline, story.image, story.authorName, story.authorType );
+				story.id			= Number(article.child("id").text());
+				story.storyType		= article.child("type").text();
+				story.title			= article.child("title").text();
+				story.headline		= article.child("headline").text();
+				story.subheadline	= article.child("subheadline").text();
+				story.image			= article.child("image_small").text();
+				story.authorName	= article.child("author").text();
+				story.authorType	= getAuthorTypeByName( story.authorName );
 				
+				//trace( getOtherArticlesByAuthorName( story.authorName ) );
+				//trace( 	story.id, story.storyType, story.title, story.headline, story.subheadline, story.image, story.authorName, story.authorType );
+
 			//Specific Story Information
 			switch( story.storyType ){
-				case "text":
-					story.content = xml.content.text();
+				case "article":
+					story.content = xml.child("content").text();
 					break;
 				case "video":
 					story.vimeoConsumerKey = getVimeoConsumerKey();
-					story.vimeoID = xml.vimeo_id.text();
+					story.vimeoID = Number( xml.child("vimeo_id").text() );
+					break;
+				case "photo":
+					story.path = xml.child("path").text();
+					trace( story.path );
 					break;
 				case "slideshow":
 					story.flickrKey = getFlickrAPIKey();
-					story.flickrPhotoset = xml.flickr_photoset.text();
-					break;
-				case "soundslide":
-					story.path = xml.path.text();
+					story.flickrPhotoset = xml.child("flickr_photoset").text();
 					break;
 			}
-			
+			/*
 			//Related Stories / Responses
 			var totalResponses:Number = xml.responses.children().length();
 			//trace( "XMLLoader:createStory:", totalResponses );
@@ -182,77 +192,33 @@ package org.tizianoproject.model
 					story.responses.push( response );
 				} 
 			}
+			*/
 			return story;
 		}
 
-		//Get Article By Article ID
-		public function getArticleByArticleID( uniqueID:Number ):Story
-		{
-			var article:XMLList = getAllArticles().( attribute("id") == uniqueID );
-			var story:Story = createStory( article  ) as Story;
-			return story;
-		}		
-		
-		//Get Other Articles By Article ID
-		public function getOtherArticlesByArticleID( uniqueID:Number ):Array
-		{
-			//Grab all the XMLLIst Stories
-			var articles:XMLList = getAllArticles().( attribute("id") == uniqueID ).parent().descendants("article");
-			
-			//Iterate through each XML Node and Create a Story Object, then Push an Array
-			var stories:Array = new Array();
-			for( var i:uint = 0; i < articles.length(); i++ ){
-				//Push the Stories!
-				var story:Story = createStory( articles[i] );
-				if( story.id != uniqueID ) stories.push( story );
-			}
-			return stories;
-		}
-		
-		//Get All Articles By Article ID
-		public function getAllArticlesByArticleID( uniqueID:Number ):Array
-		{
-			//Grab all the XMLLIst Stories
-			var articles:XMLList = getAllArticles().( attribute("id") == uniqueID ).parent().descendants("article");
-			
-			//Iterate through each XML Node and Create a Story Object, then Push an Array
-			var stories:Array = new Array();
-			for( var i:uint = 0; i < articles.length(); i++ ){
-				//Push the Stories!
-				var story:Story = createStory( articles[i] );
-				stories.push( story );
-			}
-			return stories;
-		}
-		
 		/**********************************
 		 * Private
 		 **********************************/
 		//Return all the Articles witin the XML
 		private function getAllArticles():XMLList
 		{
-			return getXMLData().authors.descendants("article");
+			return getXMLData().child("articles").descendants("article");
 		}
 		
 		private function getConfig():XMLList
 		{
-			return getXMLData().config;
+			return getXMLData().child("config");
 		}
 		
 		//Private
 		private function getAuthor():XMLList
 		{
-			return getXMLData().child("authors").child("author");
+			return getXMLData().child("authors").descendants("author");
 		}
 		
 		private function getXMLData():XMLList
 		{
 			return xmlData;
-		}
-		
-		private function getFullName( firstName:String, lastName:String ):String
-		{
-			return firstName + " " + lastName;
 		}
 		
 		/**********************************
@@ -261,39 +227,18 @@ package org.tizianoproject.model
 		private function onXMLLoaded( e:Event ):void
 		{
 			xmlData = new XMLList( e.currentTarget.data );
-			//Get all the "Reporters" or the "Mentors"
-			//trace( getAuthorsByType( "reporter" ) );
-			//Get the data from the Reporter named "zana"
-			//trace( getAllByArticleID( 1 ) );
-			
-			/*
-			_data = new Array();
-			for( var i:uint = 0; i < xmlData.length(); i++ ){
-				_data.push( xmlData[i] );
-			}
-			*/
-			//Fire once the XML has been converted into Image Objects
+
 			dispatchEvent( new Event( Event.COMPLETE ) );			
 		}
 		
-		private function httpStatusHandler (e:Event):void
+		private function securityErrorHandler (e:ErrorEvent):void
 		{
-			//trace("httpStatusHandler:" + e);
+			trace("securityErrorHandler:" + e.text);
 		}
 		
-		private function securityErrorHandler (e:Event):void
+		private function ioErrorHandler(e:ErrorEvent):void
 		{
-			trace("securityErrorHandler:" + e);
-		}
-		
-		private function ioErrorHandler(e:Event):void
-		{
-			trace("ioErrorHandler: " + e);
-		}
-		
-		private function progressHandler(e:Event):void
-		{
-			//trace(e.currentTarget.bytesLoaded + " / " + e.currentTarget.bytesTotal);
+			trace("ioErrorHandler: " + e.text);
 		}
 		
 		/**********************************
