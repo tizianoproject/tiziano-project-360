@@ -127,6 +127,7 @@ package org.tizianoproject.view
 				//Display Author Type
 				showAuthorType( currentStory.authorType );
 				
+				trace( "ArticleView::loadStory:", currentStory.storyType );
 				//Display Story
 				switch( currentStory.storyType ){
 					case "text":
@@ -146,6 +147,9 @@ package org.tizianoproject.view
 					case "soundslide":
 						initSoundSlide( currentStory );
 						break;
+					case "photo":
+						initSoundSlide( currentStory );
+						break
 				}
 				
 				//Features Holder holds the features
