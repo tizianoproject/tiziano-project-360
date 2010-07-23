@@ -5,8 +5,7 @@ package org.tizianoproject.model.vo
 		private var _id:Number;
 		private var _avatar:String;
 		private var _name:String;
-		private var _firstName:String;
-		private var _lastName:String;
+		private var _type:String;
 		private var _city:String;
 		private var _region:String;
 		private var _age:String;
@@ -55,24 +54,14 @@ package org.tizianoproject.model.vo
 			return _name;
 		}
 		
-		public function set firstName( value:String ):void
+		public function set type( value:String ):void
 		{
-			_firstName = value;
+			_type = value;
 		}
 		
-		public function get firstName():String
+		public function get type():String
 		{
-			return _firstName;
-		}
-		
-		public function set lastName( value:String ):void
-		{
-			_lastName = value;
-		}
-		
-		public function get lastName():String
-		{
-			return _lastName;
+			return _type;
 		}
 		
 		public function set city( value:String ):void
