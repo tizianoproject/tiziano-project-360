@@ -51,6 +51,7 @@ package org.tizianoproject.view.components
 
 		private var _y:Number;
 		private var _storyID:Number;
+		private var _author:String;
 		
 		public function Feature( story:Story )
 		{
@@ -58,6 +59,7 @@ package org.tizianoproject.view.components
 			buttonMode = true;
 			
 			storyID = story.id;
+			author = story.authorName;
 			title_txt.text = story.title;
 			subhed_txt.text = story.subheadline;
 
@@ -166,6 +168,15 @@ package org.tizianoproject.view.components
 			return _storyID;
 		}
 		
+		public function set author( value:String ):void
+		{
+			_author = value;
+		}
+		
+		public function get author():String
+		{
+			return _author;
+		}
 		/*********************************
 		 * Overrrides
 		*********************************/
