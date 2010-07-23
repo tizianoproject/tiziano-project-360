@@ -91,15 +91,18 @@ package org.tizianoproject.model
 			return authors;
 		}
 
-		public function getAuthorByName( authorName:String ):XMLList
+		public function getAuthorByName( authorName:String ):Author
 		{
-			var profile:XMLList = getAuthor().child("profile").( child("name") == authorName );
+			//Filter all the authors a specific name
+			var profileXML:XML = XML( getAuthor().child("profile").( child("name") == authorName ) );
+			//Convert the XML into Author
+			var profile:Author = createAuthor( profileXML );
 			return profile;
 		}
 
 		public function getAuthorTypeByName( authorName:String ):String
 		{
-			return getAuthorByName( authorName ).child("author_type").text();
+			return getAuthorByName( authorName ).name;
 		}		
 
 		private function createAuthor( xml:* ):Author
@@ -107,6 +110,7 @@ package org.tizianoproject.model
 			var profile:XML	= xml;
 			var author:Author 	= new Author();
 			author.id			= profile.child("author_id");
+			author.type			= profile.child("author_type").text();
 			author.avatar		= profile.child("avatar").text();
 			author.name			= profile.child("name").text();
 			author.city			= profile.child("city").text();
@@ -172,7 +176,7 @@ package org.tizianoproject.model
 				story.authorType	= getAuthorTypeByName( story.authorName );
 
 				//trace( getOtherArticlesByAuthorName( story.authorName ) );
-				trace( "XMLLoader::createStory:\n", story.id, story.storyType, story.title, story.headline, story.subheadline, story.image, story.authorName, story.authorType );
+				//trace( "XMLLoader::createStory:\n", story.id, story.storyType, story.title, story.headline, story.subheadline, story.image, story.authorName, story.authorType );
 
 			//Specific Story Information
 			switch( story.storyType ){
@@ -194,6 +198,7 @@ package org.tizianoproject.model
 					story.flickrPhotoset = article.child("flickr_photoset").text();
 					break;
 			}
+			//trace( "XMLLoader::createStory:", story.path );
 			
 			//Get this Story's related <tags>
 			var relatedTags:XMLList = article.child("tags").children();
