@@ -3,6 +3,7 @@ package org.tizianoproject.model
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	
+	import org.tizianoproject.model.vo.Author;
 	import org.tizianoproject.model.vo.Story;
 	
 	public interface IModel extends IEventDispatcher
@@ -13,7 +14,7 @@ package org.tizianoproject.model
 		function getAuthorsByType( authorType:String ):Array
 			
 		//Author
-		function getAuthorByName( authorName:String ):XMLList
+		function getAuthorByName( authorName:String ):Author
 		function getAuthorTypeByName( authorName:String ):String
 			
 		//Articles
