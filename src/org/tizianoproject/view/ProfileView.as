@@ -16,17 +16,20 @@ package org.tizianoproject.view
 	
 	import org.casalib.events.LoadEvent;
 	import org.casalib.load.ImageLoad;
+	import org.casalib.util.ArrayUtil;
 	import org.tizianoproject.events.BaseViewEvent;
 	import org.tizianoproject.model.IModel;
 	import org.tizianoproject.model.vo.Author;
 	import org.tizianoproject.view.components.Feature;
 	import org.tizianoproject.view.components.FeatureHolder;
 	import org.tizianoproject.view.components.article.Scroller;
+	import org.tizianoproject.view.components.profile.RelatedAuthor;
 
 	public class ProfileView extends CompositeView
 	{
 		private static const DEFAULT_POS:Point = new Point( 65, 71 );
 		private static const DEFAULT_AVATAR_POS:Point = new Point( 11, 11 );
+		private static const MAX_OTHER_AUTHORS:Number = 6;
 		
 		private var iModel:IModel;
 		private var _vo:Author;
@@ -43,6 +46,7 @@ package org.tizianoproject.view
 		
 		private var loaderContext:LoaderContext
 		private var imageLoad:ImageLoad;
+		private var relatedAuthor:RelatedAuthor;
 		
 		private var featureHolder:MovieClip;
 		private var feature:Feature;
@@ -99,6 +103,16 @@ package org.tizianoproject.view
 			
 			var articles:Array = iModel.getAllArticlesByAuthorName( vo.name );
 			loadArticles( articles );
+			
+			var otherAuthors:Array = iModel.getAuthorsByType( vo.type, vo.name );
+			for (var i:uint = 0; i <= MAX_OTHER_AUTHORS; i++){
+				relatedAuthor = new RelatedAuthor();
+				relatedAuthor.name = "relatedAuthor" + i;
+				relatedAuthor.x = i;
+				relatedAuthor.vo = otherAuthors[i];
+				relatedAuthor.load( otherAuthors[i].avatar );
+				ShowHideManager.addContent( (this as ProfileView), relatedAuthor );
+			}
 		}
 		
 		private function initFeatureHolder():void
