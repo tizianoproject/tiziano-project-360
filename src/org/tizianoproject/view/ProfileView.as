@@ -20,8 +20,8 @@ package org.tizianoproject.view
 	import org.tizianoproject.events.BaseViewEvent;
 	import org.tizianoproject.model.IModel;
 	import org.tizianoproject.model.vo.Author;
-	import org.tizianoproject.view.components.Feature;
-	import org.tizianoproject.view.components.FeatureHolder;
+	import org.tizianoproject.view.components.article.Feature;
+	import org.tizianoproject.view.components.article.FeatureHolder;
 	import org.tizianoproject.view.components.article.Scroller;
 	import org.tizianoproject.view.components.profile.RelatedAuthor;
 
