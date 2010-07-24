@@ -79,15 +79,18 @@ package org.tizianoproject.model
 		//Authors
 		////////////////////////////////
 		//Used for ReportersView and AuthorsView
-		public function getAuthorsByType( authorType:String ):Array
+		public function getAuthorsByType( authorType:String, authorName:String=null ):Array
 		{
 			//trace( "XMLLoader::getAuthorsByType:", getAuthor().child("profile").(child("author_type") == authorType) );
 			var profileList:XMLList = getAuthor().child("profile").(child("author_type") == authorType);
 			var authors:Array = new Array();
+			//trace( profileList.length() );
 			for (var i:uint = 0; i < profileList.length(); i++){
 				var author:Author = createAuthor( profileList[i] );
-				authors.push( author );
-			}			
+				//If there is an authorName:String and it matches an author.name in the array, don't use it
+				if( authorName != author.name ) authors.push( author );
+			}
+			//trace( authors.length );
 			return authors;
 		}
 
