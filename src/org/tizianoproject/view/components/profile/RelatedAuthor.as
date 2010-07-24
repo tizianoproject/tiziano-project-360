@@ -20,7 +20,8 @@ package org.tizianoproject.view.components.profile
 	{
 		private static const DEFAULT_AVATAR_WIDTH:Number = 50;
 		private static const DEFAULT_AVATAR_HEIGHT:Number = 50;
-		private static const DEFAULT_POS:Point = new Point( 45, 510 );
+//		private static const DEFAULT_POS:Point = new Point( 45, 510 );
+		private static const DEFAULT_POS:Point = new Point( 0, 0 );
 		private static const MARGIN_RIGHT:Number = 20;
 		
 		private var loaderContext:LoaderContext;
@@ -121,7 +122,7 @@ package org.tizianoproject.view.components.profile
 		 **********************************/
 		override public function set x( value:Number ):void
 		{
-			super.x = ( (DEFAULT_AVATAR_WIDTH + MARGIN_RIGHT) * value) + DEFAULT_POS.x;
+			super.x = ( (DEFAULT_AVATAR_WIDTH + MARGIN_RIGHT) * value)// + DEFAULT_POS.x;
 		}
 		
 		override public function get x():Number

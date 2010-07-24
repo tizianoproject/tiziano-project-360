@@ -46,6 +46,9 @@ package org.tizianoproject.view
 		
 		private var loaderContext:LoaderContext
 		private var imageLoad:ImageLoad;
+		private var avatar:Bitmap;
+		
+		private var relatedAuthorHolder:MovieClip;
 		private var relatedAuthor:RelatedAuthor;
 		
 		private var featureHolder:MovieClip;
@@ -67,30 +70,28 @@ package org.tizianoproject.view
 
 		override protected function unload():void
 		{
-			if( imageLoad ) {
-				imageLoad.contentAsBitmapData.dispose()
-				imageLoad.destroy();	
-			}
 			writeName( "" );
 			writeLocation( "" );
 			writeAux( "" );
-			writeIntro( "" );
-			
+			writeIntro( "" );			
 		}
 	
 		public function load(  ):void
 		{
 			//trace( "ProfileView::load:", vo.name );
 			writeName( vo.name );
-			writeAux( "!!!" );
 			writeIntro( vo.intro );
 			writeLocation( vo.city + " " + vo.region );
 			writeTitle( vo.name );
 			
 			if( vo.type == "Mentor" ){
 				writeOther( "Other Mentors" );
+				//Mentors: University, Students:Age 
+				writeAux( vo.age );
 			} else {
 				writeOther( "Other Students" );				
+				//Mentors: University, Students:Age 
+				writeAux( vo.age );
 			}
 			
 			imageLoad = new ImageLoad( new URLRequest( vo.avatar ), loaderContext );
@@ -104,6 +105,7 @@ package org.tizianoproject.view
 			var articles:Array = iModel.getAllArticlesByAuthorName( vo.name );
 			loadArticles( articles );
 			
+			initAuthorHolder();
 			var otherAuthors:Array = iModel.getAuthorsByType( vo.type, vo.name );
 			for (var i:uint = 0; i <= MAX_OTHER_AUTHORS; i++){
 				relatedAuthor = new RelatedAuthor();
@@ -111,7 +113,8 @@ package org.tizianoproject.view
 				relatedAuthor.x = i;
 				relatedAuthor.vo = otherAuthors[i];
 				relatedAuthor.load( otherAuthors[i].avatar );
-				ShowHideManager.addContent( (this as ProfileView), relatedAuthor );
+				relatedAuthor.addEventListener( MouseEvent.CLICK, onRelatedAuthorClickHandler, false, 0, true );
+				ShowHideManager.addContent( relatedAuthorHolder, relatedAuthor );
 			}
 		}
 		
@@ -122,6 +125,15 @@ package org.tizianoproject.view
 			featureHolder.name = "featureHolder";
 			featureHolder.addEventListener(Event.REMOVED, onFeatureHolderRemovedHandler, false, 0, true );
 			ShowHideManager.addContent( (this as ProfileView), featureHolder );			
+		}
+		
+		private function initAuthorHolder():void
+		{
+			relatedAuthorHolder = new MovieClip();
+			relatedAuthorHolder.name = "relatedAuthorHolder";
+			relatedAuthorHolder.x = 45;
+			relatedAuthorHolder.y = 510;
+			ShowHideManager.addContent( (this as ProfileView), relatedAuthorHolder );
 		}
 		
 		private function loadArticles( array:Array):void
@@ -171,7 +183,7 @@ package org.tizianoproject.view
 		
 		private function writeIntro( value:String ):void
 		{
-			name_txt.text = value;
+			text_txt.htmlText = value;
 		}
 		
 		private function writeOther( value:String ):void
@@ -184,16 +196,21 @@ package org.tizianoproject.view
 			title_txt.text = value + "'s Stories";
 		}
 		
+		private function drawImage():void
+		{
+			avatar = imageLoad.contentAsBitmap;
+			avatar.x = DEFAULT_AVATAR_POS.x;
+			avatar.y = DEFAULT_AVATAR_POS.y;
+			ShowHideManager.addContent( avatar_mc, avatar );			
+		}
+		
 		/**********************************
 		 * Event Handlers
 		 **********************************/
 		private function onCompleteHandler( e:LoadEvent ):void
 		{
 			//trace( "ProfileView::onCompleteHandler:" );
-			var bmp:Bitmap = imageLoad.contentAsBitmap;
-				bmp.x = DEFAULT_AVATAR_POS.x;
-				bmp.y = DEFAULT_AVATAR_POS.y;
-			ShowHideManager.addContent( avatar_mc, bmp );
+			drawImage();
 		}
 		
 		private function onErrorHandler( e:ErrorEvent ):void
@@ -201,9 +218,24 @@ package org.tizianoproject.view
 			trace( "ProfileView::onErrorHandler:", e.text );	
 		}
 		
+		private function onRelatedAuthorClickHandler( e:Event ):void
+		{
+//			trace( "ProfileView::onRelatedAuthorClickHandler:"  );
+			var ra:RelatedAuthor = e.currentTarget as RelatedAuthor;
+			//change the Data Information
+			vo = ra.vo;
+			//Delete the current image
+			avatar.bitmapData.dispose();
+			//Load New Profile
+			ShowHideManager.unloadContent( featureHolder );
+			ShowHideManager.unloadContent( relatedAuthorHolder );
+			//
+			load();			
+		}
+		
 		private function onFeatureClickHandler( e:MouseEvent ):void
 		{
-		//	trace( "ProfileView::onFeatureClickHandler:" );
+			trace( "ProfileView::onFeatureClickHandler:" );
 			dispatchEvent( e );
 		}
 

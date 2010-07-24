@@ -91,7 +91,8 @@ package org.tizianoproject.model
 				if( authorName != author.name ) authors.push( author );
 			}
 			//trace( authors.length );
-			return authors;
+			return ArrayUtil.randomize( authors );
+			//return authors;
 		}
 
 		public function getAuthorByName( authorName:String ):Author
@@ -115,11 +116,11 @@ package org.tizianoproject.model
 			author.id			= profile.child("author_id");
 			author.type			= profile.child("author_type").text();
 			author.avatar		= profile.child("avatar").text();
-			author.name			= profile.child("name").text();
+			author.name			= profile.child("name");
 			author.city			= profile.child("city").text();
 			author.region		= profile.child("country").text();
 			author.age			= profile.child("age").text();
-			author.intro		= profile.child("intro").text();
+			author.intro		= profile.child("intro");
 			//trace( author.id, author.avatar, author.name, author.city, author.region, author.age, author.intro );
 			return author;
 		}
