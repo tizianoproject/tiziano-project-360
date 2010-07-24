@@ -90,9 +90,7 @@ package org.tizianoproject.model
 				//If there is an authorName:String and it matches an author.name in the array, don't use it
 				if( authorName != author.name ) authors.push( author );
 			}
-			//trace( authors.length );
 			return ArrayUtil.randomize( authors );
-			//return authors;
 		}
 
 		public function getAuthorByName( authorName:String ):Author
