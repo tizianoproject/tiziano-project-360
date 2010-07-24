@@ -37,8 +37,8 @@ package org.tizianoproject.view
 	import org.tizianoproject.model.IModel;
 	import org.tizianoproject.model.XMLLoader;
 	import org.tizianoproject.model.vo.Story;
-	import org.tizianoproject.view.components.Feature;
-	import org.tizianoproject.view.components.FeatureHolder;
+	import org.tizianoproject.view.components.article.Feature;
+	import org.tizianoproject.view.components.article.FeatureHolder;
 	import org.tizianoproject.view.components.article.Scroller;
 	import org.tizianoproject.view.components.article.Slideshow;
 	import org.tizianoproject.view.components.article.SoundSlide;
@@ -247,10 +247,10 @@ package org.tizianoproject.view
 			authorType_mc.gotoAndStop( value );
 		}
 
-		private function gatherStories( e:Event ):Array
+		//Get the Story that the User Clicked on
+		private function gatherStories( feature:Feature ):Array
 		{
-			var feature:Feature = e.currentTarget as Feature;
-			var primaryStory:Story = iModel.getArticleByArticleID( feature.storyID );
+			var primaryStory:Story = iModel.getArticleByArticleID( feature.vo.id );
 			var otherStories:Array = iModel.getOtherArticlesByAuthorName( primaryStory.authorName, primaryStory.id );
 			otherStories.unshift( primaryStory );
 			
@@ -337,7 +337,8 @@ package org.tizianoproject.view
 			trace( "ArticleView:onClickFeatureHandler" );
 			
 			//Assign New Stories
-			stories = gatherStories( e );
+			var feature:Feature = e.currentTarget as Feature;
+			stories = gatherStories( feature );
 			currentIndex = 0;
 			
 			cycleStories();
