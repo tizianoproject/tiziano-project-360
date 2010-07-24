@@ -11,7 +11,7 @@ package org.tizianoproject.model
 		function load( path:String ):void
 			
 		//StudentView + MentorView
-		function getAuthorsByType( authorType:String ):Array
+		function getAuthorsByType( authorType:String, authorName:String=null ):Array
 			
 		//Author
 		function getAuthorByName( authorName:String ):Author
