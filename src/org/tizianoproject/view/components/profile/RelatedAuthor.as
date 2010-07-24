@@ -6,8 +6,11 @@ package org.tizianoproject.view.components.profile
 	import flash.display.BitmapData;
 	import flash.display.LoaderInfo;
 	import flash.display.MovieClip;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
+	import flash.events.IOErrorEvent;
 	import flash.events.MouseEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.geom.Point;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
@@ -20,7 +23,6 @@ package org.tizianoproject.view.components.profile
 	{
 		private static const DEFAULT_AVATAR_WIDTH:Number = 50;
 		private static const DEFAULT_AVATAR_HEIGHT:Number = 50;
-//		private static const DEFAULT_POS:Point = new Point( 45, 510 );
 		private static const DEFAULT_POS:Point = new Point( 0, 0 );
 		private static const MARGIN_RIGHT:Number = 20;
 		
@@ -52,6 +54,8 @@ package org.tizianoproject.view.components.profile
 		{
 			imageLoad = new ImageLoad( new URLRequest( url ), loaderContext );
 			imageLoad.addEventListener( LoadEvent.COMPLETE, onCompleteHandler, false, 0, true );
+			imageLoad.addEventListener( IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
+			imageLoad.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
 			imageLoad.start();
 		}
 
@@ -67,20 +71,17 @@ package org.tizianoproject.view.components.profile
 			bmp.height = DEFAULT_AVATAR_HEIGHT;
 			bmp.smoothing = true;
 			
-			ShowHideManager.addContent( (this as RelatedAuthor), bmp );
-			
-			//Since you are drawing a Bitmap then you don't nead Loader		
-			clearLoader();
+			ShowHideManager.addContent( (this as RelatedAuthor), bmp );			
 		}
 		
 		private function clearBitmap():void
 		{
-			bmp.bitmapData.dispose();
+			if( bmp ) bmp.bitmapData.dispose();
 		}
 		
 		private function clearLoader():void
 		{
-			imageLoad.destroy()
+			if( imageLoad ) imageLoad.destroy()
 		}
 
 		private function unload():void
@@ -116,29 +117,24 @@ package org.tizianoproject.view.components.profile
 		{
 			unload();
 		}		
+		
+		private function onErrorHandler( e:ErrorEvent ):void
+		{
+			trace( "RelatedAuthor::onErrorHandler:" );
+		}
 
 		/**********************************
 		 * Getters Setters
 		 **********************************/
 		override public function set x( value:Number ):void
 		{
-			super.x = ( (DEFAULT_AVATAR_WIDTH + MARGIN_RIGHT) * value)// + DEFAULT_POS.x;
+			super.x = ( (DEFAULT_AVATAR_WIDTH + MARGIN_RIGHT) * value);
 		}
 		
 		override public function get x():Number
 		{
 			return super.x;
 		}		
-		
-		public function set index( value:Number ):void
-		{
-			_index = value;
-		}
-		
-		public function get index():Number
-		{
-			return _index;
-		}
 		
 		public function set vo( value:Author ):void
 		{
