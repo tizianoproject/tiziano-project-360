@@ -30,8 +30,6 @@ package org.tizianoproject.view
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	
-	import nl.demonsters.debugger.MonsterDebugger;
-	
 	import org.casalib.util.NumberUtil;
 	import org.tizianoproject.events.BaseViewEvent;
 	import org.tizianoproject.model.IModel;
@@ -91,7 +89,6 @@ package org.tizianoproject.view
 		{			
 			iModel = m;
 
-			//trace( "CHRIS:", iModel.getArticleByArticleID( 2 ) );
 			prev_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
 			prev_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
 			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
@@ -108,6 +105,7 @@ package org.tizianoproject.view
 			defaultHeight = stage.stageHeight;
 			updatePosition( );
 			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
+
 		}
 		
 		override protected function unload():void{
@@ -130,7 +128,7 @@ package org.tizianoproject.view
 				trace( "ArticleView::loadStory:", currentStory.storyType );
 				//Display Story
 				switch( currentStory.storyType ){
-					case "text":
+					case "article":
 						initText( currentStory );
 						break;
 					case "slideshow":
@@ -151,10 +149,7 @@ package org.tizianoproject.view
 						initSoundSlide( currentStory );
 						break
 				}
-				
-				//Features Holder holds the features
-				initFeatureHolder();
-				
+								
 				//Add new Related Features
 				//trace( "ArticleView::loadStory::", currentStory.related );
 				if( currentStory.related.length > 0 ) initFeatures( currentStory.related );
@@ -204,14 +199,16 @@ package org.tizianoproject.view
 		private function initFeatureHolder():void
 		{
 			//Collect all the Features in an Array
-			featureHolder = new FeatureHolder();			
+			featureHolder = new FeatureHolder();
 			featureHolder.name = "featureHolder";
-			featureHolder.addEventListener(Event.REMOVED, onFeatureHolderRemovedHandler, false, 0, true );
-			ShowHideManager.addContent( (this as ArticleView), featureHolder );			
+			ShowHideManager.addContent( (this as ArticleView), featureHolder );							
 		}
 		
 		private function initFeatures( array:Array ):void
 		{			
+			//Features Holder holds the features
+			initFeatureHolder();
+			
 			var totalFeatures:Number = array.length;
 			var columns:Number = 1;
 			for( var i:Number = 0; i < totalFeatures; i++ ){
@@ -230,12 +227,11 @@ package org.tizianoproject.view
 			}
 			
 			//If there are more than 5 features, add a Scroll Bar
-			if( featureHolder.numChildren > 5 ) initFeatureScrollBar();
+			if( totalFeatures > 5 ) initFeatureScrollBar();
 		}
 		
 		private function initFeatureScrollBar():void
 		{
-			trace( "ArticleView::initFeatureScrollBar:" );
 			//Create the Features Holder
 			featureScrollBar = new Scroller( featureHolder );
 			featureScrollBar.name = "featureScrollBar";
@@ -248,7 +244,7 @@ package org.tizianoproject.view
 		}
 
 		//Get the Story that the User Clicked on
-		private function gatherStories( feature:Feature ):Array
+		private function getAuthorStories( feature:Feature ):Array
 		{
 			var primaryStory:Story = iModel.getArticleByArticleID( feature.vo.id );
 			var otherStories:Array = iModel.getOtherArticlesByAuthorName( primaryStory.authorName, primaryStory.id );
@@ -268,23 +264,26 @@ package org.tizianoproject.view
 		
 		private function unloadStories( ):void
 		{
-			//Delete any Story on the stage
-			ShowHideManager.removeContent( (this as ArticleView), "text" );
-			ShowHideManager.removeContent( (this as ArticleView), "slideshow" );
+			//Video
+			//if ( video ) video.visible = false;
 			
-//			ShowHideManager.removeContent( (this as ArticleView), "video" );
-			if ( video ) video.visible = false;
-			ShowHideManager.removeContent( (this as ArticleView), "soundslide" );
+			ShowHideManager.removeContent( (this as ArticleView), "featureHolder"  );
 			ShowHideManager.removeContent( (this as ArticleView), "featureScrollBar" );
 
-			//Delete any feature in the featureHolder
-			//ShowHideManager.unloadContent( featureHolder );
-			ShowHideManager.removeContent( (this as ArticleView), "featureHolder" );			
+			ShowHideManager.removeContent( (this as ArticleView), "text" );
+			ShowHideManager.removeContent( (this as ArticleView), "slideshow" );
+			ShowHideManager.removeContent( (this as ArticleView), "soundslide" );
 		}
 
 		/**********************************
 		 * Update Position
 		 **********************************/
+		override protected function resize():void
+		{
+			//trace( "ArticleView::onFullScreenHandler:", stage.fullScreenWidth, stage.fullScreenHeight );
+			updatePosition();			
+		}
+		
 		private function updatePosition( ):void
 		{
 			if( stage ){
@@ -316,16 +315,9 @@ package org.tizianoproject.view
 			browserWidth = e.windowWidth;
 			browserHeight = e.bottomY;
 			
-			trace( "ArticleView::swfSizerHandler:" );
 			updatePosition( );
 		}
 		
-		override protected function onFullScreenHandler( e:FullScreenEvent ):void
-		{
-			//trace( "ArticleView::onFullScreenHandler:", stage.fullScreenWidth, stage.fullScreenHeight );
-			updatePosition();
-		}		
-
 		private function onBaseCloseHandler( e:BaseViewEvent ):void
 		{
 			//trace( e.results.name, "::onBaseCloseHandler:" );
@@ -334,18 +326,20 @@ package org.tizianoproject.view
 
 		private function onFeatureClickHandler( e:MouseEvent ):void
 		{
-			trace( "ArticleView:onClickFeatureHandler" );
-			
+			//trace( "ArticleView:onClickFeatureHandler" );			
 			//Assign New Stories
 			var feature:Feature = e.currentTarget as Feature;
-			stories = gatherStories( feature );
+			//Get the Selected Author's Stories
+			stories = getAuthorStories( feature );
+			//Start the Story at the one the User Selected
 			currentIndex = 0;
-			
+			//Start
 			cycleStories();
 		}
 		
 		private function onMouseClickHandler( e:MouseEvent ):void
-		{			
+		{
+			//Change the Index to Flip Stories
 			switch( e.currentTarget.name ){
 				case "next_btn":
 					if( currentIndex == stories.length - 1 ) currentIndex = 0;
@@ -357,11 +351,6 @@ package org.tizianoproject.view
 					break;
 			}
 			cycleStories();	
-		}
-		
-		private function onFeatureHolderRemovedHandler( e:Event ):void
-		{
-			//trace( "ArticleView::onFeatureHolderRemovedHandler:", featureHolder.numChildren );
 		}
 		
 		private function onRollOverHandler( e:MouseEvent ):void
@@ -379,7 +368,7 @@ package org.tizianoproject.view
 		 **********************************/
 		public function set stories( value:Array ):void
 		{
-			_stories = value;	
+			_stories = value;
 		}
 		
 		public function get stories():Array

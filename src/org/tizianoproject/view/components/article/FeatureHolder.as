@@ -17,13 +17,17 @@
 
 package org.tizianoproject.view.components.article
 {
+	import com.chrisaiv.utils.ShowHideManager;
+	
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
+	import flash.geom.Point;
 	
-	public class FeatureHolder extends MovieClip
+	import org.tizianoproject.view.CompositeView;
+	
+	public class FeatureHolder extends CompositeView
 	{
-		private static const DEFAULT_X_POS:Number = 530;
-		private static const DEFAULT_Y_POS:Number = 73;
+		private static const DEFAULT_POS:Point = new Point( 530, 73 );
 		private static const WIDTH:Number = 320;
 		private static const HEIGHT:Number = 500;
 		
@@ -33,12 +37,24 @@ package org.tizianoproject.view.components.article
 		{
 			tabEnabled = false;
 			
-			x = DEFAULT_X_POS;
-			y = DEFAULT_Y_POS;
-			
-			graphics.beginFill( 0xff00ff, 0 );
+			x = DEFAULT_POS.x;
+			y = DEFAULT_POS.y;			
+		}
+		
+		override protected function init():void
+		{
+			initBackground();
+		}
+		
+		private function initBackground():void
+		{
+			graphics.beginFill( 0xff00ff, 0.4 );
 			graphics.drawRect( 0, 0, WIDTH, HEIGHT );
-			graphics.endFill();
-		}		
+			graphics.endFill();			
+		}
+		
+		override protected function unload():void
+		{
+		}
 	}
 }

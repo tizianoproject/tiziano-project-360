@@ -36,8 +36,9 @@ package org.tizianoproject.view.components.article
 	import org.casalib.events.LoadEvent;
 	import org.casalib.load.ImageLoad;
 	import org.tizianoproject.model.vo.Story;
+	import org.tizianoproject.view.CompositeView;
 	
-	public class Feature extends MovieClip
+	public class Feature extends CompositeView
 	{
 		private static const DEFAULT_TEXT_WIDTH:Number = 175;
 		private static const DEFAULT_BITMAP_POS:Point = new Point( 12, 10 );
@@ -52,11 +53,6 @@ package org.tizianoproject.view.components.article
 		public var title_txt:TextField;
 		public var subhed_txt:TextField;
 		
-		private var font:Class;
-
-		private var titleTxt:TextField;
-		private var subheadTxt:TextField;
-
 		private var _y:Number;
 		private var _storyID:Number;
 		private var _author:String;
@@ -67,22 +63,20 @@ package org.tizianoproject.view.components.article
 			vo = story;
 
 			//Write the Title
+			
 			writeTitle( vo.title );
 			
 			//Write Subheadline
-			writeSubhead( vo.subheadline );
+			writeSubhead( Math.random().toString() );
 
 			//Set the Author Type
 			authorType( vo.authorType );
 			
 			//Load the image
-			loadImage( vo.image );		
-
-			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
-			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
+			loadImage( vo.image );
 		}
 		
-		private function init():void
+		override protected function init():void
 		{
 			buttonMode = true;
 			addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );			
@@ -128,19 +122,20 @@ package org.tizianoproject.view.components.article
 			authorType( "blank" );
 		}
 		
-		private function unload():void
+		override protected function unload():void
 		{
+			writeTitle( "" );
+			writeSubhead( "" );
 			clearBitmap();
 			clearLoader();
+			resetAuthorType();
 		}
 		
 		//Redraw the Image for a smaller size
 		private function drawImage( ):void
 		{
 			bmp = imageLoad.contentAsBitmap;
-			bmp.x = DEFAULT_BITMAP_POS.x;
-			bmp.y = DEFAULT_BITMAP_POS.y;
-			ShowHideManager.addContent( (this as Feature), bmp );			
+			ShowHideManager.addContent( image_mc, bmp );			
 		}
 
 		/**********************************
@@ -149,18 +144,6 @@ package org.tizianoproject.view.components.article
 		private function onCompleteHandler( e:Event ):void
 		{
 			drawImage();
-		}
-		
-		private function onAddedToStageHandler( e:Event ):void
-		{
-			init();
-			//trace( "Feature::onAddedToStageHandler:" );
-		}
-		
-		private function onRemovedFromStageHandler( e:Event ):void
-		{
-			unload();
-			//trace( "Feature::onRemovedFromStageHandler:" );
 		}
 		
 		private function onMouseClickHandler( e:MouseEvent ):void

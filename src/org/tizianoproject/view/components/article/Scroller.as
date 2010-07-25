@@ -15,6 +15,7 @@
  * */
 package org.tizianoproject.view.components.article
 {
+	import com.chrisaiv.utils.ShowHideManager;
 	import com.greensock.TimelineLite;
 	import com.greensock.TweenAlign;
 	import com.greensock.TweenLite;
@@ -23,6 +24,7 @@ package org.tizianoproject.view.components.article
 	import com.tis.utils.components.Scrollbar;
 	
 	import flash.display.MovieClip;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
 	import org.casalib.transitions.Tween;
@@ -38,6 +40,8 @@ package org.tizianoproject.view.components.article
 			dragHandleMC.buttonMode = true;
 			upScrollControl.alpha = 0;
 			downScrollControl.alpha = 0;
+			
+			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
 		
 		override public function moveScroll(event:MouseEvent):void
@@ -65,7 +69,12 @@ package org.tizianoproject.view.components.article
 		
 		private function onCompleteHandler( ):void
 		{
-			trace( "Scroller::onCompleteHandler:" );
+			//trace( "Scroller::onCompleteHandler:" );
+		}
+		
+		private function onRemovedFromStageHandler( e:Event ):void
+		{
+			ShowHideManager.unloadContent( (this as Scrollbar ) );
 		}
 	}
 }

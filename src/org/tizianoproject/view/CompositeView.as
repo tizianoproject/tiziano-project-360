@@ -31,14 +31,7 @@ package org.tizianoproject.view
 
 		/**********************************
 		 * Event Handlers
-		 **********************************/
-		/*
-		public function swfSizerHandler( e:SWFSize ):void
-		{
-			
-		}
-		*/
-		
+		 **********************************/		
 		protected function onAddedHandler( e:Event ):void
 		{
 			//trace( "CompositeView::onAddedHandler:", e.target );
