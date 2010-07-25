@@ -56,7 +56,7 @@ package org.tizianoproject.view.components.article
 			container.mask = swfMask;
 			ShowHideManager.addContent( container, swf );
 			//Draw a mask for the container
-			redrawMask()
+			redrawMask();
 			//Add the container to the stage
 			ShowHideManager.addContent( (this as SoundSlide), container );
 		}
@@ -85,8 +85,10 @@ package org.tizianoproject.view.components.article
 			SoundMixer.stopAll();
 
 			//Unload the Loader
-			if( swf ) swf = null;
-			if( swfLoader ) swfLoader.destroy();
+			if( swf ){ swf = null; } 
+			if( swfLoader ) swfLoader = null;
+			if( container ) container = null;
+			if( swfMask ) swfMask = null;
 			
 			ShowHideManager.unloadContent( (this as SoundSlide) ) 
 		}
@@ -94,6 +96,12 @@ package org.tizianoproject.view.components.article
 		/**********************************
 		 * Event Handlers
 		 **********************************/
+		override protected function onAddedHandler(e:Event):void
+		{
+			//Destroy the swfLoader once the SoundSlide has been loaded
+			if( e.target.name == "container" ) 	swfLoader.destroy();
+		}
+		
 		private function onCompleteHandler( e:Event ):void
 		{
 			//trace( "SoundSlide::onCompleteHandler:" );
