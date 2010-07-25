@@ -16,6 +16,7 @@
 
 package org.tizianoproject.view.components.article
 {
+	import com.chrisaiv.utils.CSSFormatter;
 	import com.chrisaiv.utils.ShowHideManager;
 	import com.chrisaiv.utils.TextFormatter;
 	
@@ -28,6 +29,7 @@ package org.tizianoproject.view.components.article
 	import flash.events.IOErrorEvent;
 	import flash.events.MouseEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.events.TextEvent;
 	import flash.geom.Point;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
@@ -99,7 +101,8 @@ package org.tizianoproject.view.components.article
 		
 		private function writeTitle( value:String ):void
 		{
-			title_txt.text = value;
+			title_txt.htmlText = "<a href='event:blank'>" + value + "</a>";
+			title_txt.styleSheet = CSSFormatter.simpleUnderline();
 		}
 		
 		private function writeSubhead( value:String ):void

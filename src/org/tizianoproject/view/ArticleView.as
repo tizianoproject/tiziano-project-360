@@ -5,7 +5,7 @@
  * - ---------------------------------------------------------
  * Created by: cmendez@tizianoproject.org
  * Modified by: 
- * Date Modified: June 22, 2010
+ * Date Modified: 
  * - ---------------------------------------------------------
  * Copyright ©2010
  * - ---------------------------------------------------------
@@ -19,6 +19,7 @@
 package org.tizianoproject.view
 {
 	import com.chargedweb.swfsize.SWFSizeEvent;
+	import com.chrisaiv.utils.CSSFormatter;
 	import com.chrisaiv.utils.ShowHideManager;
 	import com.tis.utils.components.Scrollbar;
 	
@@ -28,6 +29,8 @@ package org.tizianoproject.view
 	import flash.events.EventDispatcher;
 	import flash.events.FullScreenEvent;
 	import flash.events.MouseEvent;
+	import flash.events.TextEvent;
+	import flash.text.StyleSheet;
 	import flash.text.TextField;
 	
 	import org.casalib.util.NumberUtil;
@@ -103,9 +106,10 @@ package org.tizianoproject.view
 			//Position the ArticleView
 			defaultWidth  = stage.stageWidth;
 			defaultHeight = stage.stageHeight;
+			
 			updatePosition( );
+			
 			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
-
 		}
 		
 		override protected function unload():void{
@@ -118,14 +122,14 @@ package org.tizianoproject.view
 				
 			if( currentStory ){
 				//Display Title
-				title_txt.text = currentStory.title;
+				writeTitle( currentStory.title );
 				//Display Author Name
-				author_txt.text = currentStory.authorName;
+				writeAuthor( currentStory.authorName );
 				
 				//Display Author Type
 				showAuthorType( currentStory.authorType );
 				
-				trace( "ArticleView::loadStory:", currentStory.storyType );
+				//trace( "ArticleView::loadStory:", currentStory.storyType );
 				//Display Story
 				switch( currentStory.storyType ){
 					case "article":
@@ -151,11 +155,21 @@ package org.tizianoproject.view
 				}
 								
 				//Add new Related Features
-				//trace( "ArticleView::loadStory::", currentStory.related );
 				if( currentStory.related.length > 0 ) initFeatures( currentStory.related );
 			}
 		}
 		
+		private function writeTitle( value:String ):void
+		{
+			title_txt.text = value;
+		}
+		
+		private function writeAuthor( value:String ):void
+		{
+			author_txt.htmlText = "<a href='event:" + value + "'>" + value + "</a>";
+			author_txt.styleSheet = CSSFormatter.simpleUnderline();
+			author_txt.addEventListener(TextEvent.LINK, onTextLinkHandler, false, 0, true );
+		}
 		/**********************************
 		 * Story Types
 		 **********************************/
@@ -315,6 +329,7 @@ package org.tizianoproject.view
 			browserWidth = e.windowWidth;
 			browserHeight = e.bottomY;
 			
+			trace( "ArticleView::swfSizerHandler:" );
 			updatePosition( );
 		}
 		
@@ -323,14 +338,19 @@ package org.tizianoproject.view
 			//trace( e.results.name, "::onBaseCloseHandler:" );
 			dispatchEvent( e );
 		}	
-
+		
+		private function onTextLinkHandler( e:TextEvent ):void
+		{
+			trace( "ArticleView::onTextLinkHandler:", e.text, e.text.length );
+			trace( 	iModel.getAuthorByName( e.text ) );
+		}
+		
 		private function onFeatureClickHandler( e:MouseEvent ):void
 		{
 			//trace( "ArticleView:onClickFeatureHandler" );			
 			//Assign New Stories
-			var feature:Feature = e.currentTarget as Feature;
 			//Get the Selected Author's Stories
-			stories = getAuthorStories( feature );
+			stories = getAuthorStories( (e.currentTarget as Feature) );
 			//Start the Story at the one the User Selected
 			currentIndex = 0;
 			//Start
