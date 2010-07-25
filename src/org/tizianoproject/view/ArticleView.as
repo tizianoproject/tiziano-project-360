@@ -342,8 +342,7 @@ package org.tizianoproject.view
 		
 		private function onTextLinkHandler( e:TextEvent ):void
 		{
-			trace( "ArticleView::onTextLinkHandler:", e.text, e.text.length );
-			trace( 	iModel.getAuthorByName( e.text ) );
+			trace( "ArticleView::onTextLinkHandler:", e.text, iModel.getAuthorByName( e.text ) );
 		}
 		
 		private function onFeatureClickHandler( e:MouseEvent ):void
