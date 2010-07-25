@@ -135,10 +135,11 @@ package org.tizianoproject.model
 				//Push the Stories!
 				var story:Story = createStory( XMLList(articles[i]) );
 				if( story.id != storyID ) stories.push( story );
-			}			
+			}
+			
 			return stories;
 		}
-
+		
 		public function getAllArticlesByAuthorName( authorName:String ):Array
 		{
 			var articles:XMLList = getAllArticles().( child("author") == authorName );
@@ -183,7 +184,7 @@ package org.tizianoproject.model
 			//Specific Story Information
 			switch( story.storyType ){
 				case "article":
-					story.content = article.child("content").text();
+					story.content = article.child("content");
 					break;
 				case "video":
 					story.vimeoConsumerKey = getVimeoConsumerKey();
