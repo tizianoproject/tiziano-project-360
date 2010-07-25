@@ -155,6 +155,7 @@ package org.tizianoproject.view
 				}
 								
 				//Add new Related Features
+				
 				if( currentStory.related.length > 0 ) initFeatures( currentStory.related );
 			}
 		}
@@ -231,13 +232,13 @@ package org.tizianoproject.view
 				
 				//Get the Story based on the Reponse ID
 				var story:Story = iModel.getArticleByArticleID( array[i] );
-				//Create a new Feature
-				feature = new Feature( story );
-				feature.name = "feature" + i;
-				feature.addEventListener(MouseEvent.CLICK, onFeatureClickHandler, false, 0, true );
-				//Feature.y is overriden to include DEFAULT_Y_POS
-				feature.y = (i * feature.height);
-				ShowHideManager.addContent( featureHolder, feature );
+					//Create a new Feature
+					feature = new Feature( story );
+					feature.name = "feature" + i;
+					feature.addEventListener(MouseEvent.CLICK, onFeatureClickHandler, false, 0, true );
+					//Feature.y is overriden to include DEFAULT_Y_POS
+					feature.y = (i * feature.height);
+					ShowHideManager.addContent( featureHolder, feature );					
 			}
 			
 			//If there are more than 5 features, add a Scroll Bar

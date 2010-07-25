@@ -1,4 +1,4 @@
-/**
+ /**
  * -------------------------------------------------------
  * Model: XMLLoader 
  * -------------------------------------------------------
@@ -128,6 +128,7 @@ package org.tizianoproject.model
 		////////////////////////////////
 		public function getOtherArticlesByAuthorName( authorName:String, storyID:Number ):Array
 		{
+			trace( "XMLLoader::getOtherArticlesByAuthorName:" );
 			var articles:XMLList = getAllArticles().( child("author") == authorName );
 			//Iterate through each XML Node and Create a Story Object, then Push an Array
 			var stories:Array = new Array();
@@ -142,6 +143,7 @@ package org.tizianoproject.model
 		
 		public function getAllArticlesByAuthorName( authorName:String ):Array
 		{
+			trace( "XMLLoader::getAllArticlesByAuthorName" );
 			var articles:XMLList = getAllArticles().( child("author") == authorName );
 			//Iterate through each XML Node and Create a Story Object, then Push an Array
 			var stories:Array = new Array();
@@ -156,6 +158,7 @@ package org.tizianoproject.model
 		//Get Article By Article ID
 		public function getArticleByArticleID( uniqueID:Number ):Story
 		{
+			//trace( "XMLLoader::getArticleByArticleID" );
 			//Find the <article> based on it's <article><id>
 			var article:XMLList = getAllArticles().( child("id") == uniqueID );
 			//Create A Story Object based on <article>
@@ -207,13 +210,15 @@ package org.tizianoproject.model
 			var relatedTags:XMLList = article.child("tags").children();
 			//If there are <tag>'s available, let's get this party started
 			if( relatedTags.length() > 0 ){
-				story.related = getRelatedArticles( relatedTags );
+				//Make sure that this story is not featured in the Related Stories
+				story.related = getRelatedArticles( relatedTags, story.id );
 			}
 			return story;
 		}
 
-		private function getRelatedArticles( relatedTags:XMLList ):Array
+		private function getRelatedArticles( relatedTags:XMLList, storyID:Number ):Array
 		{
+			//trace( "XMLLoader::getRelatedArticles:" );
 			//We're going to create an array filled with Story ID's
 			var IDs:Array = new Array();
 			//Iterate through each related <tag>
@@ -230,8 +235,12 @@ package org.tizianoproject.model
 					}
 				}
 			}
-			//Now that you have an array full of <article><id>, find the unique stories
-			return ArrayUtil.removeDuplicates( IDs );
+			//Remove the Featured story from the Related Stories
+			ArrayUtil.removeItem( IDs, storyID );
+			//Remove any Duplicate Featured Stories
+			ArrayUtil.removeDuplicates( IDs );
+			//Randomize the Stories
+			return ArrayUtil.randomize( IDs );
 			//trace( "All Stories:", IDs.length, "Unique Stories:", story.related.length );			
 		}
 		
