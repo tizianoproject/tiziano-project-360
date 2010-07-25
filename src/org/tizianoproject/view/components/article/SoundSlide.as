@@ -102,10 +102,10 @@ package org.tizianoproject.view.components.article
 			if( e.target.name == "container" ) 	swfLoader.destroy();
 		}
 		
-		private function onCompleteHandler( e:Event ):void
+		private function onCompleteHandler( e:LoadEvent ):void
 		{
 			//trace( "SoundSlide::onCompleteHandler:" );
-			swf = swfLoader.contentAsAvm1Movie;
+			swf = SwfLoad(e.currentTarget).contentAsAvm1Movie;
 			if( stage ) showSoundSlide();
 		}
 		
