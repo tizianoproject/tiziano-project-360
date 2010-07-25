@@ -98,12 +98,14 @@ package org.tizianoproject.model
 			//Filter all the authors a specific name
 			var profileXML:XML = XML( getAuthor().child("profile").( child("name") == authorName ) );
 			//Convert the XML into Author
+			//trace( profileXML );
 			var profile:Author = createAuthor( profileXML );
 			return profile;
 		}
 
 		public function getAuthorTypeByName( authorName:String ):String
 		{
+			//trace( "getAuthorTypeByName:", authorName );
 			return getAuthorByName( authorName ).name;
 		}		
 
@@ -111,14 +113,14 @@ package org.tizianoproject.model
 		{
 			var profile:XML	= xml;
 			var author:Author 	= new Author();
-			author.id			= profile.child("author_id");
-			author.type			= profile.child("author_type").text();
-			author.avatar		= profile.child("avatar").text();
-			author.name			= profile.child("name");
-			author.city			= profile.child("city").text();
-			author.region		= profile.child("country").text();
-			author.age			= profile.child("age").text();
-			author.intro		= profile.child("intro");
+			author.id			= ( profile.child("author_id") ) ? profile.child("author_id") : -1;
+			author.type			= ( profile.child("author_type").text() ) ? profile.child("author_type").text() : "";
+			author.avatar		= ( profile.child("avatar").text() ) ? profile.child("avatar").text() : "";
+			author.name			= ( profile.child("name").text() ) ? profile.child("name").text() : "";
+			author.city			= ( profile.child("city").text() ) ? profile.child("city").text() : "";
+			author.region		= ( profile.child("country").text() ) ? profile.child("country").text() : "";
+			author.age			= ( profile.child("age").text() ) ? profile.child("age").text() : "";
+			author.intro		= ( profile.child("intro") ) ? profile.child("intro") : "";
 			//trace( author.id, author.avatar, author.name, author.city, author.region, author.age, author.intro );
 			return author;
 		}
@@ -172,14 +174,14 @@ package org.tizianoproject.model
 			var article:XMLList = xml;
 			//Generic Story Information
 			var story:Story			= new Story();
-				story.id			= Number(article.child("id").text());
-				story.storyType		= article.child("type").text();
-				story.title			= article.child("title").text();
-				story.headline		= article.child("headline").text();
-				story.subheadline	= article.child("subheadline").text();
-				story.image			= article.child("image_small").text();
-				story.authorName	= article.child("author").text();
-				story.authorType	= getAuthorTypeByName( story.authorName );
+				story.id			= ( Number(article.child("id").text()) ) ? Number(article.child("id").text()) : -1;
+				story.storyType		= ( article.child("type").text() ) ? article.child("type").text() : "";
+				story.title			= ( article.child("title").text() ) ? article.child("title").text() : "";
+				story.headline		= ( article.child("headline").text() ) ? article.child("headline").text() : "";
+				story.subheadline	= ( article.child("subheadline").text() ) ? article.child("subheadline").text() : "";
+				story.image			= ( article.child("image_small").text() ) ? article.child("image_small").text() : "";
+				story.authorName	= ( article.child("author").text() ) ? article.child("author").text() : "";
+				story.authorType	= ( story.authorName ) ? getAuthorTypeByName( story.authorName ) : "";
 
 				//trace( getOtherArticlesByAuthorName( story.authorName ) );
 				//trace( "XMLLoader::createStory:\n", story.id, story.storyType, story.title, story.headline, story.subheadline, story.image, story.authorName, story.authorType );
@@ -216,7 +218,7 @@ package org.tizianoproject.model
 			return story;
 		}
 
-		private function getRelatedArticles( relatedTags:XMLList, storyID:Number ):Array
+		private function getRelatedArticles( relatedTags:XMLList, primaryStoryID:Number ):Array
 		{
 			//trace( "XMLLoader::getRelatedArticles:" );
 			//We're going to create an array filled with Story ID's
@@ -236,7 +238,7 @@ package org.tizianoproject.model
 				}
 			}
 			//Remove the Featured story from the Related Stories
-			ArrayUtil.removeItem( IDs, storyID );
+			ArrayUtil.removeItem( IDs, primaryStoryID );
 			//Remove any Duplicate Featured Stories
 			ArrayUtil.removeDuplicates( IDs );
 			//Randomize the Stories
