@@ -113,14 +113,14 @@ package org.tizianoproject.model
 		{
 			var profile:XML	= xml;
 			var author:Author 	= new Author();
-			author.id			= ( profile.child("author_id") ) ? profile.child("author_id") : -1;
-			author.type			= ( profile.child("author_type").text() ) ? profile.child("author_type").text() : "";
-			author.avatar		= ( profile.child("avatar").text() ) ? profile.child("avatar").text() : "";
-			author.name			= ( profile.child("name").text() ) ? profile.child("name").text() : "";
-			author.city			= ( profile.child("city").text() ) ? profile.child("city").text() : "";
-			author.region		= ( profile.child("country").text() ) ? profile.child("country").text() : "";
-			author.age			= ( profile.child("age").text() ) ? profile.child("age").text() : "";
-			author.intro		= ( profile.child("intro") ) ? profile.child("intro") : "";
+			author.id			= ( profile.child("author_id") )			? profile.child("author_id") : -1;
+			author.type			= ( profile.child("author_type").text() )	? profile.child("author_type").text() : "";
+			author.avatar		= ( profile.child("avatar").text() )		? profile.child("avatar").text() : "";
+			author.name			= ( profile.child("name").text() )			? profile.child("name").text() : "";
+			author.city			= ( profile.child("city").text() )			? profile.child("city").text() : "";
+			author.region		= ( profile.child("country").text() )		? profile.child("country").text() : "";
+			author.age			= ( profile.child("age").text() )			? profile.child("age").text() : "";
+			author.intro		= ( profile.child("intro") )				? profile.child("intro") : "";
 			//trace( author.id, author.avatar, author.name, author.city, author.region, author.age, author.intro );
 			return author;
 		}
@@ -174,14 +174,15 @@ package org.tizianoproject.model
 			var article:XMLList = xml;
 			//Generic Story Information
 			var story:Story			= new Story();
-				story.id			= ( Number(article.child("id").text()) ) ? Number(article.child("id").text()) : -1;
-				story.storyType		= ( article.child("type").text() ) ? article.child("type").text() : "";
-				story.title			= ( article.child("title").text() ) ? article.child("title").text() : "";
-				story.headline		= ( article.child("headline").text() ) ? article.child("headline").text() : "";
-				story.subheadline	= ( article.child("subheadline").text() ) ? article.child("subheadline").text() : "";
-				story.image			= ( article.child("image_small").text() ) ? article.child("image_small").text() : "";
-				story.authorName	= ( article.child("author").text() ) ? article.child("author").text() : "";
-				story.authorType	= ( story.authorName ) ? getAuthorTypeByName( story.authorName ) : "";
+				story.id			= ( Number(article.child("id").text()) )	? Number(article.child("id").text()) : -1;
+				story.storyType		= ( article.child("type").text() )			? article.child("type").text() : "";
+				story.title			= ( article.child("title").text() )			? article.child("title").text() : "";
+				story.headline		= ( article.child("headline").text() )		? article.child("headline").text() : "";
+				story.subheadline	= ( article.child("subheadline").text() )	? article.child("subheadline").text() : "";
+				story.image			= ( article.child("image_small").text() )	? article.child("image_small").text() : "";
+				story.authorName	= ( article.child("author").text() )		? article.child("author").text() : "";
+				story.sound			= ( article.child("audio_wall").text() )	? article.child("audio_wall").text() : "";
+				story.authorType	= ( story.authorName )						? getAuthorTypeByName( story.authorName ) : "";
 
 				//trace( getOtherArticlesByAuthorName( story.authorName ) );
 				//trace( "XMLLoader::createStory:\n", story.id, story.storyType, story.title, story.headline, story.subheadline, story.image, story.authorName, story.authorType );
