@@ -20,6 +20,7 @@ package org.tizianoproject.events
 	public class BaseViewEvent extends Event
 	{
 		public static const CLOSE:String = "close";
+		public static const OPEN:String  = "open";
 		
 		public var results:*;
 		

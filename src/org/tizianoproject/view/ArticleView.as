@@ -119,6 +119,7 @@ package org.tizianoproject.view
 		public function loadStory( ):void
 		{	
 			currentStory = stories[currentIndex] as Story
+			trace( "ArticleView::loadStory", currentStory.id, currentStory.storyType );
 				
 			if( currentStory ){
 				//Display Title
