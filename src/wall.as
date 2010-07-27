@@ -4,6 +4,7 @@ import flash.geom.Rectangle;
 /****************************
 Full Screen
 ****************************/
+//System.security.allowDomain('*');
 Stage.align = "TL";
 Stage.scaleMode="noScale";
 
@@ -119,7 +120,8 @@ function updateMatrixSize( w:Number, h:Number ):Void
 }
 
 function loadXML() {
-	matrix_mc._visible = true;
-	matrix_mc.load("http://demo.chrisaiv.com/xml/tiziano/jumpeye.xml");
+//	matrix_mc._visible = true;
+//	matrix_mc.load("http://tizianoproject.org/360/jumpeye.xml");
 }
-//matrix_mc.load("http://localhost:8080/xml/tiziano/jumpeye.xml");
+matrix_mc._visible = true;
+matrix_mc.load("http://tizianoproject.org/360/jumpeye.xml");
