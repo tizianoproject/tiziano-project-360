@@ -7,6 +7,7 @@ package org.tizianoproject.view.components.article
 	import flash.display.Loader;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
@@ -14,7 +15,10 @@ package org.tizianoproject.view.components.article
 	import flash.media.Sound;
 	import flash.media.SoundMixer;
 	import flash.net.URLRequest;
+	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
+	import flash.system.Security;
+	import flash.system.SecurityDomain;
 	
 	import org.casalib.events.LoadEvent;
 	import org.casalib.load.SwfLoad;
@@ -29,12 +33,15 @@ package org.tizianoproject.view.components.article
 
 		private var loaderContext:LoaderContext;
 		private var swfLoader:SwfLoad;
+		private var swfLoad:Loader;
 		private var swf:AVM1Movie;
 		private var swfMask:Sprite
 		private var container:Sprite
 		
 		public function SoundSlide()
-		{
+		{ 
+			loaderContext = new LoaderContext( true );
+			
 			x = DEFAULT_POS.x;
 			y = DEFAULT_POS.y;
 		}
@@ -54,7 +61,7 @@ package org.tizianoproject.view.components.article
 			container = new Sprite();
 			container.name = "container";
 			container.mask = swfMask;
-			ShowHideManager.addContent( container, swf );
+			ShowHideManager.addContent( container, swfLoad );
 			//Draw a mask for the container
 			redrawMask();
 			//Add the container to the stage
@@ -71,11 +78,21 @@ package org.tizianoproject.view.components.article
 
 		public function load( path:String ):void
 		{
-			swfLoader = new SwfLoad( new URLRequest( path ), new LoaderContext( true ) );
+			/*
+			swfLoader = new SwfLoad( new URLRequest( path ), loaderContext );
 			swfLoader.addEventListener( LoadEvent.COMPLETE, onCompleteHandler, false, 0, true );
 			swfLoader.addEventListener( IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
 			swfLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
 			swfLoader.start();
+			*/
+			swfLoad = new Loader();
+			swfLoad.addEventListener( IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
+			swfLoad.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
+			swfLoad.addEventListener( IOErrorEvent.NETWORK_ERROR, onErrorHandler, false, 0, true );
+			swfLoad.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onCompleteHandler, false, 0, true );
+			swfLoad.contentLoaderInfo.addEventListener(IOErrorEvent.NETWORK_ERROR, onCompleteHandler, false, 0, true );
+			swfLoad.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true );
+			swfLoad.load( new URLRequest( path ), loaderContext );
 		}
 		
 		override protected function unload():void
@@ -89,6 +106,14 @@ package org.tizianoproject.view.components.article
 			if( swfLoader ) swfLoader = null;
 			if( container ) container = null;
 			if( swfMask ) swfMask = null;
+			if( swfLoad ) { 
+				try{
+					swfLoad.close();					
+				} catch (e:Error){
+					trace( "SoundSlide::unload:", e.message );
+					swfLoad = null;
+				}
+			}
 			
 			ShowHideManager.unloadContent( (this as SoundSlide) ) 
 		}
@@ -99,13 +124,14 @@ package org.tizianoproject.view.components.article
 		override protected function onAddedHandler(e:Event):void
 		{
 			//Destroy the swfLoader once the SoundSlide has been loaded
-			if( e.target.name == "container" ) 	swfLoader.destroy();
+			//if( e.target.name == "container" ) 	swfLoader.destroy();
 		}
 		
-		private function onCompleteHandler( e:LoadEvent ):void
+		private function onCompleteHandler( e:Event ):void
 		{
 			//trace( "SoundSlide::onCompleteHandler:" );
-			swf = SwfLoad(e.currentTarget).contentAsAvm1Movie;
+			//swf = SwfLoad(e.currentTarget).contentAsAvm1Movie;
+			//swf = e.currentTarget.content as AVM1Movie;
 			if( stage ) showSoundSlide();
 		}
 		
