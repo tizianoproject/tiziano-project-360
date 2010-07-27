@@ -105,8 +105,8 @@ package org.tizianoproject.model
 
 		public function getAuthorTypeByName( authorName:String ):String
 		{
-			//trace( "getAuthorTypeByName:", authorName );
-			return getAuthorByName( authorName ).name;
+			//trace( "getAuthorTypeByName:", getAuthorByName( authorName ).type );
+			return getAuthorByName( authorName ).type;
 		}		
 
 		private function createAuthor( xml:* ):Author
@@ -184,7 +184,7 @@ package org.tizianoproject.model
 				story.sound			= ( article.child("audio_wall").text() )	? article.child("audio_wall").text() : "";
 				story.authorType	= ( story.authorName )						? getAuthorTypeByName( story.authorName ) : "";
 
-				//trace( getOtherArticlesByAuthorName( story.authorName ) );
+				//trace(  story.authorType );
 				//trace( "XMLLoader::createStory:\n", story.id, story.storyType, story.title, story.headline, story.subheadline, story.image, story.authorName, story.authorType );
 
 			//Specific Story Information

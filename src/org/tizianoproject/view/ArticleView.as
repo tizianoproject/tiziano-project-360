@@ -30,6 +30,7 @@ package org.tizianoproject.view
 	import flash.events.FullScreenEvent;
 	import flash.events.MouseEvent;
 	import flash.events.TextEvent;
+	import flash.system.Security;
 	import flash.text.StyleSheet;
 	import flash.text.TextField;
 	
@@ -37,6 +38,7 @@ package org.tizianoproject.view
 	import org.tizianoproject.events.BaseViewEvent;
 	import org.tizianoproject.model.IModel;
 	import org.tizianoproject.model.XMLLoader;
+	import org.tizianoproject.model.vo.Author;
 	import org.tizianoproject.model.vo.Story;
 	import org.tizianoproject.view.components.article.Feature;
 	import org.tizianoproject.view.components.article.FeatureHolder;
@@ -92,12 +94,7 @@ package org.tizianoproject.view
 		{			
 			iModel = m;
 
-			prev_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
-			prev_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
-			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
-			
-			next_btn.addEventListener(MouseEvent.ROLL_OVER, onRollOverHandler, false, 0, true );
-			next_btn.addEventListener(MouseEvent.ROLL_OUT, onRollOutHandler, false, 0, true );
+			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );			
 			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 		}
 		
@@ -119,7 +116,7 @@ package org.tizianoproject.view
 		public function loadStory( ):void
 		{	
 			currentStory = stories[currentIndex] as Story
-			trace( "ArticleView::loadStory", currentStory.id, currentStory.storyType );
+			//trace( "ArticleView::loadStory", currentStory.id, currentStory.storyType );
 				
 			if( currentStory ){
 				//Display Title
@@ -154,9 +151,8 @@ package org.tizianoproject.view
 						initSoundSlide( currentStory );
 						break
 				}
-								
-				//Add new Related Features
 				
+				//Add new Related Features
 				if( currentStory.related.length > 0 ) initFeatures( currentStory.related );
 			}
 		}
@@ -234,7 +230,8 @@ package org.tizianoproject.view
 				//Get the Story based on the Reponse ID
 				var story:Story = iModel.getArticleByArticleID( array[i] );
 					//Create a new Feature
-					feature = new Feature( story );
+					feature = new Feature( );
+					feature.vo = story;
 					feature.name = "feature" + i;
 					feature.addEventListener(MouseEvent.CLICK, onFeatureClickHandler, false, 0, true );
 					//Feature.y is overriden to include DEFAULT_Y_POS
@@ -343,8 +340,16 @@ package org.tizianoproject.view
 		
 		private function onTextLinkHandler( e:TextEvent ):void
 		{
-			trace( "ArticleView::onTextLinkHandler:", e.text, iModel.getAuthorByName( e.text ) );
+			//trace( "ArticleView::onTextLinkHandler:", e.text );
+			var data:Author = iModel.getAuthorByName( e.text );
+			sendToApp( { view: "profileView", data: data } );
 		}
+		
+		private function sendToApp( obj:Object ):void
+		{
+			dispatchEvent( new BaseViewEvent( BaseViewEvent.OPEN, obj ) );
+		}
+
 		
 		private function onFeatureClickHandler( e:MouseEvent ):void
 		{
@@ -360,6 +365,7 @@ package org.tizianoproject.view
 		
 		private function onMouseClickHandler( e:MouseEvent ):void
 		{
+			//trace( "ArticleView::onMouseClickHandler:", stories.length );
 			//Change the Index to Flip Stories
 			switch( e.currentTarget.name ){
 				case "next_btn":
@@ -371,19 +377,10 @@ package org.tizianoproject.view
 					else currentIndex--;
 					break;
 			}
-			cycleStories();	
+			//You must have more than one story to cycle through
+			if( stories.length > 1 ) cycleStories();	
 		}
-		
-		private function onRollOverHandler( e:MouseEvent ):void
-		{
-			//trace( "ArticleView::onRollOverHandler:", e.currentTarget.name );
-		}
-		
-		private function onRollOutHandler( e:MouseEvent ):void
-		{
-			//trace( "ArticleView::onRollOutHandler:", e.currentTarget.name );
-		}
-		
+				
 		/**********************************
 		 * Getters Setters
 		 **********************************/
