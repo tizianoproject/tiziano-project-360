@@ -1,6 +1,7 @@
 ﻿/** ----------------------------------------------------------- * Tiziano Project 360 Main Class   * ----------------------------------------------------------- * Description: Central Nervous System * - --------------------------------------------------------- * Created by: cmendez@tizianoproject.org * Modified by:  * Date Modified: Always * - --------------------------------------------------------- * Copyright ©2010 * - --------------------------------------------------------- * *  */package {	import flash.display.LoaderInfo;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.system.Security;
 	
 	import org.tizianoproject.Application;
 	import org.tizianoproject.model.MainObjectParams;
