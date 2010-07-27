@@ -48,7 +48,7 @@ package org.tizianoproject.view.components.article
 		
 		private function initBackground():void
 		{
-			graphics.beginFill( 0xff00ff, 0.4 );
+			graphics.beginFill( 0xff00ff, 0 );
 			graphics.drawRect( 0, 0, WIDTH, HEIGHT );
 			graphics.endFill();			
 		}

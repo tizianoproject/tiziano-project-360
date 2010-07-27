@@ -60,33 +60,31 @@ package org.tizianoproject.view.components.article
 		private var _author:String;
 		private var _vo:Story;
 		
-		public function Feature( story:Story )
+		public function Feature(  )
 		{			
-			vo = story;
 
-			//Write the Title
-			
+		}
+		
+		override protected function init():void
+		{
+			//Write the Title	
 			writeTitle( vo.title );
 			
 			//Write Subheadline
 			writeSubhead( Math.random().toString() );
-
+			
 			//Set the Author Type
 			authorType( vo.authorType );
 			
 			//Load the image
 			loadImage( vo.image );
-		}
-		
-		override protected function init():void
-		{
 			buttonMode = true;
-			addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );			
 		}
 		
 		private function authorType( value:String ):void
 		{
-			authorType_mc.gotoAndStop( value );
+			//trace( "Feature::authorType:", value );
+			authorType_mc.gotoAndStop( value.toLowerCase() );
 		}
 		
 		private function loadImage( url:String ):void
@@ -138,7 +136,7 @@ package org.tizianoproject.view.components.article
 		private function drawImage( ):void
 		{
 			bmp = imageLoad.contentAsBitmap;
-			ShowHideManager.addContent( image_mc, bmp );			
+			ShowHideManager.addContent( image_mc, bmp );
 		}
 
 		/**********************************
@@ -147,11 +145,6 @@ package org.tizianoproject.view.components.article
 		private function onCompleteHandler( e:Event ):void
 		{
 			drawImage();
-		}
-		
-		private function onMouseClickHandler( e:MouseEvent ):void
-		{
-			trace( "Feature::onMouseClickHandler:", e.currentTarget.name );			
 		}
 		
 		private function onErrorHandler( e:ErrorEvent ):void
