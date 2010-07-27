@@ -20,6 +20,7 @@ package org.tizianoproject.view
 	import org.tizianoproject.events.BaseViewEvent;
 	import org.tizianoproject.model.IModel;
 	import org.tizianoproject.model.vo.Author;
+	import org.tizianoproject.model.vo.Story;
 	import org.tizianoproject.view.components.article.Feature;
 	import org.tizianoproject.view.components.article.FeatureHolder;
 	import org.tizianoproject.view.components.article.Scroller;
@@ -32,7 +33,6 @@ package org.tizianoproject.view
 		private static const MAX_OTHER_AUTHORS:Number = 6;
 		
 		private var iModel:IModel;
-		private var _vo:Author;
 		
 		public var baseView_mc:BaseView;
 
@@ -54,12 +54,14 @@ package org.tizianoproject.view
 		private var featureHolder:MovieClip;
 		private var feature:Feature;
 		private var featureScrollBar:Scroller;
+
+		private var _vo:Author;
 		
 		public function ProfileView( m:IModel )
 		{
 			x = DEFAULT_POS.x;
 			y = DEFAULT_POS.y;
-
+			
 			iModel = m;
 		}
 
@@ -144,8 +146,9 @@ package org.tizianoproject.view
 				var xx:Number = i%columns;
 				var yy:Number = Math.floor(i/columns);
 				
-				feature = new Feature( array[i] );
+				feature = new Feature(  );
 				feature.name = "feature" + i;
+				feature.vo = array[i];
 				feature.addEventListener(MouseEvent.CLICK, onFeatureClickHandler, false, 0, true );
 				//Feature.y is overriden to include DEFAULT_Y_POS
 				feature.y = (i * feature.height);
@@ -235,8 +238,14 @@ package org.tizianoproject.view
 		
 		private function onFeatureClickHandler( e:MouseEvent ):void
 		{
-			trace( "ProfileView::onFeatureClickHandler:" );
-			dispatchEvent( e );
+			var data:Story = e.currentTarget.vo as Story;
+			sendToApp( { view: "articleView", data: data } );
+		}
+
+		private function sendToApp( obj:Object ):void
+		{
+			//trace( "ProfileView::sendToApp:", obj.data.authorName );
+			dispatchEvent( new BaseViewEvent( BaseViewEvent.OPEN, obj ) );
 		}
 
 		private function onFeatureHolderRemovedHandler( e:Event ):void
