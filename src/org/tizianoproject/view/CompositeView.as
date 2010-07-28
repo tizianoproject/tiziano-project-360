@@ -1,15 +1,20 @@
 package org.tizianoproject.view
 {	
 	import com.chargedweb.swfsize.SWFSize;
+	import com.chargedweb.swfsize.SWFSizeEvent;
 	
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.FullScreenEvent;
 
-	public class CompositeView extends MovieClip
-	{		
+	public class CompositeView extends ComponentView
+	{
+		private var children:Array;
+		
 		public function CompositeView()
 		{
+			children = new Array();
+			
 			addEventListener( Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
 			addEventListener( Event.ADDED, onAddedHandler, false, 0, true );
 			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
@@ -19,19 +24,35 @@ package org.tizianoproject.view
 		{
 		}
 		
-		protected function resize( ):void
+		protected function resize( e:FullScreenEvent ):void
 		{
-			
 		}
 		
 		protected function unload():void
 		{
 			
 		}	
+
+		override public function add(c:ComponentView) : void
+		{
+			children.push( c );
+		}
 		
 		/**********************************
 		 * Event Handlers
-		 **********************************/		
+		 **********************************/	
+		//This must remain public in order for Application.as::swfSizer can access
+		public function swfSizerHandler( e:SWFSizeEvent ):void
+		{
+			//trace( "CompositeView::swfSizerHandler:", e.topY, e.bottomY, e.leftX, e.rightX, e.windowWidth, e.windowHeight );
+			
+			//Notify to all the children that the browser has updated
+			for each( var c:ComponentView in children )
+			{
+				c.browserResize( e );
+			}
+		}
+		
 		protected function onAddedHandler( e:Event ):void
 		{
 			//trace( "CompositeView::onAddedHandler:", e.target );
@@ -51,8 +72,7 @@ package org.tizianoproject.view
 		
 		protected function onFullScreenHandler( e:FullScreenEvent ):void
 		{
-			resize( );
+			resize( e );
 		}
-				
 	}
 }
