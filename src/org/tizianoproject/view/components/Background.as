@@ -22,8 +22,6 @@ package org.tizianoproject.view.components
 	import flash.profiler.showRedrawRegions;
 	import flash.system.LoaderContext;
 	
-	import nl.demonsters.debugger.MonsterDebugger;
-	
 	import org.tizianoproject.view.CompositeView;
 	
 	public class Background extends CompositeView
@@ -38,8 +36,7 @@ package org.tizianoproject.view.components
 		private var browserHeight:Number;
 		private var aspectRatio:Number;
 				
-		private var loaderContext:LoaderContext;
-		private var bitmap:Bitmap;
+		private var bmp:Bitmap;
 		private var bgLoader:Loader;		
 		
 		public function Background()
@@ -51,22 +48,21 @@ package org.tizianoproject.view.components
 			loadBackground();
 		}
 
-		private function bitmapIsLoaded():Boolean
-		{
-			return ( bitmap ) ? true : false;
-		}
-		
 		private function loadBackground():void
 		{
-			loaderContext = new LoaderContext( true );
 			bgLoader = new Loader();				
 			bgLoader.name = "bgLoader";
 			bgLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true ); 
 			bgLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true ); 
 			bgLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
 			bgLoader.addEventListener( IOErrorEvent.NETWORK_ERROR, onErrorHandler, false, 0, true );
-			bgLoader.load( new URLRequest( DEFAULT_BG_IMAGE ), loaderContext );
+			bgLoader.load( new URLRequest( DEFAULT_BG_IMAGE ), new LoaderContext( true ) );
 			ShowHideManager.addContent( (this as Background), bgLoader );
+		}
+		
+		private function bitmapIsLoaded():Boolean
+		{
+			return ( bmp ) ? true : false;
 		}
 		
 		private function showBitmap( e:Event ):void
@@ -75,45 +71,15 @@ package org.tizianoproject.view.components
 				assetLoader.alpha = 0;
 			var asset:LoaderInfo = e.currentTarget as LoaderInfo;
 			//Assign the background image
-			bitmap = asset.content as Bitmap;
-			defaultWidth = bitmap.width;
-			defaultHeight = bitmap.height;
+			bmp = asset.content as Bitmap;
+			defaultWidth = bmp.width;
+			defaultHeight = bmp.height;
 			//Create an Aspect Ratio for the Background IMage
 			aspectRatio = defaultWidth / defaultHeight;
 			//Resize the Bitmap to fit either the browser or Theatre Mode (Full Screen)
-			resize();
+			resize( new FullScreenEvent( "normal" ) );
 			//Tween in the image
 			TweenLite.to( assetLoader, 1, { alpha: 1 } ); 			
-		}
-		
-		//Resize Bitmap handles fullScreen and normalScreen so that you only need to update from one place
-		override protected function resize( ):void
-		{
-			//Adjust the image to the browser window
-			if( stage.displayState == StageDisplayState.FULL_SCREEN ){
-				adjustSize( stage.stageWidth, (stage.stageHeight / aspectRatio) );				
-			} else {
-				//Adjust the Background to match the size of the browser
-				if( browserWidth && browserHeight ) adjustSize( browserWidth, browserHeight );
-				//SWF is being loaded from IDE
-				else adjustSize( defaultWidth, defaultHeight );
-			}			
-		}
-
-		//Not in use
-		private function removeBitmap( name:String ) :void
-		{
-			var childName:String = name;
-			var container:MovieClip = (this as Background);
-
-			if( container.getChildByName( childName ) != null){
-				//Next check if it's currently visible. If it is, then remove it from the stage
-				if( container.getChildByName( childName ).visible ){
-					//Destroy the BitmapData and lower the memory
-					Bitmap( container.getChildByName( childName ) ).bitmapData.dispose();
-					container.removeChild( container.getChildByName( childName ) );					
-				}
-			}			  
 		}
 		
 		private function adjustSize( w:Number, h:Number ):void
@@ -134,20 +100,39 @@ package org.tizianoproject.view.components
 		}
 		
 		/**********************************
-		 * Event
-		 **********************************/	
-		public function swfSizerHandler( e:SWFSizeEvent ):void
+		 * Resize
+		 **********************************/
+		override public function browserResize(e:SWFSizeEvent):void
 		{
 			//Keep track of the Browser Window
 			browserWidth = e.windowWidth;
-			browserHeight = e.windowHeight;
-			
+			browserHeight = e.windowHeight;			
 			//trace( "Background::swfSizerHandler:", e.type, e.windowWidth, e.windowHeight );
-			resize();
+			
+			resize( new FullScreenEvent( "normal" ) );
 		}
 		
+		//Resize Bitmap handles fullScreen and normalScreen so that you only need to update from one place
+		override protected function resize(e:FullScreenEvent):void
+		{
+			//Adjust the image to the browser window
+			if( stage.displayState == StageDisplayState.FULL_SCREEN ){
+				adjustSize( stage.stageWidth, (stage.stageHeight / aspectRatio) );				
+			} else {
+				//Adjust the Background to match the size of the browser
+				if( browserWidth && browserHeight ) adjustSize( browserWidth, browserHeight );
+					//SWF is being loaded from IDE
+				else adjustSize( defaultWidth, defaultHeight );
+			}			
+		}
+		
+		
+		/**********************************
+		 * Event
+		 **********************************/	
 		private function onCompleteHandler( e:Event ):void
 		{
+			trace( "Background:onCompleteHandler:" );
 			showBitmap( e );
 		}
 		
