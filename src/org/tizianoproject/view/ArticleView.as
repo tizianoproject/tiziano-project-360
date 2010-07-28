@@ -11,7 +11,7 @@
  * - ---------------------------------------------------------
  *
  * Notes: 
- * var currentIndex:Number keeps track of all the stories:Array
+ * var currentIndex:Number keeps track of all the authorStories:Array
  * var story.id is the uniqueID of the story:Story
  *
  */
@@ -25,6 +25,7 @@ package org.tizianoproject.view
 	
 	import flash.display.MovieClip;
 	import flash.display.SimpleButton;
+	import flash.display.StageDisplayState;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.FullScreenEvent;
@@ -88,7 +89,7 @@ package org.tizianoproject.view
 
 		private var _currentStory:Story;
 		private var _currentIndex:Number;		
-		private var _stories:Array;
+		private var _authorStories:Array;
 
 		public function ArticleView( m:IModel )
 		{			
@@ -98,6 +99,27 @@ package org.tizianoproject.view
 			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 		}
 		
+		/**********************************
+		 * Model
+		 **********************************/
+		private function getAuthor( authorName:String ):Author
+		{
+			return iModel.getAuthorByName( authorName );
+		}
+		
+		private function getArticle( uniqueID:Number ):Story
+		{
+			return iModel.getArticleByArticleID( uniqueID );
+		}
+		
+		private function getAllArticles( uniqueID:Number ):Array
+		{
+			return iModel.getAllAuthorArticlesByID( uniqueID );
+		}
+		
+		/**********************************
+		 * Init
+		 **********************************/
 		override protected function init():void
 		{
 			//Position the ArticleView
@@ -105,7 +127,7 @@ package org.tizianoproject.view
 			defaultHeight = stage.stageHeight;
 			
 			updatePosition( );
-			
+
 			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
 		}
 		
@@ -115,9 +137,9 @@ package org.tizianoproject.view
 
 		public function loadStory( ):void
 		{	
-			currentStory = stories[currentIndex] as Story
+			currentStory = authorStories[currentIndex] as Story
 			//trace( "ArticleView::loadStory", currentStory.id, currentStory.storyType );
-				
+
 			if( currentStory ){
 				//Display Title
 				writeTitle( currentStory.title );
@@ -128,33 +150,47 @@ package org.tizianoproject.view
 				showAuthorType( currentStory.authorType );
 				
 				//trace( "ArticleView::loadStory:", currentStory.storyType );
-				//Display Story
-				switch( currentStory.storyType ){
-					case "article":
-						initText( currentStory );
-						break;
-					case "slideshow":
-						initSlideshow( currentStory );
-						break;
-					case "video":
-						if( video ){
-							video.load( currentStory.id );
-							video.visible = true;
-						} else {
-							initVideo( currentStory );						
-						}
-						break;
-					case "soundslide":
-						initSoundSlide( currentStory );
-						break;
-					case "photo":
-						initSoundSlide( currentStory );
-						break
-				}
+				//Switch Story
+				switchStory( )
 				
 				//Add new Related Features
 				if( currentStory.related.length > 0 ) initFeatures( currentStory.related );
 			}
+			
+			if ( authorStories.length < 2 ){
+				next_btn.visible = false;
+				prev_btn.visible = true;
+			} else {
+				next_btn.visible = true;
+				prev_btn.visible = true;
+			}
+			
+		}
+		
+		private function switchStory( ):void
+		{
+			switch( currentStory.storyType ){
+				case "article":
+					initText( currentStory );
+					break;
+				case "slideshow":
+					initSlideshow( currentStory );
+					break;
+				case "video":
+					if( video ){
+						video.load( currentStory.id );
+						video.visible = true;
+					} else {
+						initVideo( currentStory );						
+					}
+					break;
+				case "soundslide":
+					initSoundSlide( currentStory );
+					break;
+				case "photo":
+					initSoundSlide( currentStory );
+					break;
+			}			
 		}
 		
 		private function writeTitle( value:String ):void
@@ -228,10 +264,9 @@ package org.tizianoproject.view
 				var yy:Number = Math.floor(i/columns);
 				
 				//Get the Story based on the Reponse ID
-				var story:Story = iModel.getArticleByArticleID( array[i] );
 					//Create a new Feature
 					feature = new Feature( );
-					feature.vo = story;
+					feature.vo = getArticle( array[i] ) as Story;
 					feature.name = "feature" + i;
 					feature.addEventListener(MouseEvent.CLICK, onFeatureClickHandler, false, 0, true );
 					//Feature.y is overriden to include DEFAULT_Y_POS
@@ -253,18 +288,8 @@ package org.tizianoproject.view
 		
 		private function showAuthorType( value:String ):void
 		{
-			authorType_mc.gotoAndStop( value );
+			authorType_mc.gotoAndStop( value.toLowerCase() );
 		}
-
-		//Get the Story that the User Clicked on
-		private function getAuthorStories( feature:Feature ):Array
-		{
-			var primaryStory:Story = iModel.getArticleByArticleID( feature.vo.id );
-			var otherStories:Array = iModel.getOtherArticlesByAuthorName( primaryStory.authorName, primaryStory.id );
-			otherStories.unshift( primaryStory );
-			
-			return otherStories;
-		}		
 
 		/**********************************
 		 * Clean Up
@@ -277,6 +302,7 @@ package org.tizianoproject.view
 		
 		private function unloadStories( ):void
 		{
+//!!!
 			//Video
 			//if ( video ) video.visible = false;
 			
@@ -289,20 +315,29 @@ package org.tizianoproject.view
 		}
 
 		/**********************************
-		 * Update Position
-		 **********************************/
-		override protected function resize():void
+		 * Resize
+		 **********************************/		
+		override public function swfSizerHandler(e:SWFSizeEvent):void
 		{
-			//trace( "ArticleView::onFullScreenHandler:", stage.fullScreenWidth, stage.fullScreenHeight );
-			updatePosition();			
+			trace( "ArticleView::swfSizerHandler:" );
+			browserWidth = e.windowWidth;
+			browserHeight = e.bottomY;
+			
+			updatePosition( );			
+		}
+		
+		override protected function resize(e:FullScreenEvent):void
+		{
+			updatePosition()
 		}
 		
 		private function updatePosition( ):void
 		{
+			trace( "ArticleView::updatePosition:" );
 			if( stage ){
-				if( stage.displayState == "fullScreen" ){
-					x = stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 );
-					y = stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 );
+				if( stage.displayState == StageDisplayState.FULL_SCREEN ){
+						x = stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 );
+						y = stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 );
 				} else {
 					if( browserWidth && browserHeight ){
 						var dynWidth:Number = ( browserWidth > MIN_WIDTH) ? browserWidth : MIN_WIDTH;
@@ -322,16 +357,7 @@ package org.tizianoproject.view
 		
 		/**********************************
 		 * Event Handlers
-		 **********************************/
-		public function swfSizerHandler( e:SWFSizeEvent ):void
-		{
-			browserWidth = e.windowWidth;
-			browserHeight = e.bottomY;
-			
-			trace( "ArticleView::swfSizerHandler:" );
-			updatePosition( );
-		}
-		
+		 **********************************/		
 		private function onBaseCloseHandler( e:BaseViewEvent ):void
 		{
 			//trace( e.results.name, "::onBaseCloseHandler:" );
@@ -341,22 +367,22 @@ package org.tizianoproject.view
 		private function onTextLinkHandler( e:TextEvent ):void
 		{
 			//trace( "ArticleView::onTextLinkHandler:", e.text );
-			var data:Author = iModel.getAuthorByName( e.text );
-			sendToApp( { view: "profileView", data: data } );
+			var object:Object = new Object();
+				object.view = "profileView";
+				object.data = getAuthor( e.text );
+				sendToApp( object );
 		}
 		
 		private function sendToApp( obj:Object ):void
 		{
 			dispatchEvent( new BaseViewEvent( BaseViewEvent.OPEN, obj ) );
 		}
-
 		
 		private function onFeatureClickHandler( e:MouseEvent ):void
 		{
 			//trace( "ArticleView:onClickFeatureHandler" );			
-			//Assign New Stories
 			//Get the Selected Author's Stories
-			stories = getAuthorStories( (e.currentTarget as Feature) );
+			authorStories = getAllArticles( (e.currentTarget as Feature).vo.id );
 			//Start the Story at the one the User Selected
 			currentIndex = 0;
 			//Start
@@ -365,33 +391,33 @@ package org.tizianoproject.view
 		
 		private function onMouseClickHandler( e:MouseEvent ):void
 		{
-			//trace( "ArticleView::onMouseClickHandler:", stories.length );
+			//trace( "ArticleView::onMouseClickHandler:", authorStories.length );
 			//Change the Index to Flip Stories
 			switch( e.currentTarget.name ){
 				case "next_btn":
-					if( currentIndex == stories.length - 1 ) currentIndex = 0;
+					if( currentIndex == authorStories.length - 1 ) currentIndex = 0;
 					else currentIndex++;
 					break;
 				case "prev_btn":
-					if( currentIndex == 0 ) currentIndex = stories.length - 1;
+					if( currentIndex == 0 ) currentIndex = authorStories.length - 1;
 					else currentIndex--;
 					break;
 			}
 			//You must have more than one story to cycle through
-			if( stories.length > 1 ) cycleStories();	
+			if( authorStories.length > 1 ) cycleStories();	
 		}
 				
 		/**********************************
 		 * Getters Setters
 		 **********************************/
-		public function set stories( value:Array ):void
+		public function set authorStories( value:Array ):void
 		{
-			_stories = value;
+			_authorStories = value;
 		}
 		
-		public function get stories():Array
+		public function get authorStories():Array
 		{
-			return _stories;
+			return _authorStories;
 		}
 		
 		public function set currentIndex( value:Number ):void

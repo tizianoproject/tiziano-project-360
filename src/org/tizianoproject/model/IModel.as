@@ -11,7 +11,7 @@ package org.tizianoproject.model
 		function load( path:String ):void
 			
 		//StudentView + MentorView
-		function getAuthorsByType( authorType:String, authorName:String=null ):Array
+		function getAuthorsByType( authorType:String, authorName:String=null, isRandom:Boolean=false ):Array
 			
 		//Author
 		function getAuthorByName( authorName:String ):Author
@@ -22,5 +22,7 @@ package org.tizianoproject.model
 		function getAllArticlesByAuthorName( authorName:String ):Array			
 			
 		function getArticleByArticleID( uniqueID:Number ):Story
+		//Gets all author articles with the uniqueID story having priority
+		function getAllAuthorArticlesByID( uniqueID:Number ):Array
 	}
 }

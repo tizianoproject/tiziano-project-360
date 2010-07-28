@@ -77,7 +77,7 @@ package org.tizianoproject.view
 		
 		private function getRelatedAuthors( authorType:String, authorName:String ):Array
 		{
-			return iModel.getAuthorsByType( authorType, authorName );
+			return iModel.getAuthorsByType( authorType, authorName, true );
 		}
 		
 		/**********************************

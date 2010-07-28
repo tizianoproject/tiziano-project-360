@@ -60,7 +60,7 @@ package org.tizianoproject.view.components.profile
 		}
 
 		//Redraw the Image for a smaller size
-		private function drawImage( ):void
+		private function drawBitmap( ):void
 		{
 			bmp = imageLoad.contentAsBitmap;
 			
@@ -100,7 +100,7 @@ package org.tizianoproject.view.components.profile
 		
 		private function onCompleteHandler( e:Event ):void
 		{
-			drawImage( );
+			drawBitmap( );
 		}
 		
 		private function onAddedHandler( e:Event ):void

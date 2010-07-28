@@ -79,7 +79,7 @@ package org.tizianoproject.model
 		//Authors
 		////////////////////////////////
 		//Used for ReportersView and AuthorsView
-		public function getAuthorsByType( authorType:String, authorName:String=null ):Array
+		public function getAuthorsByType( authorType:String, authorName:String=null, isRandom:Boolean=false ):Array
 		{
 			//trace( "XMLLoader::getAuthorsByType:", getAuthor().child("profile").(child("author_type") == authorType) );
 			var profileList:XMLList = getAuthor().child("profile").(child("author_type") == authorType);
@@ -90,7 +90,8 @@ package org.tizianoproject.model
 				//If there is an authorName:String and it matches an author.name in the array, don't use it
 				if( authorName != author.name ) authors.push( author );
 			}
-			return ArrayUtil.randomize( authors );
+			var array:Array = ( isRandom ) ? ArrayUtil.randomize( authors ) : authors; 
+			return array;
 		}
 
 		public function getAuthorByName( authorName:String ):Author
@@ -128,6 +129,14 @@ package org.tizianoproject.model
 		////////////////////////////////
 		//Articles 
 		////////////////////////////////
+		public function getAllAuthorArticlesByID( uniqueID:Number ):Array
+		{
+			var primaryStory:Story = getArticleByArticleID( uniqueID );
+			var otherStories:Array = getOtherArticlesByAuthorName( primaryStory.authorName, primaryStory.id );
+				otherStories.unshift( primaryStory );
+			return otherStories;
+		}
+		
 		public function getOtherArticlesByAuthorName( authorName:String, storyID:Number ):Array
 		{
 			trace( "XMLLoader::getOtherArticlesByAuthorName:" );
@@ -239,11 +248,11 @@ package org.tizianoproject.model
 				}
 			}
 			//Remove the Featured story from the Related Stories
-			ArrayUtil.removeItem( IDs, primaryStoryID );
 			//Remove any Duplicate Featured Stories
-			ArrayUtil.removeDuplicates( IDs );
+			var array:Array = ArrayUtil.removeDuplicates( IDs );
+			ArrayUtil.removeItem( array, primaryStoryID );
 			//Randomize the Stories
-			return ArrayUtil.randomize( IDs );
+			return ArrayUtil.randomize( array );
 			//trace( "All Stories:", IDs.length, "Unique Stories:", story.related.length );			
 		}
 		
