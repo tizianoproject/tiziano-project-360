@@ -156,14 +156,8 @@ package org.tizianoproject.view
 				//Add new Related Features
 				if( currentStory.related.length > 0 ) initFeatures( currentStory.related );
 			}
-			
-			if ( authorStories.length < 2 ){
-				next_btn.visible = false;
-				prev_btn.visible = true;
-			} else {
-				next_btn.visible = true;
-				prev_btn.visible = true;
-			}
+
+			displayButtons();
 			
 		}
 		
@@ -204,6 +198,18 @@ package org.tizianoproject.view
 			author_txt.styleSheet = CSSFormatter.simpleUnderline();
 			author_txt.addEventListener(TextEvent.LINK, onTextLinkHandler, false, 0, true );
 		}
+		
+		private function displayButtons():void
+		{
+			if ( authorStories.length < 2 ){
+				next_btn.visible = false;
+				prev_btn.visible = false;
+			} else {
+				next_btn.visible = true;
+				prev_btn.visible = true;
+			}			
+		}
+		
 		/**********************************
 		 * Story Types
 		 **********************************/
