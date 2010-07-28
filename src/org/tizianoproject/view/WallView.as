@@ -22,14 +22,9 @@ package org.tizianoproject.view
 	public class WallView extends CompositeView
 	{
 		private static const MIN_WIDTH:Number = 800;
-
 		private static const TWEEN_SPEED:Number = 0.5;
 
-		private var browserWidth:Number;
-		private var browserHeight:Number;
-		
 		private var swfLoader:Loader;
-		private var loaderContext:LoaderContext;
 		
 		public function WallView( )
 		{
@@ -39,13 +34,12 @@ package org.tizianoproject.view
 		
 		public function loadWall( path:String ):void
 		{
-			loaderContext = new LoaderContext( true );
 			swfLoader = new Loader();				
 			swfLoader.name = "swfLoader";
 			swfLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true ); 
 			swfLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true ); 
 			swfLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
-			swfLoader.load( new URLRequest( path ), loaderContext );
+			swfLoader.load( new URLRequest( path ), new LoaderContext( true ) );
 			ShowHideManager.addContent( (this as WallView), swfLoader );			
 		}
 		
@@ -64,13 +58,6 @@ package org.tizianoproject.view
 		/**********************************
 		 * Event
 		 **********************************/		
-		public function swfSizerHandler( e:SWFSizeEvent ):void
-		{
-			//trace( "HeaderView::swfSizerHandler:", e.topY, e.bottomY, e.leftX, e.rightX, e.windowWidth, e.windowHeight );
-			browserWidth = e.rightX;
-			browserHeight = e.bottomY;
-		}
-		
 		private function onCompleteHandler( e:Event ):void
 		{
 			trace( "WallView::onCompleteHandler:", "Wall is LOADED" );
