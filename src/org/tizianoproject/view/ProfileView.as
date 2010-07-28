@@ -30,6 +30,8 @@ package org.tizianoproject.view
 	{
 		private static const DEFAULT_POS:Point = new Point( 65, 71 );
 		private static const DEFAULT_AVATAR_POS:Point = new Point( 11, 11 );
+		private static const DEFAULT_RELATED_AUTHOR_POS:Point = new Point( 45, 510);
+		private static const DEFAULT_TABLE_COLUMNS:Number = 1;
 		private static const MAX_OTHER_AUTHORS:Number = 6;
 		
 		private var iModel:IModel;
@@ -46,7 +48,7 @@ package org.tizianoproject.view
 		
 		private var loaderContext:LoaderContext
 		private var imageLoad:ImageLoad;
-		private var avatar:Bitmap;
+		private var bmp:Bitmap;
 		
 		private var relatedAuthorHolder:MovieClip;
 		private var relatedAuthor:RelatedAuthor;
@@ -65,6 +67,22 @@ package org.tizianoproject.view
 			iModel = m;
 		}
 
+		/**********************************
+		 * Model Requests
+		 **********************************/
+		private function getAllArticlesByAuthorName( authorName:String ):Array
+		{
+			return iModel.getAllArticlesByAuthorName( authorName );
+		}
+		
+		private function getRelatedAuthors( authorType:String, authorName:String ):Array
+		{
+			return iModel.getAuthorsByType( authorType, authorName );
+		}
+		
+		/**********************************
+		 * Init
+		 **********************************/
 		override protected function init():void
 		{
 			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
@@ -75,18 +93,32 @@ package org.tizianoproject.view
 			writeName( "" );
 			writeLocation( "" );
 			writeAux( "" );
-			writeIntro( "" );			
+			writeIntro( "" );	
+
+			//Destroy the bitmap
+			clearBitmap();
+			//Destroy the Loader
+			clearLoader()
+
+			//Load New Profile
+			ShowHideManager.unloadContent( featureHolder );
+			ShowHideManager.unloadContent( relatedAuthorHolder );
 		}
 	
 		public function load(  ):void
 		{
-			//trace( "ProfileView::load:", vo.name );
+			//trace( "ProfileView::load:", vo.name, vo.intro, vo.city, vo.region, vo.age );
+			///////////////////////////
+			//Author
+			///////////////////////////
+			loadAvatar( vo.avatar );
+			
 			writeName( vo.name );
 			writeIntro( vo.intro );
 			writeLocation( vo.city + " " + vo.region );
 			writeTitle( vo.name );
 			
-			if( vo.type == "Mentor" ){
+			if( vo.type.toLocaleLowerCase() == "mentor" ){
 				writeOther( "Other Mentors" );
 				//Mentors: University, Students:Age 
 				writeAux( vo.age );
@@ -95,37 +127,56 @@ package org.tizianoproject.view
 				//Mentors: University, Students:Age 
 				writeAux( vo.age );
 			}
-			
-			imageLoad = new ImageLoad( new URLRequest( vo.avatar ), loaderContext );
-			imageLoad.addEventListener(LoadEvent.COMPLETE, onCompleteHandler, false, 0, true );
-			imageLoad.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
-			imageLoad.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
-			imageLoad.start();
-			
+
+			///////////////////////////
+			//Features
+			///////////////////////////
 			initFeatureHolder();
 			
-			var articles:Array = iModel.getAllArticlesByAuthorName( vo.name );
-			loadArticles( articles );
+			///////////////////////////
+			//Articles
+			///////////////////////////			
+			loadArticles( getAllArticlesByAuthorName( vo.name ) );
 			
+			///////////////////////////
+			//Related Authors
+			///////////////////////////			
 			initAuthorHolder();
-			var otherAuthors:Array = iModel.getAuthorsByType( vo.type, vo.name );
-			for (var i:uint = 0; i <= MAX_OTHER_AUTHORS; i++){
+			var relatedAuthors:Array = getRelatedAuthors( vo.type, vo.name );
+			var totalAuthors:Number = (relatedAuthors.length > MAX_OTHER_AUTHORS ) ? MAX_OTHER_AUTHORS : relatedAuthors.length
+			for (var i:uint = 0; i <= totalAuthors - 1; i++){
 				relatedAuthor = new RelatedAuthor();
 				relatedAuthor.name = "relatedAuthor" + i;
 				relatedAuthor.x = i;
-				relatedAuthor.vo = otherAuthors[i];
-				relatedAuthor.load( otherAuthors[i].avatar );
+				relatedAuthor.vo = relatedAuthors[i];
+				relatedAuthor.load( relatedAuthors[i].avatar );
 				relatedAuthor.addEventListener( MouseEvent.CLICK, onRelatedAuthorClickHandler, false, 0, true );
 				ShowHideManager.addContent( relatedAuthorHolder, relatedAuthor );
 			}
 		}
 		
+		private function loadAvatar( path:String ):void
+		{
+			imageLoad = new ImageLoad( new URLRequest( path ), loaderContext );
+			imageLoad.addEventListener(LoadEvent.COMPLETE, onCompleteHandler, false, 0, true );
+			imageLoad.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
+			imageLoad.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
+			imageLoad.start();
+		}
+		
+		private function drawBitmap():void
+		{
+			bmp = imageLoad.contentAsBitmap;
+			bmp.x = DEFAULT_AVATAR_POS.x;
+			bmp.y = DEFAULT_AVATAR_POS.y;
+			ShowHideManager.addContent( avatar_mc, bmp );			
+		}		
+		
 		private function initFeatureHolder():void
 		{
 			//Collect all the Features in an Array
-			featureHolder = new FeatureHolder();			
+			featureHolder = new FeatureHolder();
 			featureHolder.name = "featureHolder";
-			featureHolder.addEventListener(Event.REMOVED, onFeatureHolderRemovedHandler, false, 0, true );
 			ShowHideManager.addContent( (this as ProfileView), featureHolder );			
 		}
 		
@@ -133,20 +184,19 @@ package org.tizianoproject.view
 		{
 			relatedAuthorHolder = new MovieClip();
 			relatedAuthorHolder.name = "relatedAuthorHolder";
-			relatedAuthorHolder.x = 45;
-			relatedAuthorHolder.y = 510;
+			relatedAuthorHolder.x = DEFAULT_RELATED_AUTHOR_POS.x;
+			relatedAuthorHolder.y = DEFAULT_RELATED_AUTHOR_POS.y;
 			ShowHideManager.addContent( (this as ProfileView), relatedAuthorHolder );
 		}
 		
 		private function loadArticles( array:Array):void
 		{
-			var totalFeatures:Number = array.length;
-			var columns:Number = 1;
-			for( var i:Number = 0; i < totalFeatures; i++ ){
+			var columns:Number = DEFAULT_TABLE_COLUMNS;
+			for( var i:Number = 0; i < array.length; i++ ){
 				var xx:Number = i%columns;
 				var yy:Number = Math.floor(i/columns);
-				
-				feature = new Feature(  );
+
+				feature = new Feature( );
 				feature.name = "feature" + i;
 				feature.vo = array[i];
 				feature.addEventListener(MouseEvent.CLICK, onFeatureClickHandler, false, 0, true );
@@ -162,12 +212,10 @@ package org.tizianoproject.view
 		private function initFeatureScrollBar():void
 		{
 			//trace( "ProfileView::initFeatureScrollBar:" );
-			//Create the Features Holder
 			featureScrollBar = new Scroller( featureHolder );
 			featureScrollBar.name = "featureScrollBar";
 			ShowHideManager.addContent( (this as ProfileView), featureScrollBar );
 		}
-
 		
 		private function writeName( value:String ):void
 		{
@@ -199,12 +247,15 @@ package org.tizianoproject.view
 			title_txt.text = value + "'s Stories";
 		}
 		
-		private function drawImage():void
+		private function clearBitmap():void
 		{
-			avatar = imageLoad.contentAsBitmap;
-			avatar.x = DEFAULT_AVATAR_POS.x;
-			avatar.y = DEFAULT_AVATAR_POS.y;
-			ShowHideManager.addContent( avatar_mc, avatar );			
+			//Delete the current image
+			if( bmp ) bmp.bitmapData.dispose();			
+		}
+		
+		private function clearLoader():void
+		{
+			if( imageLoad ) imageLoad.destroy();
 		}
 		
 		/**********************************
@@ -213,7 +264,7 @@ package org.tizianoproject.view
 		private function onCompleteHandler( e:LoadEvent ):void
 		{
 			//trace( "ProfileView::onCompleteHandler:" );
-			drawImage();
+			drawBitmap();
 		}
 		
 		private function onErrorHandler( e:ErrorEvent ):void
@@ -225,20 +276,18 @@ package org.tizianoproject.view
 		{
 //			trace( "ProfileView::onRelatedAuthorClickHandler:"  );
 			var ra:RelatedAuthor = e.currentTarget as RelatedAuthor;
-			//change the Data Information
-			vo = ra.vo;
-			//Delete the current image
-			avatar.bitmapData.dispose();
-			//Load New Profile
-			ShowHideManager.unloadContent( featureHolder );
-			ShowHideManager.unloadContent( relatedAuthorHolder );
-			//
+			//Change the Data
+			vo = ra.vo;	
+			//Unload the Data
+			unload();
+			//Reload
 			load();			
 		}
 		
 		private function onFeatureClickHandler( e:MouseEvent ):void
 		{
 			var data:Story = e.currentTarget.vo as Story;
+			
 			sendToApp( { view: "articleView", data: data } );
 		}
 
@@ -248,13 +297,9 @@ package org.tizianoproject.view
 			dispatchEvent( new BaseViewEvent( BaseViewEvent.OPEN, obj ) );
 		}
 
-		private function onFeatureHolderRemovedHandler( e:Event ):void
-		{
-			//trace( "ArticleView::onFeatureHolderRemovedHandler:", featureHolder.numChildren );
-		}
-
 		private function onBaseCloseHandler( e:BaseViewEvent ):void
 		{
+			//trace( "ProfileView::onBaseCloseHandler:" );
 			dispatchEvent( e );
 		}		
 		/**********************************
