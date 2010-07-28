@@ -68,21 +68,6 @@ package org.tizianoproject.view
 			}
 		}
 		
-		override protected function resize( ):void
-		{
-			var w:Number = stage.stageWidth;
-			var h:Number = stage.stageHeight;
-			
-			//trace( "Background::onFullScreenHandler:", w, h );			
-			if( stage.displayState == StageDisplayState.FULL_SCREEN ){
-				updatePosition( stage.stageWidth - headerRight_mc.width );
-				updateBackground( stage.stageWidth );
-			} else {
-				updatePosition( browserWidth - headerRight_mc.width );
-				updateBackground( browserWidth );
-			}
-		}		
-		
 		/**********************************
 		 * 
 		 **********************************/
@@ -105,15 +90,30 @@ package org.tizianoproject.view
 		}
 
 		/**********************************
-		 * Event
+		 * Resize
 		 **********************************/		
-		public function swfSizerHandler( e:SWFSizeEvent ):void
+		override protected function resize(e:FullScreenEvent):void
+		{
+			var w:Number = stage.stageWidth;
+			var h:Number = stage.stageHeight;
+			
+			//trace( "HeaderView::onFullScreenHandler:", w, h );
+			if( stage.displayState == StageDisplayState.FULL_SCREEN ){
+				updatePosition( stage.stageWidth - headerRight_mc.width );
+				updateBackground( stage.stageWidth );
+			} else {
+				updatePosition( browserWidth - headerRight_mc.width );
+				updateBackground( browserWidth );
+			}			
+		}
+		
+		override public function browserResize(e:SWFSizeEvent):void
 		{
 			//trace( "HeaderView::swfSizerHandler:", e.topY, e.bottomY, e.leftX, e.rightX, e.windowWidth, e.windowHeight );
 			browserWidth = e.rightX;
 			
 			updatePosition( browserWidth - headerRight_mc.width );
-			updateBackground( browserWidth );
+			updateBackground( browserWidth );			
 		}		
 	}
 }
