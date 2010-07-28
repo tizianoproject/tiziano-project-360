@@ -25,8 +25,9 @@ package org.tizianoproject.view.components.directory
 	import flash.text.TextFieldAutoSize;
 	
 	import org.tizianoproject.model.vo.Author;
+	import org.tizianoproject.view.CompositeView;
 	
-	public class AuthorListing extends MovieClip
+	public class AuthorListing extends CompositeView
 	{
 		private static const DEFAULT_TEXT_X_POS:Number = 108;
 		private static const DEFAULT_NAME_POS:Point = new Point( DEFAULT_TEXT_X_POS, 6 );
@@ -38,7 +39,6 @@ package org.tizianoproject.view.components.directory
 		
 		private var bmp:Bitmap;
 		private var imageLoader:Loader;
-		private var loaderContext:LoaderContext;
 		
 		//Views
 		public var container_mc:MovieClip;
@@ -50,19 +50,18 @@ package org.tizianoproject.view.components.directory
 		
 		private var _id:Number;
 		private var _authorName:String;
-		
 		private var _vo:Author;
 		
 		public function AuthorListing()
 		{
+		}
+		
+		override protected function init():void
+		{
 			buttonMode = true;
-			loaderContext = new LoaderContext( true );
-			
-			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
-			addEventListener(Event.REMOVED_FROM_STAGE, removedFromStageHandler, false, 0, true );
-			
-			addEventListener( MouseEvent.ROLL_OVER, onMouseRollOverHandler, false, 0, true );
-			addEventListener( MouseEvent.ROLL_OUT, onMouseOutHandler, false, 0, true );
+			writeName( vo.name );
+			writeGrade( vo.age );
+			loadImage( vo.avatar );
 		}
 		
 		public function loadImage( url:String ):void
@@ -73,7 +72,7 @@ package org.tizianoproject.view.components.directory
 			imageLoader.addEventListener( IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true);
 			imageLoader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true);
 			imageLoader.contentLoaderInfo.addEventListener( Event.COMPLETE, onCompleteHandler, false, 0, true);
-			imageLoader.load( new URLRequest( url ), loaderContext );
+			imageLoader.load( new URLRequest( url ), new LoaderContext(true) );
 		}
 		
 		public function writeName( string:String ):void
@@ -130,11 +129,7 @@ package org.tizianoproject.view.components.directory
 			clearLoader();			
 		}
 		
-		private function init():void
-		{
-		}		
-		
-		private function unload():void
+		override protected function unload():void
 		{
 			clearLoader();
 			clearBitmap();
@@ -153,20 +148,6 @@ package org.tizianoproject.view.components.directory
 		/**********************************
 		 * Event Handlers
 		 **********************************/
-		private function onAddedToStageHandler( e:Event ):void
-		{
-			removeEventListener( e.type, arguments.callee );			
-			//trace( "Author::onAddedToStageHandler:" );
-			init();
-		}
-		
-		private function removedFromStageHandler( e:Event ):void
-		{
-			removeEventListener( e.type, arguments.callee );
-			//trace( "Author::removedFromStageHandler:" );
-			unload();
-		}
-		
 		private function onErrorHandler( e:ErrorEvent ):void
 		{
 			//trace( "Author::onErrorHandler:", e.text );
@@ -178,37 +159,17 @@ package org.tizianoproject.view.components.directory
 			drawImage( e.currentTarget as LoaderInfo );
 		}
 		
-		private function onMouseRollOverHandler( e:MouseEvent ):void
-		{
-			//trace( "Author::onMouseRollOverHandler:", e.currentTarget );
-		}
-		
-		private function onMouseOutHandler( e:MouseEvent ):void
-		{
-			//trace( "Author::onMouseOutHandler:", e.currentTarget );
-		}
-		
 		/**********************************
 		 * Read Write Accessors
 		 **********************************/
-		public function set id( value:Number ):void
-		{
-			_id = value;
-		}
-		
 		public function get id():Number
 		{
-			return _id;
+			return _vo.id;
 		}
 			
-		public function set authorName( value:String ):void
-		{
-			_authorName = value;
-		}
-		
 		public function get authorName():String
 		{
-			return _authorName;
+			return _vo.name;
 		}
 		
 		public function set vo( value:Author ):void
