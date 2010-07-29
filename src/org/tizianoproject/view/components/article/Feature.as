@@ -71,7 +71,7 @@ package org.tizianoproject.view.components.article
 			writeTitle( vo.title );
 			
 			//Write Subheadline
-			writeSubhead( Math.random().toString() );
+			writeSubhead( "By: " + vo.authorName );
 			
 			//Set the Author Type
 			authorType( vo.authorType );
@@ -105,7 +105,7 @@ package org.tizianoproject.view.components.article
 		
 		private function writeSubhead( value:String ):void
 		{
-			subhed_txt.text = value + "!!!";			
+			subhed_txt.text = value;			
 		}
 		
 		private function clearLoader():void
