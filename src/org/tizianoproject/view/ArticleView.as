@@ -334,7 +334,7 @@ package org.tizianoproject.view
 			browserHeight = e.bottomY;
 			//trace( "ArticleView::swfSizerHandler:", browserWidth, browserHeight );
 			
-			updatePosition();
+			if( stage ) updatePosition();
 		}
 		
 		override protected function resize(e:FullScreenEvent):void
@@ -344,6 +344,7 @@ package org.tizianoproject.view
 		
 		private function updatePosition(  ):void
 		{
+			trace( "Application::updatePosition:", stage.displayState );
 			if( stage.displayState == StageDisplayState.FULL_SCREEN ){
 				x = stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 );
 				y = stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 );

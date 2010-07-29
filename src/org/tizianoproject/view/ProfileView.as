@@ -283,7 +283,7 @@ package org.tizianoproject.view
 			browserHeight = e.bottomY;
 			//trace( "DirectoryView::browserResize:", browserWidth, browserHeight );
 			
-			updatePosition();			
+			if( stage ) updatePosition();			
 		}
 		
 		override protected function resize(e:FullScreenEvent):void
