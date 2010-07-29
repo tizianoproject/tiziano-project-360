@@ -37,6 +37,7 @@ package org.tizianoproject.view
 	import flash.text.TextField;
 	
 	import org.casalib.util.NumberUtil;
+	import org.tizianoproject.events.ArticleViewEvent;
 	import org.tizianoproject.events.BaseViewEvent;
 	import org.tizianoproject.model.IModel;
 	import org.tizianoproject.model.XMLLoader;
@@ -133,15 +134,19 @@ package org.tizianoproject.view
 		}
 		
 		override protected function unload():void{
+			//Dump the Stories
 			unloadStories();
 		}		
 
 		public function loadStory( ):void
 		{	
 			currentStory = authorStories[currentIndex] as Story
-			//trace( "ArticleView::loadStory", currentStory.id, currentStory.storyType );
-
+			//trace( "ArticleView::loadStory", currentStory.bgImage );
+			
 			if( currentStory ){
+				//Load a Background Image
+				if( currentStory.bgImage ) dispatchEvent( new ArticleViewEvent( ArticleViewEvent.LOAD_BG, { data: currentStory.bgImage } ) );
+				
 				//Display Title
 				writeTitle( currentStory.title );
 				//Display Author Name
@@ -309,8 +314,7 @@ package org.tizianoproject.view
 		{
 //!!!
 			//Video
-			//if ( video ) video.visible = false;
-			
+			//if ( video ) video.visible = false;			
 			ShowHideManager.removeContent( (this as ArticleView), "featureHolder"  );
 			ShowHideManager.removeContent( (this as ArticleView), "featureScrollBar" );
 
