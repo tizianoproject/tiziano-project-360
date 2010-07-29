@@ -31,6 +31,7 @@ package org.tizianoproject.view
 	import flash.events.FullScreenEvent;
 	import flash.events.MouseEvent;
 	import flash.events.TextEvent;
+	import flash.geom.Point;
 	import flash.system.Security;
 	import flash.text.StyleSheet;
 	import flash.text.TextField;
@@ -55,7 +56,7 @@ package org.tizianoproject.view
 		private static const DEFAULT_AUTHOR:String = "DEFAULT_AUTHOR";
 
 		//This is the height of the Top Header
-		private static const DEFAULT_Y_POS:Number = 71;	
+		private static const DEFAULT_POS:Point = new Point( 0, 71 ); 
 
 		//This is the Default Width + Close Button
 		private static const MIN_WIDTH:Number = 900;
@@ -156,9 +157,7 @@ package org.tizianoproject.view
 				//Add new Related Features
 				if( currentStory.related.length > 0 ) initFeatures( currentStory.related );
 			}
-
 			displayButtons();
-			
 		}
 		
 		private function switchStory( ):void
@@ -350,12 +349,12 @@ package org.tizianoproject.view
 						var dynHeight:Number = ( browserHeight > MIN_HEIGHT ) ? browserHeight : MIN_HEIGHT ;
 						var yPos:Number = ( dynHeight / 2) - ( MIN_HEIGHT / 2 );
 						x = ( dynWidth / 2) - ( MIN_WIDTH / 2 );
-						y = ( yPos > + DEFAULT_Y_POS ) ? yPos : DEFAULT_Y_POS;
+						y = ( yPos > + DEFAULT_POS.y ) ? yPos : DEFAULT_POS.y;
 					}
 						//App is loading without a browser
 					else {
 						x = (defaultWidth / 2) - ( MIN_WIDTH / 2 );
-						y = ( (defaultHeight - DEFAULT_Y_POS) / 2) - ( MIN_HEIGHT / 2 ) + DEFAULT_Y_POS;
+						y = ( (defaultHeight - DEFAULT_POS.y ) / 2) - ( MIN_HEIGHT / 2 ) + DEFAULT_POS.y;
 					}
 				}
 			}
