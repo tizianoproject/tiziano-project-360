@@ -53,7 +53,7 @@ package org.tizianoproject.view
 		private var relatedAuthorHolder:MovieClip;
 		private var relatedAuthor:RelatedAuthor;
 		
-		private var featureHolder:MovieClip;
+		private var featureHolder:FeatureHolder;
 		private var feature:Feature;
 		private var featureScrollBar:Scroller;
 
@@ -112,21 +112,12 @@ package org.tizianoproject.view
 			//Author
 			///////////////////////////
 			loadAvatar( vo.avatar );
-			
+
 			writeName( vo.name );
 			writeIntro( vo.intro );
-			writeLocation( vo.city + " " + vo.region );
+			writeLocation( vo.city + ", " + vo.region );
 			writeTitle( vo.name );
-			
-			if( vo.type.toLocaleLowerCase() == "mentor" ){
-				writeOther( "Other Mentors" );
-				//Mentors: University, Students:Age 
-				writeAux( vo.age );
-			} else {
-				writeOther( "Other Students" );				
-				//Mentors: University, Students:Age 
-				writeAux( vo.age );
-			}
+			writeOtherAuthors( vo.type.toLocaleLowerCase() );
 
 			///////////////////////////
 			//Features
@@ -237,14 +228,22 @@ package org.tizianoproject.view
 			text_txt.htmlText = value;
 		}
 		
-		private function writeOther( value:String ):void
-		{
-			other_txt.text = value;
-		}
-		
 		private function writeTitle( value:String ):void
 		{
 			title_txt.text = value + "'s Stories";
+		}
+		
+		private function writeOtherAuthors( authorType:String ):void
+		{
+			if( authorType == "mentor" ){
+				other_txt.text = "Other Mentors";
+				//Mentors: University, Students:Age 
+				writeAux( vo.age );
+			} else {
+				other_txt.text = "Other Students" ;				
+				//Mentors: University, Students:Age 
+				writeAux( vo.age );
+			}
 		}
 		
 		private function clearBitmap():void
@@ -256,6 +255,12 @@ package org.tizianoproject.view
 		private function clearLoader():void
 		{
 			if( imageLoad ) imageLoad.destroy();
+		}
+
+		private function sendToApp( obj:Object ):void
+		{
+			//trace( "ProfileView::sendToApp:", obj.data.authorName );
+			dispatchEvent( new BaseViewEvent( BaseViewEvent.OPEN, obj ) );
 		}
 		
 		/**********************************
@@ -275,26 +280,20 @@ package org.tizianoproject.view
 		private function onRelatedAuthorClickHandler( e:Event ):void
 		{
 //			trace( "ProfileView::onRelatedAuthorClickHandler:"  );
-			var ra:RelatedAuthor = e.currentTarget as RelatedAuthor;
-			//Change the Data
-			vo = ra.vo;	
-			//Unload the Data
+			//Update Data (RelatedAuthor.vo carries the Author object)
+			vo = e.currentTarget.vo as Author;	
+			//Unload the Views
 			unload();
-			//Reload
+			//Reload the Views
 			load();			
 		}
 		
 		private function onFeatureClickHandler( e:MouseEvent ):void
 		{
-			var data:Story = e.currentTarget.vo as Story;
-			
-			sendToApp( { view: "articleView", data: data } );
-		}
-
-		private function sendToApp( obj:Object ):void
-		{
-			//trace( "ProfileView::sendToApp:", obj.data.authorName );
-			dispatchEvent( new BaseViewEvent( BaseViewEvent.OPEN, obj ) );
+			var object:Object = new Object();
+				object.view = "articleView";
+				object.data = e.currentTarget.vo as Story;
+			sendToApp( object );
 		}
 
 		private function onBaseCloseHandler( e:BaseViewEvent ):void
