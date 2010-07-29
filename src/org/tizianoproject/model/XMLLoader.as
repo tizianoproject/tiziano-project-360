@@ -139,7 +139,7 @@ package org.tizianoproject.model
 		
 		public function getOtherArticlesByAuthorName( authorName:String, storyID:Number ):Array
 		{
-			trace( "XMLLoader::getOtherArticlesByAuthorName:" );
+			//trace( "XMLLoader::getOtherArticlesByAuthorName:" );
 			var articles:XMLList = getAllArticles().( child("author") == authorName );
 			//Iterate through each XML Node and Create a Story Object, then Push an Array
 			var stories:Array = new Array();
