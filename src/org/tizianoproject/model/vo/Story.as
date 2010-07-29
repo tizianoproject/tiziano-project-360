@@ -27,6 +27,7 @@ package org.tizianoproject.model.vo
 		private var _caption:String;
 		private var _related:Array;
 		private var _sound:String;
+		private var _bgImage:String;
 		
 		//Text Article
 		private var _content:String;
@@ -142,6 +143,16 @@ package org.tizianoproject.model.vo
 		public function get sound():String
 		{
 			return _sound;	
+		}
+		
+		public function set bgImage( value:String ):void
+		{
+			_bgImage = value;
+		}
+		
+		public function get bgImage():String
+		{
+			return _bgImage;
 		}
 		
 		//related are the Associations to Stories
