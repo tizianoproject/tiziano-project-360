@@ -45,27 +45,28 @@ package org.tizianoproject.view.components
 		
 		override protected function init( ):void
 		{
-			loadBackground();
 		}
-
-		private function loadBackground():void
+		
+		public function load( path:String=DEFAULT_BG_IMAGE ):void
 		{
+			ShowHideManager.unloadContent( (this as Background ) );
+			
 			bgLoader = new Loader();				
 			bgLoader.name = "bgLoader";
 			bgLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true ); 
 			bgLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true ); 
 			bgLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
 			bgLoader.addEventListener( IOErrorEvent.NETWORK_ERROR, onErrorHandler, false, 0, true );
-			bgLoader.load( new URLRequest( DEFAULT_BG_IMAGE ), new LoaderContext( true ) );
+			bgLoader.load( new URLRequest( path ), new LoaderContext( true ) );
 			ShowHideManager.addContent( (this as Background), bgLoader );
 		}
-		
+
 		private function bitmapIsLoaded():Boolean
 		{
 			return ( bmp ) ? true : false;
 		}
 		
-		private function showBitmap( e:Event ):void
+		private function drawBitmap( e:Event ):void
 		{
 			var assetLoader:Loader = e.currentTarget.loader as Loader;
 				assetLoader.alpha = 0;
@@ -126,14 +127,13 @@ package org.tizianoproject.view.components
 			}			
 		}
 		
-		
 		/**********************************
 		 * Event
 		 **********************************/	
 		private function onCompleteHandler( e:Event ):void
 		{
 			trace( "Background:onCompleteHandler:" );
-			showBitmap( e );
+			drawBitmap( e );
 		}
 		
 		private function onErrorHandler( e:ErrorEvent ):void
