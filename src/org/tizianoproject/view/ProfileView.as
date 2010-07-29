@@ -1,11 +1,14 @@
 package org.tizianoproject.view
 {
+	import com.chargedweb.swfsize.SWFSizeEvent;
 	import com.chrisaiv.utils.ShowHideManager;
 	
 	import flash.display.Bitmap;
 	import flash.display.MovieClip;
+	import flash.display.StageDisplayState;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
+	import flash.events.FullScreenEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.MouseEvent;
 	import flash.events.SecurityErrorEvent;
@@ -28,6 +31,11 @@ package org.tizianoproject.view
 
 	public class ProfileView extends CompositeView
 	{
+		//This is the Default Width + Close Button
+		private static const MIN_WIDTH:Number = 900;
+		//This is the Default Height
+		private static const MIN_HEIGHT:Number = 600;
+		
 		private static const DEFAULT_POS:Point = new Point( 65, 71 );
 		private static const DEFAULT_AVATAR_POS:Point = new Point( 11, 11 );
 		private static const DEFAULT_RELATED_AUTHOR_POS:Point = new Point( 45, 510);
@@ -56,6 +64,9 @@ package org.tizianoproject.view
 		private var featureHolder:FeatureHolder;
 		private var feature:Feature;
 		private var featureScrollBar:Scroller;
+
+		private var browserWidth:Number;
+		private var browserHeight:Number;
 
 		private var _vo:Author;
 		
@@ -261,6 +272,44 @@ package org.tizianoproject.view
 		{
 			//trace( "ProfileView::sendToApp:", obj.data.authorName );
 			dispatchEvent( new BaseViewEvent( BaseViewEvent.OPEN, obj ) );
+		}
+		
+		/**********************************
+		 * Resize
+		 **********************************/
+		override public function browserResize(e:SWFSizeEvent):void
+		{
+			browserWidth = e.rightX;
+			browserHeight = e.bottomY;
+			//trace( "DirectoryView::browserResize:", browserWidth, browserHeight );
+			
+			updatePosition();			
+		}
+		
+		override protected function resize(e:FullScreenEvent):void
+		{
+			if( stage ) updatePosition();
+		}
+		
+		private function updatePosition(  ):void
+		{
+			if( stage.displayState == StageDisplayState.FULL_SCREEN ){
+				x = stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 );
+				y = stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 );
+			} else {
+				//trace( "ArticleView::updatePosition:", browserWidth, browserHeight );
+				if( browserWidth && browserHeight ){
+					var dynWidth:Number = ( browserWidth > MIN_WIDTH) ? browserWidth : MIN_WIDTH;
+					x = ( dynWidth / 2) - ( MIN_WIDTH / 2 );
+					
+					var dynHeight:Number = ( browserHeight > MIN_HEIGHT ) ? browserHeight : MIN_HEIGHT ;
+					var yPos:Number = ( dynHeight / 2) - ( MIN_HEIGHT / 2 );
+					y = ( yPos > + DEFAULT_POS.y ) ? yPos : DEFAULT_POS.y;					
+				} else {
+					x = ( stage.stageWidth / 2) - ( MIN_WIDTH / 2 );
+					y = ( ( stage.stageHeight - DEFAULT_POS.y ) / 2) - ( MIN_HEIGHT / 2 ) + DEFAULT_POS.y;
+				}
+			}
 		}
 		
 		/**********************************

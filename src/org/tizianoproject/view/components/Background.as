@@ -108,7 +108,7 @@ package org.tizianoproject.view.components
 			//Keep track of the Browser Window
 			browserWidth = e.windowWidth;
 			browserHeight = e.windowHeight;			
-			//trace( "Background::swfSizerHandler:", e.type, e.windowWidth, e.windowHeight );
+			//trace( "Background::browserResize:", e.type, e.windowWidth, e.windowHeight );
 			
 			resize( new FullScreenEvent( "normal" ) );
 		}

@@ -44,7 +44,7 @@ package org.tizianoproject.view
 		//This must remain public in order for Application.as::swfSizer can access
 		public function swfSizerHandler( e:SWFSizeEvent ):void
 		{
-			//trace( "CompositeView::swfSizerHandler:", e.topY, e.bottomY, e.leftX, e.rightX, e.windowWidth, e.windowHeight );
+			//trace( "CompositeView::browserResize:", e.topY, e.bottomY, e.leftX, e.rightX, e.windowWidth, e.windowHeight );
 			
 			//Notify to all the children that the browser has updated
 			for each( var c:ComponentView in children )

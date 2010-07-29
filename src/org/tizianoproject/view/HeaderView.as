@@ -109,7 +109,7 @@ package org.tizianoproject.view
 		
 		override public function browserResize(e:SWFSizeEvent):void
 		{
-			//trace( "HeaderView::swfSizerHandler:", e.topY, e.bottomY, e.leftX, e.rightX, e.windowWidth, e.windowHeight );
+			//trace( "HeaderView::browserResize:", e.topY, e.bottomY, e.leftX, e.rightX, e.windowWidth, e.windowHeight );
 			browserWidth = e.rightX;
 			
 			updatePosition( browserWidth - headerRight_mc.width );

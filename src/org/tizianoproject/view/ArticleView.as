@@ -53,16 +53,16 @@ package org.tizianoproject.view
 	
 	public class ArticleView extends CompositeView
 	{
+		//This is the Default Width + Close Button
+		private static const MIN_WIDTH:Number = 900;
+		//This is the Default Height
+		private static const MIN_HEIGHT:Number = 600;
+		
 		private static const DEFAULT_TITLE:String = "DEFAULT_TITLE";
 		private static const DEFAULT_AUTHOR:String = "DEFAULT_AUTHOR";
 
 		//This is the height of the Top Header
 		private static const DEFAULT_POS:Point = new Point( 0, 71 ); 
-
-		//This is the Default Width + Close Button
-		private static const MIN_WIDTH:Number = 900;
-		//This is the Default Height
-		private static const MIN_HEIGHT:Number = 600;
 		
 		private var iModel:IModel;
 		
@@ -86,8 +86,6 @@ package org.tizianoproject.view
 		
 		private var browserWidth:Number;
 		private var browserHeight:Number;
-		private var defaultWidth:Number;
-		private var defaultHeight:Number;
 
 		private var _currentStory:Story;
 		private var _currentIndex:Number;		
@@ -124,11 +122,7 @@ package org.tizianoproject.view
 		 **********************************/
 		override protected function init():void
 		{
-			//Position the ArticleView
-			defaultWidth  = stage.stageWidth;
-			defaultHeight = stage.stageHeight;
-			
-			updatePosition( );
+			updatePosition(  );
 
 			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
 		}
@@ -205,27 +199,20 @@ package org.tizianoproject.view
 		
 		private function displayButtons():void
 		{
+			//It's just easier to turn this on
+			next_btn.visible = true;
+			prev_btn.visible = true;
+			
 			if ( authorStories.length < 2 ){
 				next_btn.visible = false;
 				prev_btn.visible = false;
 			} else {
-				next_btn.visible = true;
-				prev_btn.visible = true;
-				
-				if( authorStories.length > 1 && currentIndex + 1 <= authorStories.length - 1 ) {
-					trace( "ArticleView::displayButtons:", authorStories.length, authorStories[currentIndex+1].title );
-					next_btn.text_txt.text = authorStories[currentIndex+1].title;
-				} else {
-					next_btn.text_txt.text = "!!!";
-					next_btn.visible = false;
-				}
-				
-				if( currentIndex - 1 >= 0){
-					prev_btn.text_txt.text = authorStories[currentIndex-1].title;
-				} else {
-					prev_btn.text_txt.text = "!!!";
-					prev_btn.visible = false;
-				}
+				//Next Button
+				if( authorStories.length > 1 && currentIndex + 1 <= authorStories.length - 1 ) next_btn.text_txt.text = authorStories[currentIndex+1].title;
+				else next_btn.visible = false;
+				//Previous Button
+				if( currentIndex - 1 >= 0) prev_btn.text_txt.text = authorStories[currentIndex-1].title;
+				else prev_btn.visible = false;
 			}			
 		}
 		
@@ -341,40 +328,37 @@ package org.tizianoproject.view
 		/**********************************
 		 * Resize
 		 **********************************/		
-		override public function swfSizerHandler(e:SWFSizeEvent):void
+		override public function browserResize(e:SWFSizeEvent):void
 		{
-			trace( "ArticleView::swfSizerHandler:" );
-			browserWidth = e.windowWidth;
+			browserWidth = e.rightX;
 			browserHeight = e.bottomY;
+			//trace( "ArticleView::swfSizerHandler:", browserWidth, browserHeight );
 			
-			updatePosition( );			
+			updatePosition();
 		}
 		
 		override protected function resize(e:FullScreenEvent):void
 		{
-			updatePosition()
+			if( stage ) updatePosition();
 		}
 		
-		private function updatePosition( ):void
+		private function updatePosition(  ):void
 		{
-			trace( "ArticleView::updatePosition:" );
-			if( stage ){
-				if( stage.displayState == StageDisplayState.FULL_SCREEN ){
-						x = stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 );
-						y = stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 );
+			if( stage.displayState == StageDisplayState.FULL_SCREEN ){
+				x = stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 );
+				y = stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 );
+			} else {
+				//trace( "ArticleView::updatePosition:", browserWidth, browserHeight );
+				if( browserWidth && browserHeight ){
+					var dynWidth:Number = ( browserWidth > MIN_WIDTH) ? browserWidth : MIN_WIDTH;
+					x = ( dynWidth / 2) - ( MIN_WIDTH / 2 );
+				
+					var dynHeight:Number = ( browserHeight > MIN_HEIGHT ) ? browserHeight : MIN_HEIGHT ;
+					var yPos:Number = ( dynHeight / 2) - ( MIN_HEIGHT / 2 );
+					y = ( yPos > + DEFAULT_POS.y ) ? yPos : DEFAULT_POS.y;					
 				} else {
-					if( browserWidth && browserHeight ){
-						var dynWidth:Number = ( browserWidth > MIN_WIDTH) ? browserWidth : MIN_WIDTH;
-						var dynHeight:Number = ( browserHeight > MIN_HEIGHT ) ? browserHeight : MIN_HEIGHT ;
-						var yPos:Number = ( dynHeight / 2) - ( MIN_HEIGHT / 2 );
-						x = ( dynWidth / 2) - ( MIN_WIDTH / 2 );
-						y = ( yPos > + DEFAULT_POS.y ) ? yPos : DEFAULT_POS.y;
-					}
-						//App is loading without a browser
-					else {
-						x = (defaultWidth / 2) - ( MIN_WIDTH / 2 );
-						y = ( (defaultHeight - DEFAULT_POS.y ) / 2) - ( MIN_HEIGHT / 2 ) + DEFAULT_POS.y;
-					}
+					x = ( stage.stageWidth / 2) - ( MIN_WIDTH / 2 );
+					y = ( ( stage.stageHeight - DEFAULT_POS.y ) / 2) - ( MIN_HEIGHT / 2 ) + DEFAULT_POS.y;
 				}
 			}
 		}
