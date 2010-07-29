@@ -191,6 +191,7 @@ package org.tizianoproject.model
 				story.image			= ( article.child("image_small").text() )	? article.child("image_small").text() : "";
 				story.authorName	= ( article.child("author").text() )		? article.child("author").text() : "";
 				story.sound			= ( article.child("audio_wall").text() )	? article.child("audio_wall").text() : "";
+				story.bgImage		= ( article.child("image_bg").text() )		? article.child("image_bg").text() : "";
 				story.authorType	= ( story.authorName )						? getAuthorTypeByName( story.authorName ) : "";
 
 				//trace(  story.authorType );
