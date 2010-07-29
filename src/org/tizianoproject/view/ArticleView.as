@@ -72,8 +72,8 @@ package org.tizianoproject.view
 		public var author_txt:TextField;
 		
 		public var authorType_mc:MovieClip;
-		public var prev_btn:SimpleButton;
-		public var next_btn:SimpleButton;
+		public var prev_btn:MovieClip;
+		public var next_btn:MovieClip;
 
 		private var text:Text;
 		private var slideshow:Slideshow;
@@ -211,6 +211,21 @@ package org.tizianoproject.view
 			} else {
 				next_btn.visible = true;
 				prev_btn.visible = true;
+				
+				if( authorStories.length > 1 && currentIndex + 1 <= authorStories.length - 1 ) {
+					trace( "ArticleView::displayButtons:", authorStories.length, authorStories[currentIndex+1].title );
+					next_btn.text_txt.text = authorStories[currentIndex+1].title;
+				} else {
+					next_btn.text_txt.text = "!!!";
+					next_btn.visible = false;
+				}
+				
+				if( currentIndex - 1 >= 0){
+					prev_btn.text_txt.text = authorStories[currentIndex-1].title;
+				} else {
+					prev_btn.text_txt.text = "!!!";
+					prev_btn.visible = false;
+				}
 			}			
 		}
 		
