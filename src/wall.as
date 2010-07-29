@@ -10,8 +10,6 @@ Stage.scaleMode="noScale";
 
 
 function goFullScreen():Void{
-//	var scalingRect:Rectangle = new Rectangle( 0, 0, Stage.width, Stage.height );
-//	Stage["fullScreenSourceRect"] = scalingRect;
 	if(Stage["displayState"] == "normal"){
         Stage["displayState"] = "fullScreen";
     } else {
@@ -109,8 +107,8 @@ matrix_mc.thumbBorderSize = 0;
 matrix_mc.thumbWidth = 201;
 matrix_mc.thumbHeight = 139;
 matrix_mc.thumbResizeType = "borderscale";
-matrix_mc.thumbSpacing = 30;
-matrix_mc.remainActiveOnPress = true;
+matrix_mc.thumbSpacing = 25;
+matrix_mc.remainActiveOnPress = false;
 matrix_mc.addListener(matrixListener);
 matrix_mc._visible = false;
 
