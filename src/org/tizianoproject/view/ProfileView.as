@@ -96,6 +96,8 @@ package org.tizianoproject.view
 		 **********************************/
 		override protected function init():void
 		{
+			updatePosition();
+			
 			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
 		}
 
@@ -288,7 +290,9 @@ package org.tizianoproject.view
 		
 		override protected function resize(e:FullScreenEvent):void
 		{
-			if( stage ) updatePosition();
+			if( stage ){
+				updatePosition();
+			}
 		}
 		
 		private function updatePosition(  ):void

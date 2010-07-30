@@ -37,6 +37,8 @@ package org.tizianoproject.view
 	import flash.text.TextField;
 	
 	import org.casalib.util.NumberUtil;
+	import org.casalib.util.StringUtil;
+	import org.casalib.util.TextFieldUtil;
 	import org.tizianoproject.events.ArticleViewEvent;
 	import org.tizianoproject.events.BaseViewEvent;
 	import org.tizianoproject.model.IModel;
@@ -125,7 +127,8 @@ package org.tizianoproject.view
 		 **********************************/
 		override protected function init():void
 		{
-			updatePosition(  );
+			//trace( "ArticleView::init:", stage.displayState );
+			updatePosition();
 
 			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
 		}
@@ -142,14 +145,12 @@ package org.tizianoproject.view
 			
 			//Insurance: Make sure there are no double writes
 			if( featureHolder ){
-				if( featureHolder.numChildren > 0 ){
-					unloadFeatures();
-				}
+				if( featureHolder.numChildren > 0 ) unloadFeatures();
 			}
 			
 			if( currentStory ){
 				//Load a Background Image
-				if( currentStory.bgImage ) dispatchEvent( new ArticleViewEvent( ArticleViewEvent.LOAD_BG, { data: currentStory.bgImage } ) );
+				loadBackground();
 				
 				//Display Title
 				writeTitle( currentStory.title );
@@ -198,6 +199,7 @@ package org.tizianoproject.view
 		private function writeTitle( value:String ):void
 		{
 			title_txt.text = value;
+			if( TextFieldUtil.hasOverFlow( title_txt ) ) TextFieldUtil.removeOverFlow( title_txt, "..." );
 		}
 		
 		private function writeAuthor( value:String ):void
@@ -223,7 +225,12 @@ package org.tizianoproject.view
 				//Previous Button
 				if( currentIndex - 1 >= 0) prev_btn.text_txt.text = authorStories[currentIndex-1].title;
 				else prev_btn.visible = false;
-			}			
+			}
+		}
+		
+		private function loadBackground():void
+		{
+			if( currentStory.bgImage ) dispatchEvent( new ArticleViewEvent( ArticleViewEvent.LOAD_BG, { data: currentStory.bgImage } ) );
 		}
 		
 		/**********************************
@@ -256,7 +263,7 @@ package org.tizianoproject.view
 		
 		private function initSoundSlide( story:Story ):void
 		{
-			trace( "ArticleView::initSoundSlide:", story.path );
+			//trace( "ArticleView::initSoundSlide:", story.path );
 			soundslide = new SoundSlide();
 			soundslide.name = "soundslide";
 			soundslide.load( story.path );
@@ -286,14 +293,13 @@ package org.tizianoproject.view
 				var yy:Number = Math.floor(i/columns);
 				
 				//Get the Story based on the Reponse ID
-					//Create a new Feature
-					feature = new Feature( );
-					feature.vo = getArticle( array[i] ) as Story;
-					feature.name = "feature" + i;
-					feature.addEventListener(MouseEvent.CLICK, onFeatureClickHandler, false, 0, true );
-					//Feature.y is overriden to include DEFAULT_Y_POS
-					feature.y = (i * feature.height);
-					ShowHideManager.addContent( featureHolder, feature );					
+				feature = new Feature( );
+				feature.vo = getArticle( array[i] ) as Story;
+				feature.name = "feature" + i;
+				feature.addEventListener(MouseEvent.CLICK, onFeatureClickHandler, false, 0, true );
+				//Feature.y is overriden to include DEFAULT_Y_POS
+				feature.y = (i * feature.height);
+				ShowHideManager.addContent( featureHolder, feature );					
 			}
 			
 			//If there are more than 5 features, add a Scroll Bar
@@ -354,12 +360,14 @@ package org.tizianoproject.view
 		
 		override protected function resize(e:FullScreenEvent):void
 		{
-			if( stage ) updatePosition();
+			if( stage ){
+				updatePosition();				
+			} 
 		}
 		
 		private function updatePosition(  ):void
 		{
-			trace( "Application::updatePosition:", stage.displayState );
+			//trace( "ArticleView::updatePosition:", stage.displayState );
 			if( stage.displayState == StageDisplayState.FULL_SCREEN ){
 				x = stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 );
 				y = stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 );
