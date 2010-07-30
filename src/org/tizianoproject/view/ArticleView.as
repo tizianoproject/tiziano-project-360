@@ -95,7 +95,10 @@ package org.tizianoproject.view
 		{			
 			iModel = m;
 
-			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );			
+			prev_btn.buttonMode = true;
+			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
+			
+			next_btn.buttonMode = true;
 			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 		}
 		
@@ -136,6 +139,13 @@ package org.tizianoproject.view
 		{	
 			currentStory = authorStories[currentIndex] as Story
 			//trace( "ArticleView::loadStory", currentStory.bgImage );
+			
+			//Insurance: Make sure there are no double writes
+			if( featureHolder ){
+				if( featureHolder.numChildren > 0 ){
+					unloadFeatures();
+				}
+			}
 			
 			if( currentStory ){
 				//Load a Background Image
@@ -316,13 +326,18 @@ package org.tizianoproject.view
 		{
 //!!!
 			//Video
-			//if ( video ) video.visible = false;			
-			ShowHideManager.removeContent( (this as ArticleView), "featureHolder"  );
-			ShowHideManager.removeContent( (this as ArticleView), "featureScrollBar" );
-
+			//if ( video ) video.visible = false;
+			unloadFeatures();
+			
 			ShowHideManager.removeContent( (this as ArticleView), "text" );
 			ShowHideManager.removeContent( (this as ArticleView), "slideshow" );
 			ShowHideManager.removeContent( (this as ArticleView), "soundslide" );
+		}
+		
+		private function unloadFeatures():void
+		{
+			ShowHideManager.removeContent( (this as ArticleView), "featureHolder"  );
+			ShowHideManager.removeContent( (this as ArticleView), "featureScrollBar" );			
 		}
 
 		/**********************************
