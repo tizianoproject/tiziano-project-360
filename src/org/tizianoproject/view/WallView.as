@@ -17,7 +17,7 @@ package org.tizianoproject.view
 	
 	import org.casalib.util.LocationUtil;
 	import org.casalib.util.ValidationUtil;
-
+	import org.tizianoproject.view.components.Mask;
 	
 	public class WallView extends CompositeView
 	{
@@ -25,11 +25,10 @@ package org.tizianoproject.view
 		private static const TWEEN_SPEED:Number = 0.5;
 
 		private var swfLoader:Loader;
+		private var wallMask:Mask;
 		
 		public function WallView( )
 		{
-			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
-			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
 		
 		public function loadWall( path:String ):void
@@ -46,18 +45,49 @@ package org.tizianoproject.view
 		public function showWall( duration:Number=TWEEN_SPEED ):void
 		{
 			//Show The Wall
-			TweenLite.to( (this as WallView), duration, { alpha: 1 } );
+			TweenLite.to( (this as WallView), duration, { alpha: 1, onInit: onTweenInitHandler, onInitParams: ["show"] } );
 		}
 		
 		public function hideWall( duration:Number=TWEEN_SPEED ):void
 		{			
 			//Hide the Wall
-			TweenLite.to( (this as WallView), duration, { alpha: 0 } );
+			TweenLite.to( (this as WallView), duration, 
+				{ alpha: 0, onInit: onTweenInitHandler, onInitParams: ["hide"], onComplete: onTweenCompleteHandler } );
+		}
+		
+		private function showMask():void
+		{
+			wallMask = new Mask();
+			wallMask.name = "wallMask";
+			ShowHideManager.addContent( (this as WallView), wallMask );
+		}
+		
+		private function hideMask():void
+		{
+			ShowHideManager.removeContent( (this as WallView), "wallMask" );
 		}
 		
 		/**********************************
 		 * Event
-		 **********************************/		
+		 **********************************/
+		private function onTweenInitHandler( message:String ):void
+		{
+			switch( message ){
+				case "hide":
+					showMask();
+					break;
+				case "show":
+					hideMask();
+					break;
+			}
+			trace( "WallView::onTweenInitHandler:", message );			
+		}
+		
+		private function onTweenCompleteHandler():void
+		{
+			trace( "WallView::onTweenCompleteHandler:" );			
+		}
+		
 		private function onCompleteHandler( e:Event ):void
 		{
 			trace( "WallView::onCompleteHandler:", "Wall is LOADED" );

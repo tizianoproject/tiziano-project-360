@@ -1,33 +1,25 @@
 package org.tizianoproject.view.components
 {
-	import flash.display.Sprite;
-	import flash.events.Event;
+	import com.chrisaiv.utils.ShowHideManager;	
 	
-	public class Mask extends Sprite
+	import org.tizianoproject.view.CompositeView;
+	
+	public class Mask extends CompositeView
 	{
 		public function Mask()
 		{
-			 addEventListener( Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
-			 addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
 		
-		private function onAddedToStageHandler( e:Event ):void
+		override protected function init():void
 		{
-			graphics.beginFill( 0xFF00FF, 1 );
+			graphics.beginFill( 0xFF00FF, 0 );
 			graphics.drawRect( 0, 0, stage.stageWidth, stage.stageHeight );
 			graphics.endFill();
-			
-			addEventListener( MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 		}
 		
-		private function removedFromStageHandler( e:Event ):void
+		override protected function unload():void
 		{
-			trace( "MaskView::removedFromStageHandler:" );
-		}
-		
-		private function onMouseClickHandler( e:Event ):void
-		{
-			trace( "MaskView::onMouseClickHandler:" );
+			graphics.clear();
 		}
 	}
 }
