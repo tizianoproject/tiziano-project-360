@@ -185,7 +185,6 @@ package org.tizianoproject.model
 			var story:Story			= new Story();
 				story.id			= ( Number(article.child("id").text()) )	? Number(article.child("id").text()) : -1;
 				story.storyType		= ( article.child("type").text() )			? article.child("type").text() : "";
-				story.title			= ( article.child("title").text() )			? article.child("title").text() : "";
 				story.headline		= ( article.child("headline").text() )		? article.child("headline").text() : "";
 				story.subheadline	= ( article.child("subheadline").text() )	? article.child("subheadline").text() : "";
 				story.image			= ( article.child("image_small").text() )	? article.child("image_small").text() : "";
@@ -193,8 +192,12 @@ package org.tizianoproject.model
 				story.sound			= ( article.child("audio_wall").text() )	? article.child("audio_wall").text() : "";
 				story.bgImage		= ( article.child("image_bg").text() )		? article.child("image_bg").text() : "";
 				story.authorType	= ( story.authorName )						? getAuthorTypeByName( story.authorName ) : "";
+				story.title			= ( article.child("title").text() )			? article.child("title").text() : "";
 
-				//trace(  story.authorType );
+				//Truncate the text "in Iraqi Kurdistan"
+				var titleIndex:Number = story.title.search(/in Iraqi Kurdistan/i);
+				if( titleIndex > -1 ) story.title = story.title.substr( 0, titleIndex - 1 );
+				
 				//trace( "XMLLoader::createStory:\n", story.id, story.storyType, story.title, story.headline, story.subheadline, story.image, story.authorName, story.authorType );
 
 			//Specific Story Information
