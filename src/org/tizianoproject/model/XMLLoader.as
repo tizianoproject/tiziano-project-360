@@ -35,6 +35,7 @@ package org.tizianoproject.model
 	public class XMLLoader extends EventDispatcher implements IModel
 	{
 		private var _xmlData:XMLList;
+		private var _loaded:Boolean;
 		
 		public function XMLLoader()
 		{
@@ -295,6 +296,8 @@ package org.tizianoproject.model
 		 **********************************/
 		private function onXMLLoaded( e:Event ):void
 		{
+			loaded = true;
+			
 			xmlData = new XMLList( e.currentTarget.data );
 
 			dispatchEvent( new Event( Event.COMPLETE ) );			
@@ -310,9 +313,24 @@ package org.tizianoproject.model
 			trace("ioErrorHandler: " + e.text);
 		}
 		
+		public function isLoaded():Boolean
+		{
+			return loaded;
+		}
+		
 		/**********************************
 		 * Read Write Accessors
 		 **********************************/
+		private function set loaded( value:Boolean ):void
+		{
+			_loaded = value;
+		}
+		
+		private function get loaded():Boolean
+		{
+			return _loaded;
+		}
+		
 		private function set xmlData( value:XMLList ):void
 		{
 			_xmlData = value;
@@ -321,6 +339,6 @@ package org.tizianoproject.model
 		private function get xmlData():XMLList
 		{
 			return _xmlData;
-		}		
+		}			
 	}
 }

@@ -24,5 +24,7 @@ package org.tizianoproject.model
 		function getArticleByArticleID( uniqueID:Number ):Story
 		//Gets all author articles with the uniqueID story having priority
 		function getAllAuthorArticlesByID( uniqueID:Number ):Array
+			
+		function isLoaded():Boolean
 	}
 }
