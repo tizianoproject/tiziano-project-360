@@ -1,5 +1,6 @@
 package org.tizianoproject.view
 {
+	import com.anttikupila.utils.JPGSizeExtractor;
 	import com.chargedweb.swfsize.SWFSizeEvent;
 	import com.chrisaiv.utils.ShowHideManager;
 	
@@ -43,6 +44,10 @@ package org.tizianoproject.view
 		private static const DEFAULT_TABLE_COLUMNS:Number = 1;
 		private static const MAX_OTHER_AUTHORS:Number = 6;
 		
+		private static const IMAGE_PADDING_WIDTH:Number = 18;
+		private static const IMAGE_PADDING_HEIGHT:Number = 0;
+		private static const HTML_PADDING_HACK:String = "<p></p><p></p><p></p><p></p>";
+		
 		private var iModel:IModel;
 		
 		public var baseView_mc:BaseView;
@@ -55,9 +60,10 @@ package org.tizianoproject.view
 		public var title_txt:TextField;
 		public var other_txt:TextField;
 		
-		private var loaderContext:LoaderContext
 		private var imageLoad:ImageLoad;
 		private var bmp:Bitmap;
+		
+		private var avatarHolder:MovieClip;
 		
 		private var relatedAuthorHolder:MovieClip;
 		private var relatedAuthor:RelatedAuthor;
@@ -127,10 +133,12 @@ package org.tizianoproject.view
 			///////////////////////////
 			//Author
 			///////////////////////////
-			loadAvatar( vo.avatar );
+			//loadAvatar( vo.avatar );
+			//writeIntro( vo.intro );
+			
+			loadNewAvatar( );
 
 			writeName( vo.name );
-			writeIntro( vo.intro );
 			writeLocation( vo.city + ", " + vo.region );
 			writeTitle( vo.name );
 			writeOtherAuthors( vo.type.toLocaleLowerCase() );
@@ -164,11 +172,48 @@ package org.tizianoproject.view
 		
 		private function loadAvatar( path:String ):void
 		{
-			imageLoad = new ImageLoad( new URLRequest( path ), loaderContext );
+			imageLoad = new ImageLoad( new URLRequest( path ), new LoaderContext(true) );
 			imageLoad.addEventListener(LoadEvent.COMPLETE, onCompleteHandler, false, 0, true );
 			imageLoad.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
 			imageLoad.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
 			imageLoad.start();
+		}
+		
+		private function loadNewAvatar( ):void
+		{
+			var jpgSizeExtractor:JPGSizeExtractor = new JPGSizeExtractor();
+				jpgSizeExtractor.addEventListener( JPGSizeExtractor.PARSE_COMPLETE, onParseCompleteHandler, false, 0, true );
+				jpgSizeExtractor.addEventListener( JPGSizeExtractor.PARSE_FAILED, onParseFailHandler, false, 0, true );
+				jpgSizeExtractor.extractSize( vo.avatar );
+				
+			function onParseCompleteHandler( e:Event ):void
+			{
+				e.currentTarget.removeEventListener(e.type, arguments.callee);
+				var w:Number = jpgSizeExtractor.width;
+				var h:Number = jpgSizeExtractor.height;
+				
+				// Embed the container movieclip inside the textfield. This is done by adding an <img> tag to the actual html text from the xml. Remember to add the width and height from the JPGExtractor class, and an id for the movieclip.
+				text_txt.htmlText = "<img src='Avatar' align='left' width='"+ w 
+									+"' height='"+ h 
+									+"' hspace='"+ IMAGE_PADDING_WIDTH 
+									+"' vspace='"+ IMAGE_PADDING_HEIGHT 
+									+"' id='image' />"+ HTML_PADDING_HACK + vo.intro;
+
+				//Store the embedded movieclip in a variable for reference
+				avatarHolder = text_txt.getImageReference( "image" ) as MovieClip;
+				avatarHolder.name = "avatarHolder";
+				avatarHolder.scaleX = avatarHolder.scaleY = 1;
+				avatarHolder.y = 1;
+				avatarHolder.width = w;
+				avatarHolder.height = h;
+				loadAvatar( vo.avatar );
+			}
+			
+			function onParseFailHandler( e:Event ):void
+			{
+				e.currentTarget.removeEventListener(e.type, arguments.callee);
+								
+			}
 		}
 		
 		private function drawBitmap():void
@@ -176,7 +221,9 @@ package org.tizianoproject.view
 			bmp = imageLoad.contentAsBitmap;
 			bmp.x = DEFAULT_AVATAR_POS.x;
 			bmp.y = DEFAULT_AVATAR_POS.y;
-			ShowHideManager.addContent( avatar_mc, bmp );			
+			bmp.alpha = 1;			
+			//ShowHideManager.addContent( avatar_mc, bmp );
+			ShowHideManager.addContent( avatarHolder, bmp );
 		}		
 		
 		private function initFeatureHolder():void
