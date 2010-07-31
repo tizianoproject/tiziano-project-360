@@ -49,14 +49,16 @@ package org.tizianoproject.view.components
 		
 		public function load( path:String=DEFAULT_BG_IMAGE ):void
 		{
+			if( bitmapIsLoaded() ) bmp.bitmapData.dispose();
+			
 			ShowHideManager.unloadContent( (this as Background ) );
 			
 			bgLoader = new Loader();				
 			bgLoader.name = "bgLoader";
-			bgLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true ); 
-			bgLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true ); 
+			bgLoader.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true ); 
 			bgLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
 			bgLoader.addEventListener( IOErrorEvent.NETWORK_ERROR, onErrorHandler, false, 0, true );
+			bgLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true ); 
 			bgLoader.load( new URLRequest( path ), new LoaderContext( true ) );
 			ShowHideManager.addContent( (this as Background), bgLoader );
 		}
