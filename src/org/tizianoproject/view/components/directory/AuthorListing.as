@@ -1,5 +1,6 @@
 package org.tizianoproject.view.components.directory
 {
+	import com.chrisaiv.utils.CSSFormatter;
 	import com.chrisaiv.utils.ShowHideManager;
 	import com.chrisaiv.utils.TextFormatter;
 	
@@ -47,6 +48,8 @@ package org.tizianoproject.view.components.directory
 		private var nameTxt:TextField;
 		private var ageTxt:TextField;
 		private var locationTxt:TextField;
+
+		public var name_txt:TextField;
 		
 		private var _id:Number;
 		private var _authorName:String;
@@ -75,19 +78,19 @@ package org.tizianoproject.view.components.directory
 			imageLoader.load( new URLRequest( url ), new LoaderContext(true) );
 		}
 		
-		public function writeName( string:String ):void
+		public function writeName( value:String ):void
 		{
-			nameTxt = initTextField( "nameTxt", DEFAULT_NAME_POS, DEFAULT_TEXT_WIDTH, 0x2E94CB, 20 );
-			nameTxt.text = string;	
-			ShowHideManager.addContent( (this as AuthorListing), nameTxt );
+			name_txt.htmlText = "<a href='event:blank'>" + value + "</a>";
+			name_txt.autoSize = TextFieldAutoSize.LEFT;
+			name_txt.styleSheet = CSSFormatter.simpleUnderline();
 		}
 		
-		public function writeGrade( string:String ):void
+		public function writeGrade( value:String ):void
 		{
-			//Position ageTxt.y based on nameTxt
-			var p:Point = new Point( DEFAULT_TEXT_X_POS, nameTxt.y + nameTxt.textHeight );
+			//Position age_txt.y based on nameTxt
+			var p:Point = new Point( DEFAULT_TEXT_X_POS, name_txt.y + name_txt.textHeight );
 			ageTxt = initTextField( "ageTxt", p, DEFAULT_TEXT_WIDTH, 0x999999, 16 );
-			ageTxt.text = string;
+			ageTxt.text = value;
 			ShowHideManager.addContent( (this as AuthorListing), ageTxt );
 		}
 		

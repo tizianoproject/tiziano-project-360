@@ -83,9 +83,9 @@ package org.tizianoproject.view
 		{
 			if( stage ){
 				if( stage.displayState == StageDisplayState.FULL_SCREEN ){
-					wallMask.updateSize( stage.fullScreenWidth, stage.fullScreenHeight );
+					if( wallMask ) wallMask.updateSize( stage.fullScreenWidth, stage.fullScreenHeight );
 				} else {
-					wallMask.updateSize( browserWidth, browerHeight );
+					if( wallMask ) wallMask.updateSize( browserWidth, browerHeight );
 				}
 			}
 		}

@@ -22,6 +22,7 @@ package org.tizianoproject.view
 	import org.casalib.events.LoadEvent;
 	import org.casalib.load.ImageLoad;
 	import org.casalib.util.ArrayUtil;
+	import org.casalib.util.StringUtil;
 	import org.tizianoproject.events.BaseViewEvent;
 	import org.tizianoproject.model.IModel;
 	import org.tizianoproject.model.vo.Author;
@@ -172,20 +173,14 @@ package org.tizianoproject.view
 			}
 		}
 		
-		private function loadAvatar( path:String ):void
-		{
-			imageLoad = new ImageLoad( new URLRequest( path ), new LoaderContext(true) );
-			imageLoad.addEventListener(LoadEvent.COMPLETE, onCompleteHandler, false, 0, true );
-			imageLoad.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
-			imageLoad.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
-			imageLoad.start();
-		}
-		
 		private function loadNewAvatar( ):void
 		{
 			var jpgSizeExtractor:JPGSizeExtractor = new JPGSizeExtractor();
 				jpgSizeExtractor.addEventListener( JPGSizeExtractor.PARSE_COMPLETE, onParseCompleteHandler, false, 0, true );
 				jpgSizeExtractor.addEventListener( JPGSizeExtractor.PARSE_FAILED, onParseFailHandler, false, 0, true );
+				jpgSizeExtractor.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
+				jpgSizeExtractor.addEventListener( IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
+				jpgSizeExtractor.addEventListener( IOErrorEvent.NETWORK_ERROR, onErrorHandler, false, 0, true );
 				jpgSizeExtractor.extractSize( vo.avatar );
 				
 			function onParseCompleteHandler( e:Event ):void
@@ -208,6 +203,7 @@ package org.tizianoproject.view
 				avatarHolder.y = 1;
 				avatarHolder.width = w;
 				avatarHolder.height = h;
+				
 				loadAvatar( vo.avatar );
 			}
 			
@@ -217,7 +213,16 @@ package org.tizianoproject.view
 				trace( "ProfileView::onParseFailHandler:" );
 			}
 		}
-		
+
+		private function loadAvatar( path:String ):void
+		{
+			imageLoad = new ImageLoad( new URLRequest( path ), new LoaderContext(true) );
+			imageLoad.addEventListener(LoadEvent.COMPLETE, onCompleteHandler, false, 0, true );
+			imageLoad.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
+			imageLoad.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
+			imageLoad.start();
+		}		
+
 		private function drawBitmap():void
 		{
 			bmp = imageLoad.contentAsBitmap;
@@ -296,12 +301,17 @@ package org.tizianoproject.view
 		
 		private function writeTitle( value:String ):void
 		{
+			//Find the White Space
+			var index:Number = value.search(" " );
+			//Strip the name after the white space
+			value = value.substr( 0, index );
+			//Write
 			title_txt.text = value + "'s Stories";
 		}
 		
 		private function writeOtherAuthors( authorType:String ):void
 		{
-			if( authorType == "mentor" ){
+			if( authorType.toLowerCase() == "mentor" ){
 				other_txt.text = "Other Mentors";
 				//Mentors: University, Students:Age 
 				writeAux( vo.age );

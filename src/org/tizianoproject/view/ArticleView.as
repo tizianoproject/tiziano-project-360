@@ -99,10 +99,12 @@ package org.tizianoproject.view
 			iModel = m;
 
 			prev_btn.buttonMode = true;
+			prev_btn.text_txt.selectable = false;
 			//prev_btn.text_txt.autoSize = TextFieldAutoSize.LEFT;
 			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 			
 			next_btn.buttonMode = true;
+			next_btn.text_txt.selectable = false;
 			//prev_btn.text_txt.autoSize = TextFieldAutoSize.RIGHT;
 			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 		}
