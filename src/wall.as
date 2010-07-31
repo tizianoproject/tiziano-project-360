@@ -96,7 +96,7 @@ matrix_mc.backgroundColor = 0x000000;
 matrix_mc.keepScrollButtonSize = false;
 matrix_mc.setSize( Stage.width, Stage.height );
 matrix_mc.displayEffect = "ordered show";
-matrix_mc.matrix = { lines: 5, columns: 6 };
+matrix_mc.matrix = { lines: 6, columns: 8 };
 matrix_mc.rollOverEffect = "black&white";
 matrix_mc.border = 0;
 matrix_mc.preloader = "circle";
