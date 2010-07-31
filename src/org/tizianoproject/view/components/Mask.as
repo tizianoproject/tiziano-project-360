@@ -1,6 +1,6 @@
 package org.tizianoproject.view.components
 {
-	import com.chrisaiv.utils.ShowHideManager;	
+	import com.chrisaiv.utils.ShowHideManager;
 	
 	import org.tizianoproject.view.CompositeView;
 	
@@ -20,6 +20,12 @@ package org.tizianoproject.view.components
 		override protected function unload():void
 		{
 			graphics.clear();
+		}
+		//Update the Mask that prevents the Wall Tiles from Activating
+		public function updateSize( w:Number, h:Number ):void
+		{
+			width = w;
+			height = h;
 		}
 	}
 }

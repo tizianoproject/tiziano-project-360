@@ -6,6 +6,7 @@ package org.tizianoproject.view
 	
 	import flash.display.Loader;
 	import flash.display.MovieClip;
+	import flash.display.StageDisplayState;
 	import flash.events.Event;
 	import flash.events.FullScreenEvent;
 	import flash.events.IOErrorEvent;
@@ -26,6 +27,9 @@ package org.tizianoproject.view
 
 		private var swfLoader:Loader;
 		private var wallMask:Mask;
+		
+		private var browserWidth:Number;
+		private var browerHeight:Number;
 		
 		public function WallView( )
 		{
@@ -65,6 +69,25 @@ package org.tizianoproject.view
 		private function hideMask():void
 		{
 			ShowHideManager.removeContent( (this as WallView), "wallMask" );
+		}
+		
+		override public function browserResize(e:SWFSizeEvent):void
+		{
+			browserWidth = e.rightX;
+			browerHeight = e.bottomY;
+			
+			if( wallMask ) wallMask.updateSize( browserWidth, browerHeight );
+		}
+		
+		override protected function resize(e:FullScreenEvent):void
+		{
+			if( stage ){
+				if( stage.displayState == StageDisplayState.FULL_SCREEN ){
+					wallMask.updateSize( stage.fullScreenWidth, stage.fullScreenHeight );
+				} else {
+					wallMask.updateSize( browserWidth, browerHeight );
+				}
+			}
 		}
 		
 		/**********************************
