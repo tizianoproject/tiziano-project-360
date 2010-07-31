@@ -102,18 +102,21 @@ package org.tizianoproject.view.components.article
 			SoundMixer.stopAll();
 
 			//Unload the Loader
-			if( swf ){ swf = null; } 
-			if( swfLoader ) swfLoader = null;
-			if( container ) container = null;
-			if( swfMask ) swfMask = null;
 			if( swfLoad ) { 
+				swfLoad.visible = false;
 				try{
+					//Hide the Loader so that it doesn't look broken
 					swfLoad.close();					
 				} catch (e:Error){
 					trace( "SoundSlide::unload:", e.message );
 					swfLoad = null;
 				}
 			}
+			
+			if( swf ){ swf = null; } 
+			if( swfLoader ) swfLoader = null;
+			if( container ) container = null;
+			if( swfMask ) swfMask = null;
 			
 			ShowHideManager.unloadContent( (this as SoundSlide) ) 
 		}
