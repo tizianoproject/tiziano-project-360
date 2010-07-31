@@ -35,6 +35,7 @@ package org.tizianoproject.view
 	import flash.system.Security;
 	import flash.text.StyleSheet;
 	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
 	
 	import org.casalib.util.NumberUtil;
 	import org.casalib.util.StringUtil;
@@ -98,9 +99,11 @@ package org.tizianoproject.view
 			iModel = m;
 
 			prev_btn.buttonMode = true;
+			//prev_btn.text_txt.autoSize = TextFieldAutoSize.LEFT;
 			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 			
 			next_btn.buttonMode = true;
+			//prev_btn.text_txt.autoSize = TextFieldAutoSize.RIGHT;
 			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 		}
 		
@@ -332,12 +335,12 @@ package org.tizianoproject.view
 		{
 //!!!
 			//Video
-			//if ( video ) video.visible = false;
+			if ( video ) video.visible = false;
 			unloadFeatures();
 			
+			ShowHideManager.removeContent( (this as ArticleView), "soundslide" );
 			ShowHideManager.removeContent( (this as ArticleView), "text" );
 			ShowHideManager.removeContent( (this as ArticleView), "slideshow" );
-			ShowHideManager.removeContent( (this as ArticleView), "soundslide" );
 		}
 		
 		private function unloadFeatures():void

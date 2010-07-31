@@ -16,6 +16,7 @@ package org.tizianoproject.view
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
 	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
 	
 	import org.casalib.events.LoadEvent;
 	import org.casalib.load.ImageLoad;
@@ -96,6 +97,8 @@ package org.tizianoproject.view
 		 **********************************/
 		override protected function init():void
 		{
+			name_txt.autoSize = TextFieldAutoSize.LEFT;
+			
 			updatePosition();
 			
 			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
