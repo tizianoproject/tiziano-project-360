@@ -12,9 +12,6 @@ package org.tizianoproject.view
 	import flash.events.FullScreenEvent;
 	import flash.events.MouseEvent;
 	
-	import org.tizianoproject.view.components.global.MentorsButton;
-	import org.tizianoproject.view.components.global.StudentsButton;
-	
 	public class HeaderView extends CompositeView
 	{
 		private static const DEFAULT_BG_COLOR:Number = 0x000000;
@@ -28,8 +25,8 @@ package org.tizianoproject.view
 		private var browserWidth:Number;
 
 		public var headerRight_mc:MovieClip;
-		private var studentsView:StudentsButton;
-		private var mentorsView:MentorsButton;
+		private var studentsView:SimpleButton;
+		private var mentorsView:SimpleButton;
 		
 		public function HeaderView(  )
 		{

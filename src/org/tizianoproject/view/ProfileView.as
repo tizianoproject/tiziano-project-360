@@ -60,6 +60,7 @@ package org.tizianoproject.view
 		public var title_txt:TextField;
 		public var other_txt:TextField;
 		
+		private var loaderContext:LoaderContext;
 		private var imageLoad:ImageLoad;
 		private var bmp:Bitmap;
 		
@@ -133,6 +134,7 @@ package org.tizianoproject.view
 			///////////////////////////
 			//Author
 			///////////////////////////
+			//This was the old way to doing things
 			//loadAvatar( vo.avatar );
 			//writeIntro( vo.intro );
 			
@@ -212,7 +214,7 @@ package org.tizianoproject.view
 			function onParseFailHandler( e:Event ):void
 			{
 				e.currentTarget.removeEventListener(e.type, arguments.callee);
-								
+				trace( "ProfileView::onParseFailHandler:" );
 			}
 		}
 		
@@ -222,6 +224,7 @@ package org.tizianoproject.view
 			bmp.x = DEFAULT_AVATAR_POS.x;
 			bmp.y = DEFAULT_AVATAR_POS.y;
 			bmp.alpha = 1;			
+			//Old Way
 			//ShowHideManager.addContent( avatar_mc, bmp );
 			ShowHideManager.addContent( avatarHolder, bmp );
 		}		

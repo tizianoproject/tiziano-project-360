@@ -62,7 +62,6 @@ package org.tizianoproject.view.components.article
 		
 		public function Feature(  )
 		{			
-
 		}
 		
 		override protected function init():void
