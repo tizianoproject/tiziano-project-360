@@ -18,41 +18,35 @@ package org.tizianoproject.view.components.profile
 	import org.casalib.events.LoadEvent;
 	import org.casalib.load.ImageLoad;
 	import org.tizianoproject.model.vo.Author;
+	import org.tizianoproject.view.CompositeView;
 	
-	public class RelatedAuthor extends MovieClip
+	public class RelatedAuthor extends CompositeView
 	{
 		private static const DEFAULT_AVATAR_WIDTH:Number = 50;
 		private static const DEFAULT_AVATAR_HEIGHT:Number = 50;
 		private static const DEFAULT_POS:Point = new Point( 0, 0 );
 		private static const MARGIN_RIGHT:Number = 20;
 		
-		private var loaderContext:LoaderContext;
 		private var imageLoad:ImageLoad;
 		private var bmp:Bitmap;
-		private var _vo:Author;
 		
+		private var _vo:Author;
 		private var _index:Number;
 		
 		public function RelatedAuthor()
 		{
-			buttonMode = true;
-			
-			y = DEFAULT_POS.y;
-			
-			addEventListener( Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
-			addEventListener( Event.ADDED, onAddedHandler, false, 0, true );
-			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
-			addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 		}
 
-		private function init():void
+		override protected function init():void
 		{
-			loaderContext = new LoaderContext(true );
+			buttonMode = true;
+			y = DEFAULT_POS.y;
+			addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 		}
 		
 		public function load( url:String ):void
 		{
-			imageLoad = new ImageLoad( new URLRequest( url ), loaderContext );
+			imageLoad = new ImageLoad( new URLRequest( url ), new LoaderContext(true) );
 			imageLoad.addEventListener( LoadEvent.COMPLETE, onCompleteHandler, false, 0, true );
 			imageLoad.addEventListener( IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
 			imageLoad.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
@@ -84,7 +78,7 @@ package org.tizianoproject.view.components.profile
 			if( imageLoad ) imageLoad.destroy()
 		}
 
-		private function unload():void
+		override protected function unload():void
 		{
 			clearBitmap();
 			clearLoader();
@@ -101,21 +95,6 @@ package org.tizianoproject.view.components.profile
 		private function onCompleteHandler( e:Event ):void
 		{
 			drawBitmap( );
-		}
-		
-		private function onAddedHandler( e:Event ):void
-		{
-			//trace( "CompositeView::onAddedHandler:", e.target );
-		}
-		
-		private function onAddedToStageHandler( e:Event ):void
-		{
-			init();
-		}
-		
-		private function onRemovedFromStageHandler( e:Event ):void
-		{
-			unload();
 		}		
 		
 		private function onErrorHandler( e:ErrorEvent ):void
