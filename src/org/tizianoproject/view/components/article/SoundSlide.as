@@ -31,17 +31,13 @@ package org.tizianoproject.view.components.article
 		private static const DEFAULT_HEIGHT:Number = 375;
 		
 
-		private var loaderContext:LoaderContext;
 		private var swfLoader:SwfLoad;
-		private var swfLoad:Loader;
-		private var swf:AVM1Movie;
+		private var loader:Loader;
 		private var swfMask:Sprite
 		private var container:Sprite
 		
 		public function SoundSlide()
 		{ 
-			loaderContext = new LoaderContext( true );
-			
 			x = DEFAULT_POS.x;
 			y = DEFAULT_POS.y;
 		}
@@ -61,7 +57,7 @@ package org.tizianoproject.view.components.article
 			container = new Sprite();
 			container.name = "container";
 			container.mask = swfMask;
-			ShowHideManager.addContent( container, swfLoad );
+			ShowHideManager.addContent( container, loader );
 			//Draw a mask for the container
 			redrawMask();
 			//Add the container to the stage
@@ -78,21 +74,11 @@ package org.tizianoproject.view.components.article
 
 		public function load( path:String ):void
 		{
-			/*
-			swfLoader = new SwfLoad( new URLRequest( path ), loaderContext );
+			swfLoader = new SwfLoad( new URLRequest( path ), new LoaderContext(true) );
 			swfLoader.addEventListener( LoadEvent.COMPLETE, onCompleteHandler, false, 0, true );
 			swfLoader.addEventListener( IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
 			swfLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
 			swfLoader.start();
-			*/
-			swfLoad = new Loader();
-			swfLoad.addEventListener( IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
-			swfLoad.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
-			swfLoad.addEventListener( IOErrorEvent.NETWORK_ERROR, onErrorHandler, false, 0, true );
-			swfLoad.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onCompleteHandler, false, 0, true );
-			swfLoad.contentLoaderInfo.addEventListener(IOErrorEvent.NETWORK_ERROR, onCompleteHandler, false, 0, true );
-			swfLoad.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true );
-			swfLoad.load( new URLRequest( path ), loaderContext );
 		}
 		
 		override protected function unload():void
@@ -100,41 +86,54 @@ package org.tizianoproject.view.components.article
 			trace( "SoundSlide::unload:" );	
 			//Stop any possible sounds
 			SoundMixer.stopAll();
-
-			//Unload the Loader
-			if( swfLoad ) { 
-				swfLoad.visible = false;
-				try{
-					//Hide the Loader so that it doesn't look broken
-					swfLoad.close();					
-				} catch (e:Error){
-					trace( "SoundSlide::unload:", e.message );
-					swfLoad = null;
-				}
-			}
 			
-			if( swf ){ swf = null; } 
-			if( swfLoader ) swfLoader = null;
+			unloadSwfLoader();
+			
+			unloadLoader();
+			
 			if( container ) container = null;
 			if( swfMask ) swfMask = null;
 			
+			//Obsessively destroy everything!
 			ShowHideManager.unloadContent( (this as SoundSlide) ) 
+		}
+		
+		private function unloadLoader():void
+		{
+			//Unload the Loader
+			if( loader ) { 
+				loader.visible = false;
+				try{
+					//Hide the Loader so that it doesn't look broken
+					loader.close();				
+				} catch (e:Error){
+					trace( "SoundSlide::unload:", e.message );
+					loader = null;
+				}
+			}
+		}
+		
+		private function unloadSwfLoader():void
+		{
+			if( swfLoader ) { 
+				trace( "Soundslide::destroyLoader:" ); 
+				swfLoader.stop(); 
+				swfLoader.destroy(); 
+				swfLoader = null; 
+			}			
 		}
 		
 		/**********************************
 		 * Event Handlers
 		 **********************************/
-		override protected function onAddedHandler(e:Event):void
-		{
-			//Destroy the swfLoader once the SoundSlide has been loaded
-			//if( e.target.name == "container" ) 	swfLoader.destroy();
-		}
-		
 		private function onCompleteHandler( e:Event ):void
 		{
-			//trace( "SoundSlide::onCompleteHandler:" );
-			//swf = SwfLoad(e.currentTarget).contentAsAvm1Movie;
-			//swf = e.currentTarget.content as AVM1Movie;
+			//Assign the loader which will display the SoundSlide
+			loader = swfLoader.loader;
+			
+			//Destroy the swfLoader once the SoundSlide has been loaded
+			unloadSwfLoader();
+			//Show the SoundSlide
 			if( stage ) showSoundSlide();
 		}
 		

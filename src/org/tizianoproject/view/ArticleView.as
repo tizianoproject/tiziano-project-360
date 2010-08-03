@@ -109,6 +109,8 @@ package org.tizianoproject.view
 			//next_btn.text_txt.autoSize = TextFieldAutoSize.RIGHT;
 			next_btn.text_txt.styleSheet = CSSFormatter.simpleUnderline();
 			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
+			
+			addEventListener( Event.ENTER_FRAME, onEnterFrameHandler, false, 0, true );
 		}
 		
 		/**********************************
@@ -147,6 +149,9 @@ package org.tizianoproject.view
 
 		public function loadStory( ):void
 		{	
+			//Unload any previous story before creating a new one
+			unloadStories();
+
 			currentStory = authorStories[currentIndex] as Story
 			//trace( "ArticleView::loadStory", currentStory.bgImage );
 			
@@ -265,6 +270,7 @@ package org.tizianoproject.view
 		{
 			video = new Video();
 			video.name = "video";
+			trace( "FUCK:", story.vimeoConsumerKey, story.vimeoID );
 			video.consumerKey = story.vimeoConsumerKey;
 			video.load( story.vimeoID );
 			ShowHideManager.addContent( (this as ArticleView), video );
@@ -287,6 +293,7 @@ package org.tizianoproject.view
 			//Collect all the Features in an Array
 			featureHolder = new FeatureHolder();
 			featureHolder.name = "featureHolder";
+
 			ShowHideManager.addContent( (this as ArticleView), featureHolder );							
 		}
 		
@@ -333,8 +340,7 @@ package org.tizianoproject.view
 		 **********************************/
 		private function cycleStories( ):void
 		{			
-			unloadStories();
-			loadStory();			
+			loadStory();
 		}
 		
 		private function unloadStories( ):void
@@ -398,7 +404,12 @@ package org.tizianoproject.view
 		
 		/**********************************
 		 * Event Handlers
-		 **********************************/		
+		 **********************************/
+		private function onEnterFrameHandler( e:Event ):void
+		{
+			
+		}
+		
 		private function onBaseCloseHandler( e:BaseViewEvent ):void
 		{
 			//trace( e.results.name, "::onBaseCloseHandler:" );

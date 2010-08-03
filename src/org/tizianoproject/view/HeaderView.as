@@ -32,11 +32,9 @@ package org.tizianoproject.view
 		public function HeaderView(  )
 		{
 			//Assign Target
-			mentorsBtn = headerRight_mc.mentorsBtn;
-			
-			reportersBtn = headerRight_mc.reportersBtn;
-			
-			infoBtn = headerRight_mc.infoBtn;
+			infoBtn			= headerRight_mc.infoBtn;
+			mentorsBtn 		= headerRight_mc.mentorsBtn;			
+			reportersBtn	= headerRight_mc.reportersBtn;
 			//Don't enable the buttons until the model has loaded
 			disableButtons();
 		}
@@ -47,9 +45,10 @@ package org.tizianoproject.view
 		override protected function init():void
 		{
 			initBackground();
+			
+			infoBtn.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
 			mentorsBtn.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
 			reportersBtn.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
-			infoBtn.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
 		}
 		
 		private function onMentorClickHandler( e:MouseEvent ):void
@@ -65,11 +64,8 @@ package org.tizianoproject.view
 		
 		private function updatePosition( value:Number ):void
 		{
-			if( value > MIN_WIDTH ){
-				headerRight_mc.x = value - MARGIN_RIGHT;
-			} else {
-				headerRight_mc.x = MIN_WIDTH - MARGIN_RIGHT;				
-			}
+			if( value > MIN_WIDTH ) headerRight_mc.x = value - MARGIN_RIGHT;
+			else headerRight_mc.x = MIN_WIDTH - MARGIN_RIGHT;
 		}
 		
 		/**********************************
