@@ -1,5 +1,7 @@
 package org.tizianoproject.utils
 {
+	import com.chrisaiv.utils.ShowHideManager;
+	
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.display.MovieClip;
@@ -13,13 +15,15 @@ package org.tizianoproject.utils
 	import flash.net.URLRequest;
 	import flash.system.Capabilities;
 	import flash.system.LoaderContext;
+	import flash.text.TextField;
 	
 	import org.casalib.util.StageReference;
 	
 	public class Preloader extends MovieClip
 	{		
+		private static const MAIN_APPLICATION:String = "http://360.tizianoproject.org/swf/main.swf";
+		
 		private var swfLoader:Loader;
-		private var swfURL:String = "http://demo.chrisaiv.com/swf/tiziano/main.swf";
 
 		public function Preloader()
 		{
@@ -31,8 +35,8 @@ package org.tizianoproject.utils
 			swfLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler, false, 0, true );
 				
 			try{
-				swfLoader.load( new URLRequest( swfURL ), new LoaderContext( true ) );
-			} catch( e:Error ){ trace( "Error!!!!") } 
+				swfLoader.load( new URLRequest( MAIN_APPLICATION ), new LoaderContext( true ) );
+			} catch( e:Error ){ trace( "Preloader::Error!!!!") } 
 		}
 
 		/**********************************
@@ -72,10 +76,13 @@ package org.tizianoproject.utils
 		}
 		
 		private function onProgressHandler( e:ProgressEvent ):void {
-			trace( Math.round( e.bytesLoaded / e.bytesTotal * 100 ).toString() + " %" );
+			percent_txt.text = ( Math.floor( e.bytesLoaded / e.bytesTotal * 100 ).toString() + " %" );
 		}
 		
-		private function onCompleteHandler( e:Event ):void {
+		private function onCompleteHandler( e:Event ):void 
+		{
+			//Remove the TextField but keep the Stage
+			ShowHideManager.unloadContent( (this as Preloader), 1 );
 			//Remove this Preloader
 			removeChildAt( 0 );		
 			
