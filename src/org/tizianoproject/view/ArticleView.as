@@ -100,12 +100,14 @@ package org.tizianoproject.view
 
 			prev_btn.buttonMode = true;
 			prev_btn.text_txt.selectable = false;
+			prev_btn.text_txt.styleSheet = CSSFormatter.simpleUnderline();
 			//prev_btn.text_txt.autoSize = TextFieldAutoSize.LEFT;
 			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
-			
+
 			next_btn.buttonMode = true;
 			next_btn.text_txt.selectable = false;
-			//prev_btn.text_txt.autoSize = TextFieldAutoSize.RIGHT;
+			//next_btn.text_txt.autoSize = TextFieldAutoSize.RIGHT;
+			next_btn.text_txt.styleSheet = CSSFormatter.simpleUnderline();
 			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 		}
 		
@@ -225,14 +227,16 @@ package org.tizianoproject.view
 				prev_btn.visible = false;
 			} else {
 				//Next Button
-				if( authorStories.length > 1 && currentIndex + 1 <= authorStories.length - 1 ) next_btn.text_txt.text = authorStories[currentIndex+1].title;
-				else next_btn.visible = false;
+				if( authorStories.length > 1 && currentIndex + 1 <= authorStories.length - 1 ){
+					next_btn.text_txt.htmlText = "<a href='event:blank'>" + authorStories[currentIndex+1].title + "</a>";
+				} else next_btn.visible = false;
 				//Previous Button
-				if( currentIndex - 1 >= 0) prev_btn.text_txt.text = authorStories[currentIndex-1].title;
-				else prev_btn.visible = false;
+				if( currentIndex - 1 >= 0){
+					prev_btn.text_txt.htmlText = "<a href='event:blank'>" + authorStories[currentIndex-1].title + "</a>";
+				} else prev_btn.visible = false;
 			}
 		}
-		
+				
 		private function loadBackground():void
 		{
 			if( currentStory.bgImage ) dispatchEvent( new ArticleViewEvent( ArticleViewEvent.LOAD_BG, { data: currentStory.bgImage } ) );
@@ -335,9 +339,9 @@ package org.tizianoproject.view
 		
 		private function unloadStories( ):void
 		{
-//!!!
 			//Video
 			if ( video ) video.visible = false;
+			
 			unloadFeatures();
 			
 			ShowHideManager.removeContent( (this as ArticleView), "soundslide" );
