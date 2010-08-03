@@ -25,14 +25,20 @@ package org.tizianoproject.view
 		private var browserWidth:Number;
 
 		public var headerRight_mc:MovieClip;
-		private var studentsView:SimpleButton;
-		private var mentorsView:SimpleButton;
+		private var reportersBtn:SimpleButton;
+		private var mentorsBtn:SimpleButton;
+		private var infoBtn:SimpleButton;
 		
 		public function HeaderView(  )
 		{
 			//Assign Target
-			mentorsView = headerRight_mc.mentorsView;
-			studentsView = headerRight_mc.studentsView;
+			mentorsBtn = headerRight_mc.mentorsBtn;
+			
+			reportersBtn = headerRight_mc.reportersBtn;
+			
+			infoBtn = headerRight_mc.infoBtn;
+			//Don't enable the buttons until the model has loaded
+			disableButtons();
 		}
 
 		/**********************************
@@ -41,8 +47,9 @@ package org.tizianoproject.view
 		override protected function init():void
 		{
 			initBackground();
-			mentorsView.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
-			studentsView.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
+			mentorsBtn.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
+			reportersBtn.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
+			infoBtn.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
 		}
 		
 		private function onMentorClickHandler( e:MouseEvent ):void
@@ -84,6 +91,21 @@ package org.tizianoproject.view
 			bg.graphics.lineTo( stage.stageWidth, DEFAULT_HEIGHT );
 			
 			addChildAt( bg, 0 );			
+		}
+		
+		/**********************************
+		 * Student / Mentor Buttons 
+		 **********************************/
+		public function disableButtons():void
+		{			
+			mentorsBtn.enabled = false;
+			reportersBtn.enabled = false;
+		}
+		
+		public function enableButtons():void
+		{
+			mentorsBtn.enabled = true;
+			reportersBtn.enabled = true;
 		}
 
 		/**********************************
