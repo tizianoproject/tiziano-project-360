@@ -35,8 +35,6 @@ package org.tizianoproject.view
 			infoBtn			= headerRight_mc.infoBtn;
 			mentorsBtn 		= headerRight_mc.mentorsBtn;			
 			reportersBtn	= headerRight_mc.reportersBtn;
-			//Don't enable the buttons until the model has loaded
-			disableButtons();
 		}
 
 		/**********************************
@@ -92,17 +90,6 @@ package org.tizianoproject.view
 		/**********************************
 		 * Student / Mentor Buttons 
 		 **********************************/
-		public function disableButtons():void
-		{			
-			mentorsBtn.enabled = false;
-			reportersBtn.enabled = false;
-		}
-		
-		public function enableButtons():void
-		{
-			mentorsBtn.enabled = true;
-			reportersBtn.enabled = true;
-		}
 
 		/**********************************
 		 * Resize

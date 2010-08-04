@@ -155,7 +155,7 @@ package org.tizianoproject.model
 		
 		public function getAllArticlesByAuthorName( authorName:String ):Array
 		{
-			trace( "XMLLoader::getAllArticlesByAuthorName" );
+			trace( "XMLLoader::getAllArticlesByAuthorName", authorName );
 			var articles:XMLList = getAllArticles().( child("author") == authorName );
 			//Iterate through each XML Node and Create a Story Object, then Push an Array
 			var stories:Array = new Array();

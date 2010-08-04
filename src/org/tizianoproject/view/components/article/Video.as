@@ -15,7 +15,9 @@
 package org.tizianoproject.view.components.article
 {
 	import com.chrisaiv.utils.ShowHideManager;
-	import com.vimeo.VimeoPlayer;
+	
+	import de.derhess.video.vimeo.VimeoEvent;
+	import de.derhess.video.vimeo.VimeoPlayer;
 	
 	import flash.display.MovieClip;
 	import flash.events.Event;
@@ -38,36 +40,74 @@ package org.tizianoproject.view.components.article
 		
 		private var vimeoPlayer:VimeoPlayer;
 		
+		private var isPlaying:Boolean;
+
 		public function Video( )
 		{
 		}
-		
+
+		public function stopVideo():void
+		{
+			if( vimeoPlayer){
+				if( isPlaying ){
+					//vimeoPlayer.stop();
+					vimeoPlayer.unloadVideo();
+					isPlaying = false;
+				}				
+			}
+		}		
+
 		public function load( id:Number ):void
 		{
+			isPlaying = false;
 			//A video player already exists
-			if( vimeoPlayer ) vimeoPlayer.load( id );
-			else initPlayer( id );
+			if( vimeoPlayer ) vimeoPlayer.loadVideo( id );
+			//Create video player
+			else initVimeoPlayer( id );
 		}
 		
-		private function initPlayer( id:Number ):void
+		private function initVimeoPlayer( id:Number ):void
 		{
 			//Load new video
 			vimeoPlayer = new VimeoPlayer( consumerKey, id, DEFAULT_WIDTH, DEFAULT_HEIGHT );
+			vimeoPlayer.addEventListener( VimeoEvent.PLAYER_LOADED, vimeoLoadedHandler, false, 0, true );
+			vimeoPlayer.addEventListener( VimeoEvent.DURATION, vimeoDurationHandler, false, 0, true );
+			vimeoPlayer.addEventListener( VimeoEvent.STATUS, vimeoStatusHandler, false, 0, true );
 			vimeoPlayer.name = "vimeoPlayer";
 			vimeoPlayer.x = DEFAULT_POS.x;
 			vimeoPlayer.y = DEFAULT_POS.y;
-			vimeoPlayer.addEventListener( Event.COMPLETE, videoLoadedHandler, false, 0, true );
-			ShowHideManager.addContent( (this as Video), vimeoPlayer );
+			ShowHideManager.addContent( (this as Video), vimeoPlayer );	
+		}
+		
+		override protected function unload():void
+		{
+			trace( "Video::unload:" );
+			stopVideo();
 		}
 		
 		/**********************************
 		 * Event Handlers
 		 **********************************/
-		private function videoLoadedHandler( e:Event ):void
+		private function vimeoLoadedHandler( e:VimeoEvent ):void
 		{
-			trace( "Video:: VIDEO IS LOADED:" );
+			trace( "Video::vimeoLoadedHandler:", e.type );
+			isPlaying = true;
 		}
-		
+
+		private function vimeoDurationHandler( e:VimeoEvent ):void
+		{
+			trace( "Video::vimeoDurationHandler:", e.duration );
+		}
+
+		private function vimeoStatusHandler( e:VimeoEvent ):void
+		{
+			trace( "Video::vimeoStatusHandler:", e.type, e.info );
+			switch( e.info ){
+				case "vimeoNewVideo":
+					break;
+			}
+		}
+
 		/**********************************
 		 * Read Write Accessors
 		 **********************************/

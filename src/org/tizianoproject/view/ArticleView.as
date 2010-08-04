@@ -102,16 +102,12 @@ package org.tizianoproject.view
 			prev_btn.buttonMode = true;
 			prev_btn.text_txt.selectable = false;
 			prev_btn.text_txt.styleSheet = CSSFormatter.simpleUnderline();
-			//prev_btn.text_txt.autoSize = TextFieldAutoSize.LEFT;
 			prev_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
 
 			next_btn.buttonMode = true;
 			next_btn.text_txt.selectable = false;
-			//next_btn.text_txt.autoSize = TextFieldAutoSize.RIGHT;
 			next_btn.text_txt.styleSheet = CSSFormatter.simpleUnderline();
 			next_btn.addEventListener(MouseEvent.CLICK, onMouseClickHandler, false, 0, true );
-			
-			addEventListener( Event.ENTER_FRAME, onEnterFrameHandler, false, 0, true );
 		}
 		
 		/**********************************
@@ -156,11 +152,6 @@ package org.tizianoproject.view
 			currentStory = authorStories[currentIndex] as Story
 			//trace( "ArticleView::loadStory", currentStory.bgImage );
 			
-			//Insurance: Make sure there are no double writes
-			if( featureHolder ){
-				if( featureHolder.numChildren > 0 ) unloadFeatures();
-			}
-			
 			if( currentStory ){
 				//Load a Background Image
 				loadBackground();
@@ -180,7 +171,7 @@ package org.tizianoproject.view
 				//Add new Related Features
 				if( currentStory.related.length > 0 ) initFeatures( currentStory.related );
 			}
-			displayButtons();
+			showPrevNextButtons();
 		}
 		
 		private function switchStory( ):void
@@ -193,10 +184,14 @@ package org.tizianoproject.view
 					initSlideshow( currentStory );
 					break;
 				case "video":
+					//Reuse the same video object
+					trace( "ArticleView::switchStory:video: 1" );
 					if( video ){
-						video.load( currentStory.id );
 						video.visible = true;
-					} else {
+						video.load( currentStory.vimeoID );
+					}
+					//Create a video object
+					else {
 						initVideo( currentStory );						
 					}
 					break;
@@ -222,7 +217,7 @@ package org.tizianoproject.view
 			author_txt.addEventListener(TextEvent.LINK, onTextLinkHandler, false, 0, true );
 		}
 		
-		private function displayButtons():void
+		private function showPrevNextButtons():void
 		{
 			//It's just easier to turn this on
 			next_btn.visible = true;
@@ -269,6 +264,7 @@ package org.tizianoproject.view
 		
 		private function initVideo( story:Story ):void
 		{
+			trace( "ArticleView::initVideo:" );
 			video = new Video();
 			video.name = "video";
 			video.consumerKey = story.vimeoConsumerKey;
@@ -347,72 +343,23 @@ package org.tizianoproject.view
 		{
 			//Kill all available sounds
 			SoundMixer.stopAll();
+			
 			//Video
-			if ( video ) video.visible = false;
+			if ( video ){
+				video.visible = false;
+				video.stopVideo();
+			} 
 			
-			unloadFeatures();
-			
-			//ShowHideManager.removeContent( (this as ArticleView), "video" );
+			ShowHideManager.removeContent( (this as ArticleView), "featureHolder"  );
+			ShowHideManager.removeContent( (this as ArticleView), "featureScrollBar" );			
 			ShowHideManager.removeContent( (this as ArticleView), "soundslide" );
 			ShowHideManager.removeContent( (this as ArticleView), "text" );
 			ShowHideManager.removeContent( (this as ArticleView), "slideshow" );
 		}
 		
-		private function unloadFeatures():void
-		{
-			ShowHideManager.removeContent( (this as ArticleView), "featureHolder"  );
-			ShowHideManager.removeContent( (this as ArticleView), "featureScrollBar" );			
-		}
-
-		/**********************************
-		 * Resize
-		 **********************************/		
-		override public function browserResize(e:SWFSizeEvent):void
-		{
-			browserWidth = e.rightX;
-			browserHeight = e.bottomY;
-			//trace( "ArticleView::swfSizerHandler:", browserWidth, browserHeight );
-			
-			if( stage ) updatePosition();
-		}
-		
-		override protected function resize(e:FullScreenEvent):void
-		{
-			if( stage ){
-				updatePosition();				
-			} 
-		}
-		
-		private function updatePosition(  ):void
-		{
-			//trace( "ArticleView::updatePosition:", stage.displayState );
-			if( stage.displayState == StageDisplayState.FULL_SCREEN ){
-				x = stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 );
-				y = stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 );
-			} else {
-				//trace( "ArticleView::updatePosition:", browserWidth, browserHeight );
-				if( browserWidth && browserHeight ){
-					var dynWidth:Number = ( browserWidth > MIN_WIDTH) ? browserWidth : MIN_WIDTH;
-					x = ( dynWidth / 2) - ( MIN_WIDTH / 2 );
-				
-					var dynHeight:Number = ( browserHeight > MIN_HEIGHT ) ? browserHeight : MIN_HEIGHT ;
-					var yPos:Number = ( dynHeight / 2) - ( MIN_HEIGHT / 2 );
-					y = ( yPos > + DEFAULT_POS.y ) ? yPos : DEFAULT_POS.y;					
-				} else {
-					x = ( stage.stageWidth / 2) - ( MIN_WIDTH / 2 );
-					y = ( ( stage.stageHeight - DEFAULT_POS.y ) / 2) - ( MIN_HEIGHT / 2 ) + DEFAULT_POS.y;
-				}
-			}
-		}
-		
 		/**********************************
 		 * Event Handlers
 		 **********************************/
-		private function onEnterFrameHandler( e:Event ):void
-		{
-			
-		}
-		
 		private function onBaseCloseHandler( e:BaseViewEvent ):void
 		{
 			//trace( e.results.name, "::onBaseCloseHandler:" );
@@ -461,7 +408,48 @@ package org.tizianoproject.view
 			//You must have more than one story to cycle through
 			if( authorStories.length > 1 ) cycleStories();	
 		}
-				
+
+		/**********************************
+		 * Resize
+		 **********************************/		
+		override public function browserResize(e:SWFSizeEvent):void
+		{
+			browserWidth = e.rightX;
+			browserHeight = e.bottomY;
+			//trace( "ArticleView::swfSizerHandler:", browserWidth, browserHeight );
+			
+			if( stage ) updatePosition();
+		}
+		
+		override protected function resize(e:FullScreenEvent):void
+		{
+			if( stage ){
+				updatePosition();				
+			} 
+		}
+		
+		private function updatePosition(  ):void
+		{
+			//trace( "ArticleView::updatePosition:", stage.displayState );
+			if( stage.displayState == StageDisplayState.FULL_SCREEN ){
+				x = stage.fullScreenWidth / 2 - ( MIN_WIDTH / 2 );
+				y = stage.fullScreenHeight / 2 - ( MIN_HEIGHT / 2 );
+			} else {
+				//trace( "ArticleView::updatePosition:", browserWidth, browserHeight );
+				if( browserWidth && browserHeight ){
+					var dynWidth:Number = ( browserWidth > MIN_WIDTH) ? browserWidth : MIN_WIDTH;
+					x = ( dynWidth / 2) - ( MIN_WIDTH / 2 );
+					
+					var dynHeight:Number = ( browserHeight > MIN_HEIGHT ) ? browserHeight : MIN_HEIGHT ;
+					var yPos:Number = ( dynHeight / 2) - ( MIN_HEIGHT / 2 );
+					y = ( yPos > + DEFAULT_POS.y ) ? yPos : DEFAULT_POS.y;					
+				} else {
+					x = ( stage.stageWidth / 2) - ( MIN_WIDTH / 2 );
+					y = ( ( stage.stageHeight - DEFAULT_POS.y ) / 2) - ( MIN_HEIGHT / 2 ) + DEFAULT_POS.y;
+				}
+			}
+		}
+		
 		/**********************************
 		 * Getters Setters
 		 **********************************/

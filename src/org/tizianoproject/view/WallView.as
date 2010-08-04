@@ -107,17 +107,17 @@ package org.tizianoproject.view
 					hideMask();
 					break;
 			}
-			trace( "WallView::onTweenInitHandler:", message );			
+			//trace( "WallView::onTweenInitHandler:", message );			
 		}
 		
 		private function onTweenCompleteHandler():void
 		{
-			trace( "WallView::onTweenCompleteHandler:" );			
+			//trace( "WallView::onTweenCompleteHandler:" );			
 		}
 		
 		private function onCompleteHandler( e:Event ):void
 		{
-			trace( "WallView::onCompleteHandler:", "Wall is LOADED" );
+			//trace( "WallView::onCompleteHandler:", "Wall is LOADED" );
 		}
 		
 		private function onErrorHandler( e:Event ):void

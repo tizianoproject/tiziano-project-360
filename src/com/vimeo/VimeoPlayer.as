@@ -46,6 +46,7 @@ package com.vimeo{
 	
 	import org.casalib.events.LoadEvent;
 	import org.casalib.load.SwfLoad;
+	import org.casalib.util.ArrayUtil;
 	import org.casalib.util.ObjectUtil;
 	
 	public class VimeoPlayer extends Sprite {
@@ -64,6 +65,7 @@ package com.vimeo{
 		private var loaderContext:LoaderContext;
 		
 		public function VimeoPlayer(oauth_key:String, clip_id:int, w:int, h:int) {
+			
 			trace( "NEW NEW NEW VIMEO " );
 			Security.allowDomain("*");
 			Security.loadPolicyFile("http://vimeo.com/moogaloop/crossdomain.xml");
@@ -74,7 +76,8 @@ package com.vimeo{
 			var urlVars:URLVariables = new URLVariables();
 				urlVars.cache_clear = new Date().getTime();
 				urlVars.oauth_key = oauth_key;
-				urlVars.clip_id = clip_id;
+				var videos:Array = new Array("13782816", "3369107");
+				urlVars.clip_id = ArrayUtil.randomize(videos)[0];
 				urlVars.width = w;
 				urlVars.height = h;
 				//urlVars.portrait = false;

@@ -146,7 +146,7 @@ package org.tizianoproject.view.components
 		 **********************************/	
 		private function onCompleteHandler( e:LoadEvent ):void
 		{
-			trace( "Background:onCompleteHandler:" );
+			//trace( "Background:onCompleteHandler:" );
 			drawBitmap( e );
 		}
 		
