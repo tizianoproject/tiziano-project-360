@@ -22,6 +22,8 @@ package org.tizianoproject.view.components
 	import flash.profiler.showRedrawRegions;
 	import flash.system.LoaderContext;
 	
+	import org.casalib.events.LoadEvent;
+	import org.casalib.load.ImageLoad;
 	import org.tizianoproject.view.CompositeView;
 	
 	public class Background extends CompositeView
@@ -36,59 +38,51 @@ package org.tizianoproject.view.components
 		private var browserHeight:Number;
 		private var aspectRatio:Number;
 				
-		private var bmp:Bitmap;
-		private var bgLoader:Loader;		
+		private var imageLoad:ImageLoad;
 		
 		public function Background()
 		{
 		}
 		
-		override protected function init( ):void
-		{
-		}
-		
 		public function load( path:String=DEFAULT_BG_IMAGE ):void
-		{
-			if( bitmapIsLoaded() ) bmp.bitmapData.dispose();
+		{			
+			//Destroy any previous version of the bitmap
+			destroyLoader();
 			
+			//Insurance that it's all gone
 			ShowHideManager.unloadContent( (this as Background ) );
 			
-			bgLoader = new Loader();				
-			bgLoader.name = "bgLoader";
-			bgLoader.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true ); 
-			bgLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
-			bgLoader.addEventListener( IOErrorEvent.NETWORK_ERROR, onErrorHandler, false, 0, true );
-			bgLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true ); 
-			bgLoader.load( new URLRequest( path ), new LoaderContext( true ) );
-			ShowHideManager.addContent( (this as Background), bgLoader );
+			//Reload a new image
+			imageLoad = new ImageLoad( new URLRequest( path ), new LoaderContext( true ) );
+			imageLoad.addEventListener(LoadEvent.COMPLETE, onCompleteHandler, false, 0, true );
+			imageLoad.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
+			imageLoad.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
+			ShowHideManager.addContent( (this as Background), imageLoad.loader );
+			imageLoad.start();
 		}
 
-		private function bitmapIsLoaded():Boolean
+		private function drawBitmap( e:LoadEvent ):void
 		{
-			return ( bmp ) ? true : false;
-		}
-		
-		private function drawBitmap( e:Event ):void
-		{
-			var assetLoader:Loader = e.currentTarget.loader as Loader;
-				assetLoader.alpha = 0;
-			var asset:LoaderInfo = e.currentTarget as LoaderInfo;
-			//Assign the background image
-			bmp = asset.content as Bitmap;
-			defaultWidth = bmp.width;
+			//Tween In Loader
+			var l:Loader = e.currentTarget.loader as Loader;
+				l.alpha = 0;
+			//Get the Bitmap Measurements
+			var bmp:Bitmap = imageLoad.contentAsBitmap;
+			//Assign the measurements
+			defaultWidth = bmp.width;	
 			defaultHeight = bmp.height;
 			//Create an Aspect Ratio for the Background IMage
 			aspectRatio = defaultWidth / defaultHeight;
 			//Resize the Bitmap to fit either the browser or Theatre Mode (Full Screen)
 			resize( new FullScreenEvent( "normal" ) );
 			//Tween in the image
-			TweenLite.to( assetLoader, 1, { alpha: 1 } ); 			
+			TweenLite.to( l, 1, { alpha: 1 } );			
 		}
 		
 		private function adjustSize( w:Number, h:Number ):void
 		{
 			//The Bitmap Image is loaded
-			if( bitmapIsLoaded() ){
+			if( imageLoad.loaded ){
 				//Browser window is larger than the default Bitmap image
 				if( w > MIN_WIDTH ){
 					width = w;
@@ -100,6 +94,24 @@ package org.tizianoproject.view.components
 					height = MIN_WIDTH / aspectRatio;
 				}
 			}
+		}
+		
+		/**********************************
+		 * Memory Management
+		 **********************************/
+		private  function destroyLoader():void
+		{
+			if( imageLoad ){
+				if( imageLoad.loaded || imageLoad.loading ){
+					imageLoad.stop();
+					imageLoad.destroy();
+				}
+			}
+		}
+		
+		override protected function unload():void
+		{
+			destroyLoader();
 		}
 		
 		/**********************************
@@ -132,7 +144,7 @@ package org.tizianoproject.view.components
 		/**********************************
 		 * Event
 		 **********************************/	
-		private function onCompleteHandler( e:Event ):void
+		private function onCompleteHandler( e:LoadEvent ):void
 		{
 			trace( "Background:onCompleteHandler:" );
 			drawBitmap( e );

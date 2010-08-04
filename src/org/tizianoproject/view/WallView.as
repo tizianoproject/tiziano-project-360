@@ -42,7 +42,11 @@ package org.tizianoproject.view
 			swfLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler, false, 0, true ); 
 			swfLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true ); 
 			swfLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
-			swfLoader.load( new URLRequest( path ), new LoaderContext( true ) );
+			
+			try{
+				swfLoader.load( new URLRequest( path ), new LoaderContext( true ) );				
+			} catch( e:Error ){ trace( "WallView::load Error:" ) }
+
 			ShowHideManager.addContent( (this as WallView), swfLoader );			
 		}
 		

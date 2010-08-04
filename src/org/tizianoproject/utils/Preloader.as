@@ -15,6 +15,7 @@ package org.tizianoproject.utils
 	import flash.net.URLRequest;
 	import flash.system.Capabilities;
 	import flash.system.LoaderContext;
+	import flash.system.Security;
 	import flash.text.TextField;
 	
 	import org.casalib.util.StageReference;
@@ -27,6 +28,8 @@ package org.tizianoproject.utils
 
 		public function Preloader()
 		{
+			Security.allowDomain("*");
+			
 			swfLoader = new Loader();
 			swfLoader.contentLoaderInfo.addEventListener( ProgressEvent.PROGRESS, onProgressHandler, false, 0, true );
 			swfLoader.contentLoaderInfo.addEventListener( Event.COMPLETE, onCompleteHandler, false, 0, true );

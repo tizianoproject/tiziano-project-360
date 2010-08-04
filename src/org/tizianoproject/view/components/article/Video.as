@@ -60,19 +60,12 @@ package org.tizianoproject.view.components.article
 			ShowHideManager.addContent( (this as Video), vimeoPlayer );
 		}
 		
-		override protected function unload():void
-		{			
-			trace( "Video::unload:" );
-			//Kill all available sounds
-			SoundMixer.stopAll();
-		}
-		
 		/**********************************
 		 * Event Handlers
 		 **********************************/
 		private function videoLoadedHandler( e:Event ):void
 		{
-			trace( "Video::videoLoadedHandler:" );
+			trace( "Video:: VIDEO IS LOADED:" );
 		}
 		
 		/**********************************

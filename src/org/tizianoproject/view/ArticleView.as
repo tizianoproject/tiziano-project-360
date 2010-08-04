@@ -32,6 +32,7 @@ package org.tizianoproject.view
 	import flash.events.MouseEvent;
 	import flash.events.TextEvent;
 	import flash.geom.Point;
+	import flash.media.SoundMixer;
 	import flash.system.Security;
 	import flash.text.StyleSheet;
 	import flash.text.TextField;
@@ -270,7 +271,6 @@ package org.tizianoproject.view
 		{
 			video = new Video();
 			video.name = "video";
-			trace( "FUCK:", story.vimeoConsumerKey, story.vimeoID );
 			video.consumerKey = story.vimeoConsumerKey;
 			video.load( story.vimeoID );
 			ShowHideManager.addContent( (this as ArticleView), video );
@@ -345,11 +345,14 @@ package org.tizianoproject.view
 		
 		private function unloadStories( ):void
 		{
+			//Kill all available sounds
+			SoundMixer.stopAll();
 			//Video
 			if ( video ) video.visible = false;
 			
 			unloadFeatures();
 			
+			//ShowHideManager.removeContent( (this as ArticleView), "video" );
 			ShowHideManager.removeContent( (this as ArticleView), "soundslide" );
 			ShowHideManager.removeContent( (this as ArticleView), "text" );
 			ShowHideManager.removeContent( (this as ArticleView), "slideshow" );

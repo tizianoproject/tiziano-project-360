@@ -38,8 +38,15 @@ package com.vimeo{
 	import flash.net.URLRequestMethod;
 	import flash.net.URLVariables;
 	import flash.profiler.showRedrawRegions;
+	import flash.system.ApplicationDomain;
+	import flash.system.LoaderContext;
 	import flash.system.Security;
+	import flash.system.SecurityDomain;
 	import flash.utils.Timer;
+	
+	import org.casalib.events.LoadEvent;
+	import org.casalib.load.SwfLoad;
+	import org.casalib.util.ObjectUtil;
 	
 	public class VimeoPlayer extends Sprite {
 
@@ -53,11 +60,14 @@ package com.vimeo{
 		private var vimeoMask:Sprite;
 
 		private var timer:Timer;
+		private var swfLoad:SwfLoad;
+		private var loaderContext:LoaderContext;
 		
 		public function VimeoPlayer(oauth_key:String, clip_id:int, w:int, h:int) {
-
+			trace( "NEW NEW NEW VIMEO " );
 			Security.allowDomain("*");
 			Security.loadPolicyFile("http://vimeo.com/moogaloop/crossdomain.xml");
+			loaderContext = new LoaderContext( true );
 
 			this.setDimensions(w, h);
 			
@@ -67,24 +77,34 @@ package com.vimeo{
 				urlVars.clip_id = clip_id;
 				urlVars.width = w;
 				urlVars.height = h;
-				urlVars.portrait = false;
-				urlVars.hd_off = 1;
-				urlVars.fullscreen = false;				
+				//urlVars.portrait = false;
+				//urlVars.hd_off = 1;
+				//urlVars.fp = 10;
+				//urlVars.fullscreen = false;				
+				//urlVars.fullscreen = 0;				
 
 			var request:URLRequest = new URLRequest();
 				request.url = "http://api.vimeo.com/moogaloop_api.swf";
 				request.data = urlVars;
 				request.method = URLRequestMethod.GET;
 
+				/*
 			vimeoLoader = new Loader();
-			vimeoLoader.contentLoaderInfo.addEventListener( Event.COMPLETE, onCompleteHandler, false, 0, true );
+			vimeoLoader.contentLoaderInfo.addEventListener( Event.COMPLETE, onLoadCompleteHandler, false, 0, true );
 			vimeoLoader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, onIOErrorHandler, false, 0, true );
 			vimeoLoader.addEventListener( IOErrorEvent.IO_ERROR, onIOErrorHandler, false, 0, true );
 			vimeoLoader.addEventListener( IOErrorEvent.NETWORK_ERROR, onIOErrorHandler, false, 0, true );
 			vimeoLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onSecurityHandler, false, 0, true );
-			vimeoLoader.load( request );		
+			try{
+				vimeoLoader.load( request );				
+			} catch( e:Error ){ trace( "VimeoPlayer::constructor:Error:", e.message ) }
+				*/
+				swfLoad = new SwfLoad( request, loaderContext );
+				swfLoad.addEventListener(LoadEvent.COMPLETE, onLoadCompleteHandler, false, 0, true );
+				swfLoad.addEventListener(IOErrorEvent.IO_ERROR, onIOErrorHandler, false, 0, true );
+				swfLoad.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onSecurityHandler, false, 0, true );
+				swfLoad.start();
 			
-			addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler, false, 0, true );
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
 		
@@ -93,9 +113,12 @@ package com.vimeo{
 		 **********************************/
 		public function load( id:uint ):void
 		{
-			trace( "VimeoPlayer::loadVideo:" );
+			trace( "VimeoPlayer::loadVideo:", id );
 			if( moogaPlayer ) {
-				moogaPlayer.api_loadVideo( id );
+				try{
+					moogaPlayer.api_loadVideo( id );					
+				} catch( e:Error ){ trace( "VimeoPlayer::load:Error:", e.message ) }
+				
 				//Keep Track of when the player has properly loaded
 				timerStart();				
 			}
@@ -104,7 +127,8 @@ package com.vimeo{
 		//Kill the video and unload it
 		public function close():void
 		{
-			if( moogaPlayer ) moogaPlayer.api_unload();
+			//if( moogaPlayer ) moogaPlayer.api_unload();
+			if( moogaPlayer ) moogaPlayer.api_pause();
 		}
 		
 		public function play():void
@@ -169,16 +193,14 @@ package com.vimeo{
 			}
 		}
 		
+		//We don't really unload it, we simply close the video connection but keep the player
 		private function unload():void
 		{
+			trace( "VimeoPlayer::unload:" );
 			if( moogaPlayer ){
 				if( moogaPlayer.api_isPlaying ){
 					stop();
-					vimeoContainer.removeChild( DisplayObject(moogaPlayer) );
-					moogaPlayer = null;
-				}				
-				//Kill All Sounds
-				SoundMixer.stopAll();
+				}	
 			}
 		}
 
@@ -207,34 +229,37 @@ package com.vimeo{
 		/**********************************
 		 * Event Handlers
 		 **********************************/
-		private function onCompleteHandler( e:Event ):void
+		private function onLoadCompleteHandler( e:LoadEvent ):void
 		{
-			trace( "VimeoPlayer::onCompleteHandler:" );
+			//trace( "VimeoPlayer::onLoadCompleteHandler:" );
+			
+			//Assign the player
+			moogaPlayer = swfLoad.content; //e.target.loader.content;
+			moogaPlayer.addEventListener( IOErrorEvent.IO_ERROR, onIOErrorHandler, false, 0, true );
+			moogaPlayer.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onSecurityHandler, false, 0, true );
+			moogaPlayer.addEventListener( ErrorEvent.ERROR, onErrorHandler, false, 0, true );
+			initMoogaHolder();
+		}
+		
+		private function initMoogaHolder():void
+		{
+			//Create a Mask to fix some artifact issues
 			vimeoMask = new Sprite();
 			vimeoMask.name = "vimeoMask";
 			
 			//Allow your moogaplayer to be positioned anywhere
 			vimeoContainer = new Sprite();
-			vimeoContainer.mask = vimeoMask;
+			//			vimeoContainer.mask = vimeoMask;
 			vimeoContainer.name = "vimeoContainer";
-			vimeoContainer.addChild( e.target.loader.content );
-			//Assign the player
-			moogaPlayer = e.target.loader.content;
-			moogaPlayer.addEventListener( IOErrorEvent.IO_ERROR, onIOErrorHandler, false, 0, true );
-			moogaPlayer.addEventListener( IOErrorEvent.NETWORK_ERROR, onIOErrorHandler, false, 0, true );
-			moogaPlayer.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onSecurityHandler, false, 0, true );
-			moogaPlayer.addEventListener( ErrorEvent.ERROR, onErrorHandler, false, 0, true );
-
-			//Create a Mask to fix some artifact issues
+			vimeoContainer.addChild( (moogaPlayer as DisplayObject) );
 			
-			//Add to Stage			
-			ShowHideManager.addContent( (this as VimeoPlayer), vimeoMask );
+			//			ShowHideManager.addContent( (this as VimeoPlayer), vimeoMask );
 			ShowHideManager.addContent( (this as VimeoPlayer), vimeoContainer );
 			//Redraw the mask
-			redrawMask();
+			//			redrawMask();
 			
 			//Keep track of when the video is properly loaded
-			timerStart();	
+			timerStart();			
 		}
 		
 		private function onTimerHandler( e:TimerEvent ):void
@@ -251,25 +276,30 @@ package com.vimeo{
 		//Wait for Moogaloop to finish setting up
 		private function playerLoadedCheck():void
 		{
-			trace( "VimeoPlayer::playerLoadedCheck:" );
-			if( moogaPlayer ){
+			trace( "VimeoPlayer::playerLoadedCheck:", moogaPlayer,  new Date().getTime() );
+			if( !ObjectUtil.isNull(moogaPlayer) ){
+				trace( "1"  );
 				if( moogaPlayer.player_loaded ){
-					
+					trace( "2" );
 					if( timer ) timerStop();
-					
-					if( moogaPlayer ) moogaPlayer.disableMouseMove();
-					
-					stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+					try{
+						trace( "3" );
+						moogaPlayer.disableMouseMove();	
+					} catch( e:Error ){ trace( "VimeoPlayer:playerLoadedCheck: Error", e.message ) }
+										
+					trace( "4" );
+					if( stage ) stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 					
 					dispatchEvent(new Event(Event.COMPLETE));				
 				}				
 			}
 		}
-		
+
 		//Fake the mouse move/out events for Moogaloop
 		private function mouseMove(e:MouseEvent):void 
 		{
-			if( moogaPlayer ){
+			trace( "VimeoPlayer::mouseMove:", e.localX, e.localY );
+			if( !ObjectUtil.isNull(moogaPlayer) ){
 				if ( e.stageX >= this.x && e.stageX <= this.x + vimeoWidth &&
 					e.stageY >= this.y && e.stageY <= this.y + vimeoHeight ) {
 					moogaPlayer.mouseMove( e );
@@ -292,10 +322,6 @@ package com.vimeo{
 		private function onErrorHandler( e:Event ):void
 		{
 			trace( "VimeoPlayer::onErrorHandler:" );
-		}
-		
-		private function onAddedToStageHandler( e:Event ):void
-		{			
 		}
 		
 		private function onRemovedFromStageHandler( e:Event ):void
