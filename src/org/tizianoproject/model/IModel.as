@@ -14,16 +14,16 @@ package org.tizianoproject.model
 		function getAuthorsByType( authorType:String, authorName:String=null, isRandom:Boolean=false ):Array
 			
 		//Author
-		function getAuthorByName( authorName:String ):Author
-		function getAuthorTypeByName( authorName:String ):String
+		function getAuthorByName( authorName:String, callerName:String="" ):Author
+		function getAuthorTypeByName( authorName:String, callerName:String="" ):String
 			
 		//Articles
-		function getOtherArticlesByAuthorName( authorName:String, storyID:Number ):Array
-		function getAllArticlesByAuthorName( authorName:String ):Array			
+		function getOtherArticlesByAuthorName( authorName:String, storyID:Number, callerName:String="" ):Array
+		function getAllArticlesByAuthorName( authorName:String, callerName:String="" ):Array			
 			
-		function getArticleByArticleID( uniqueID:Number ):Story
+		function getArticleByArticleID( uniqueID:Number, callerName:String="" ):Story
 		//Gets all author articles with the uniqueID story having priority
-		function getAllAuthorArticlesByID( uniqueID:Number ):Array
+		function getAllAuthorArticlesByID( uniqueID:Number, callerName:String="" ):Array
 			
 		function isLoaded():Boolean
 	}
