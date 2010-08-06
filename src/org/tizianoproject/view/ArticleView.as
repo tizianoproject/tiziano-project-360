@@ -21,6 +21,7 @@ package org.tizianoproject.view
 	import com.chargedweb.swfsize.SWFSizeEvent;
 	import com.chrisaiv.utils.CSSFormatter;
 	import com.chrisaiv.utils.ShowHideManager;
+	import com.greensock.TweenLite;
 	import com.tis.utils.components.Scrollbar;
 	
 	import flash.display.MovieClip;
@@ -37,6 +38,7 @@ package org.tizianoproject.view
 	import flash.text.StyleSheet;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
+	import flash.ui.Mouse;
 	
 	import org.casalib.util.NumberUtil;
 	import org.casalib.util.StringUtil;
@@ -49,6 +51,7 @@ package org.tizianoproject.view
 	import org.tizianoproject.model.vo.Story;
 	import org.tizianoproject.view.components.article.Feature;
 	import org.tizianoproject.view.components.article.FeatureHolder;
+	import org.tizianoproject.view.components.article.Quiz;
 	import org.tizianoproject.view.components.article.Scroller;
 	import org.tizianoproject.view.components.article.Slideshow;
 	import org.tizianoproject.view.components.article.SoundSlide;
@@ -79,10 +82,12 @@ package org.tizianoproject.view
 		public var prev_btn:MovieClip;
 		public var next_btn:MovieClip;
 
+		//Story Types
 		private var text:Text;
 		private var slideshow:Slideshow;
 		private var video:Video;
 		private var soundslide:SoundSlide;
+		private var quiz:Quiz;
 
 		private var feature:Feature;
 		private var featureHolder:FeatureHolder;		
@@ -90,6 +95,8 @@ package org.tizianoproject.view
 		
 		private var browserWidth:Number;
 		private var browserHeight:Number;
+		
+		private var featureMask:MovieClip;
 
 		private var _currentStory:Story;
 		private var _currentIndex:Number;		
@@ -184,22 +191,16 @@ package org.tizianoproject.view
 					initSlideshow( currentStory );
 					break;
 				case "video":
-					//Reuse the same video object
-					trace( "ArticleView::switchStory:video: 1" );
-					if( video ){
-						video.visible = true;
-						video.load( currentStory.vimeoID );
-					}
-					//Create a video object
-					else {
-						initVideo( currentStory );						
-					}
+					initVideo( currentStory );						
 					break;
 				case "soundslide":
 					initSoundSlide( currentStory );
 					break;
 				case "photo":
 					initSoundSlide( currentStory );
+					break;
+				case "quiz":
+					initQuiz( currentStory );
 					break;
 			}			
 		}
@@ -264,12 +265,18 @@ package org.tizianoproject.view
 		
 		private function initVideo( story:Story ):void
 		{
-			trace( "ArticleView::initVideo:" );
-			video = new Video();
-			video.name = "video";
-			video.consumerKey = story.vimeoConsumerKey;
-			video.load( story.vimeoID );
-			ShowHideManager.addContent( (this as ArticleView), video );
+			trace( "ArticleView::initVideo: 1" );
+			//If a Video is already active, keep using the same video
+			if( video ){
+				video.visible = true;
+				video.load( currentStory.vimeoID );
+			} else {
+				video = new Video();
+				video.name = "video";
+				video.consumerKey = story.vimeoConsumerKey;
+				video.load( story.vimeoID );
+				ShowHideManager.addContent( (this as ArticleView), video );				
+			}
 		}
 		
 		private function initSoundSlide( story:Story ):void
@@ -279,6 +286,14 @@ package org.tizianoproject.view
 			soundslide.name = "soundslide";
 			soundslide.load( story.path );
 			ShowHideManager.addContent( (this as ArticleView), soundslide );
+		}
+		
+		private function initQuiz( story:Story ):void
+		{
+			quiz = new Quiz();
+			quiz.name = "quiz";
+			quiz.load( story.path );
+			ShowHideManager.addContent( (this as ArticleView ), quiz );
 		}
 		
 		/**********************************
@@ -315,9 +330,47 @@ package org.tizianoproject.view
 			}
 			
 			//If there are more than 5 features, add a Scroll Bar
-			if( totalFeatures > 5 ) initFeatureScrollBar();
+			if( totalFeatures > 5 ) {
+				initFeatureScrollBar();
+				//initMouseScroller();
+			}
 		}
 		
+		private function initMouseScroller():void
+		{
+			//Feature Width = 320px
+			//Feature Height = 110px * 4 (at a time)
+			
+			featureMask = new MovieClip();
+			featureMask.name = "featureMask";
+			featureMask.x = featureHolder.x;
+			featureMask.y = featureHolder.y;
+			featureMask.graphics.beginFill( 0xffcc00, 1 );
+			featureMask.graphics.drawRect( 0, 0, 320, 440 );
+			featureMask.graphics.endFill();
+			ShowHideManager.addContent( (this as ArticleView), featureMask );
+			
+			featureHolder.mask =featureMask;
+			
+			featureHolder.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMoveHandler, false, 0, true );
+		}
+		
+		private function onMouseMoveHandler( e:MouseEvent ):void
+		{
+			//trace( "ArticleView::onMouseMoveHandler:" );
+			if( e.currentTarget is FeatureHolder  ){
+				if( featureHolder.height > featureMask.height ){
+					var yResult:Number = featureHolder.height - featureMask.height;
+					var c:Number = 0 - ( (yResult / featureMask.height) * (mouseY) );
+					trace( yResult, (yResult/featureMask.height) , c );
+					if( c > 5 ){
+						c = 5;
+					}
+					TweenLite.to( featureHolder, 1, { y:Math.ceil(c) } );
+				}				
+			}
+		}
+
 		private function initFeatureScrollBar():void
 		{
 			//Create the Features Holder
@@ -326,6 +379,7 @@ package org.tizianoproject.view
 			ShowHideManager.addContent( (this as ArticleView), featureScrollBar );
 		}
 		
+
 		private function showAuthorType( value:String ):void
 		{
 			authorType_mc.gotoAndStop( value.toLowerCase() );
@@ -354,6 +408,7 @@ package org.tizianoproject.view
 			ShowHideManager.removeContent( (this as ArticleView), "featureScrollBar" );			
 			ShowHideManager.removeContent( (this as ArticleView), "soundslide" );
 			ShowHideManager.removeContent( (this as ArticleView), "text" );
+			ShowHideManager.removeContent( (this as ArticleView), "quiz" );
 			ShowHideManager.removeContent( (this as ArticleView), "slideshow" );
 		}
 		
