@@ -94,9 +94,16 @@ package org.tizianoproject.model
 			var array:Array = ( isRandom ) ? ArrayUtil.randomize( authors ) : authors; 
 			return array;
 		}
-
-		public function getAuthorByName( authorName:String ):Author
+		
+		private function showTrace( name:String, value:String ):void
 		{
+			trace( name, value );
+		}
+
+		public function getAuthorByName( authorName:String, callerName:String="" ):Author
+		{
+			if( callerName != "" ) showTrace( "XMLLoader::getAuthorByName:->", callerName );
+
 			//Filter all the authors a specific name
 			var profileXML:XML = XML( getAuthor().child("profile").( child("name") == authorName ) );
 			//Convert the XML into Author
@@ -105,8 +112,10 @@ package org.tizianoproject.model
 			return profile;
 		}
 
-		public function getAuthorTypeByName( authorName:String ):String
+		public function getAuthorTypeByName( authorName:String, callerName:String="" ):String
 		{
+			if( callerName != "" ) showTrace( "XMLLoader::getAuthorTypeByName:->", callerName );
+
 			//trace( "getAuthorTypeByName:", getAuthorByName( authorName ).type );
 			return getAuthorByName( authorName ).type;
 		}		
@@ -130,16 +139,22 @@ package org.tizianoproject.model
 		////////////////////////////////
 		//Articles 
 		////////////////////////////////
-		public function getAllAuthorArticlesByID( uniqueID:Number ):Array
+		public function getAllAuthorArticlesByID( uniqueID:Number, callerName:String="" ):Array
 		{
+			if( callerName != "" ) showTrace( "XMLLoader::getAllAuthorArticlesByID:->", callerName );
+			
+			showTrace( "XMLLoader::", "[getAllAuthorArticlesByID]:primaryStory" );
 			var primaryStory:Story = getArticleByArticleID( uniqueID );
+			showTrace( "XMLLoader::", "[getAllAuthorArticlesByID]:otherStories" );
 			var otherStories:Array = getOtherArticlesByAuthorName( primaryStory.authorName, primaryStory.id );
 				otherStories.unshift( primaryStory );
 			return otherStories;
 		}
 		
-		public function getOtherArticlesByAuthorName( authorName:String, storyID:Number ):Array
+		public function getOtherArticlesByAuthorName( authorName:String, storyID:Number, callerName:String="" ):Array
 		{
+			if( callerName != "" ) showTrace( "XMLLoader::getOtherArticlesByAuthorName:->", callerName );
+
 			//trace( "XMLLoader::getOtherArticlesByAuthorName:" );
 			var articles:XMLList = getAllArticles().( child("author") == authorName );
 			//Iterate through each XML Node and Create a Story Object, then Push an Array
@@ -153,9 +168,10 @@ package org.tizianoproject.model
 			return stories;
 		}
 		
-		public function getAllArticlesByAuthorName( authorName:String ):Array
+		public function getAllArticlesByAuthorName( authorName:String, callerName:String="" ):Array
 		{
-			trace( "XMLLoader::getAllArticlesByAuthorName", authorName );
+			if( callerName != "" ) showTrace( "XMLLoader::getAllArticlesByAuthorName:->", callerName );
+
 			var articles:XMLList = getAllArticles().( child("author") == authorName );
 			//Iterate through each XML Node and Create a Story Object, then Push an Array
 			var stories:Array = new Array();
@@ -168,8 +184,10 @@ package org.tizianoproject.model
 		}
 
 		//Get Article By Article ID
-		public function getArticleByArticleID( uniqueID:Number ):Story
+		public function getArticleByArticleID( uniqueID:Number, callerName:String="" ):Story
 		{
+			if( callerName != "" ) showTrace( "XMLLoader::getArticleByArticleID:->", callerName );
+
 			//trace( "XMLLoader::getArticleByArticleID" );
 			//Find the <article> based on it's <article><id>
 			var article:XMLList = getAllArticles().( child("id") == uniqueID );
@@ -194,20 +212,15 @@ package org.tizianoproject.model
 				story.sound			= ( article.child("audio_wall").text() )	? article.child("audio_wall").text() 	: "";
 				story.bgImage		= ( article.child("image_bg").text() )		? article.child("image_bg").text()		: "";
 
-				story.path			= ( article.child("mp4_video").text() )		? article.child("mp4_video").text()		: "";
-				story.path			= ( article.child("flv_video").text() )		? article.child("flv_video").text()		: "";
-				story.path			= ( article.child("quiz_swf").text() )		? article.child("quiz_swf").text()		: "";
-				
-				story.xml			= ( article.child("quiz_xml").text() )		? article.child("quiz_xml").text()		: "";
-				
 				story.authorName	= ( article.child("author").text() )		? article.child("author").text()		: "";
 				story.authorType	= ( story.authorName )						? getAuthorTypeByName( story.authorName ) : "";
 
+				
 				//Truncate the text "in Iraqi Kurdistan"
 				var titleIndex:Number = story.title.search(/in Iraqi Kurdistan/i);
 				if( titleIndex > -1 ) story.title = story.title.substr( 0, titleIndex - 1 );
 				
-				//trace( "XMLLoader::createStory:\n", story.id, story.storyType, story.title, story.headline, story.subheadline, story.image, story.authorName, story.authorType );
+				//trace( "XMLLoader::createStory:\n", story.id, story.storyType, story.title, story.headline, story.subheadline, story.videoPath, story.authorName, story.authorType );
 
 			//Specific Story Information
 			switch( story.storyType ){
@@ -217,6 +230,7 @@ package org.tizianoproject.model
 				case "video":
 					story.vimeoConsumerKey = getVimeoConsumerKey();
 					story.vimeoID = Number( article.child("vimeo_id").text() );
+					story.youTubeID = article.child("youtube_id").text();
 					break;
 				case "photo":
 					var uri:String = getSoundSlideURI();
@@ -227,6 +241,10 @@ package org.tizianoproject.model
 				case "slideshow":
 					story.flickrKey = getFlickrAPIKey();
 					story.flickrPhotoset = article.child("flickr_photoset").text();
+					break;
+				case "quiz":
+					story.path = article.child("quiz_swf").text();
+					story.xml = article.child("quiz_xml").text();					
 					break;
 			}
 			//trace( "XMLLoader::createStory:", story.path );
