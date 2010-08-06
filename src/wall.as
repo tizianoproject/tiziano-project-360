@@ -122,4 +122,4 @@ function loadXML() {
 //	matrix_mc.load("http://tizianoproject.org/360/jumpeye.xml");
 }
 matrix_mc._visible = true;
-matrix_mc.load("http://360.tizianoproject.org/jumpeye.xml");
+matrix_mc.load("http://360.tizianoproject.org/xml/jumpeye.xml");
