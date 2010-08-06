@@ -88,10 +88,6 @@ package org.tizianoproject.view
 		}
 		
 		/**********************************
-		 * Student / Mentor Buttons 
-		 **********************************/
-
-		/**********************************
 		 * Resize
 		 **********************************/		
 		override protected function resize(e:FullScreenEvent):void
