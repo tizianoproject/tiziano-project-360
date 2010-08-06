@@ -40,6 +40,8 @@ package org.tizianoproject.model.vo
 		//Vimeo
 		private var _vimeoConsumerKey:String;
 		private var _vimeoID:Number;
+		//You Tube
+		private var _youTubeID:String;
 		
 		public function Story()
 		{
@@ -239,6 +241,15 @@ package org.tizianoproject.model.vo
 			return _vimeoID;
 		}
 		
+		public function set youTubeID( value:String ):void
+		{
+			_youTubeID = value;
+		}
+		
+		public function get youTubeID():String
+		{
+			return _youTubeID;
+		}
 
 		/**
 		 * Quiz		
