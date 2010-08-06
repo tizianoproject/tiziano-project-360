@@ -305,8 +305,9 @@ package org.tizianoproject.view
 			var index:Number = value.search(" " );
 			//Strip the name after the white space
 			value = value.substr( 0, index );
-			//Write
-			title_txt.text = value + "'s Stories";
+			//If the first name end's with "s", strip it out
+			var pluralizer:String = ( value.substr( -1, 1 ) == "s" ) ? "" : "s";
+			title_txt.text = value + "'" + pluralizer + " Stories";
 		}
 		
 		private function writeOtherAuthors( authorType:String ):void
