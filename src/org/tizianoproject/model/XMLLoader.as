@@ -184,16 +184,24 @@ package org.tizianoproject.model
 			var article:XMLList = xml;
 			//Generic Story Information
 			var story:Story			= new Story();
-				story.id			= ( Number(article.child("id").text()) )	? Number(article.child("id").text()) : -1;
-				story.storyType		= ( article.child("type").text() )			? article.child("type").text() : "";
-				story.headline		= ( article.child("headline").text() )		? article.child("headline").text() : "";
-				story.subheadline	= ( article.child("subheadline").text() )	? article.child("subheadline").text() : "";
-				story.image			= ( article.child("image_small").text() )	? article.child("image_small").text() : "";
-				story.authorName	= ( article.child("author").text() )		? article.child("author").text() : "";
-				story.sound			= ( article.child("audio_wall").text() )	? article.child("audio_wall").text() : "";
-				story.bgImage		= ( article.child("image_bg").text() )		? article.child("image_bg").text() : "";
+				story.id			= ( Number(article.child("id").text()) )	? Number(article.child("id").text())	: -1;
+
+				story.storyType		= ( article.child("type").text() )			? article.child("type").text() 			: "";
+				story.title			= ( article.child("title").text() )			? article.child("title").text()			: "";
+				story.headline		= ( article.child("headline").text() )		? article.child("headline").text()		: "";
+				story.subheadline	= ( article.child("subheadline").text() )	? article.child("subheadline").text()	: "";
+				story.image			= ( article.child("image_small").text() )	? article.child("image_small").text()	: "";
+				story.sound			= ( article.child("audio_wall").text() )	? article.child("audio_wall").text() 	: "";
+				story.bgImage		= ( article.child("image_bg").text() )		? article.child("image_bg").text()		: "";
+
+				story.path			= ( article.child("mp4_video").text() )		? article.child("mp4_video").text()		: "";
+				story.path			= ( article.child("flv_video").text() )		? article.child("flv_video").text()		: "";
+				story.path			= ( article.child("quiz_swf").text() )		? article.child("quiz_swf").text()		: "";
+				
+				story.xml			= ( article.child("quiz_xml").text() )		? article.child("quiz_xml").text()		: "";
+				
+				story.authorName	= ( article.child("author").text() )		? article.child("author").text()		: "";
 				story.authorType	= ( story.authorName )						? getAuthorTypeByName( story.authorName ) : "";
-				story.title			= ( article.child("title").text() )			? article.child("title").text() : "";
 
 				//Truncate the text "in Iraqi Kurdistan"
 				var titleIndex:Number = story.title.search(/in Iraqi Kurdistan/i);

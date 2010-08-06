@@ -27,6 +27,7 @@ package org.tizianoproject.model.vo
 		private var _caption:String;
 		private var _related:Array;
 		private var _sound:String;
+		private var _xml:String;
 		private var _bgImage:String;
 		
 		//Text Article
@@ -237,5 +238,20 @@ package org.tizianoproject.model.vo
 		{
 			return _vimeoID;
 		}
+		
+
+		/**
+		 * Quiz		
+		 **/
+		public function set xml( value:String ):void
+		{
+			_xml = value;
+		}
+		
+		public function get xml():String
+		{
+			return _xml;
+		}
+		
 	}
 }
