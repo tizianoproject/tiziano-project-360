@@ -16,9 +16,9 @@ package de.derhess.video.vimeo
         //  Class variables
         //
         //--------------------------------------------------------------------------
-        public static const DURATION:String = "vimeoDurationChange";
-		public static const STATUS:String = "vimeoStatus";
-		public static const PLAYER_LOADED:String = "vimeoPlayerLoaded";
+        public static const DURATION:String			= "vimeoDurationChange";
+		public static const STATUS:String			= "vimeoStatus";
+		public static const PLAYER_LOADED:String	= "vimeoPlayerLoaded";
         //--------------------------------------------------------------------------
         //
         //  Initialization
@@ -88,9 +88,9 @@ package de.derhess.video.vimeo
         override public function clone():Event 
         {	
         	var event:VimeoEvent = new VimeoEvent(type);
-        	event.info = this.info;
-        	event.currentTime = this.currentTime;
-        	event.duration = this.duration;
+        		event.info = this.info;
+	        	event.currentTime = this.currentTime;
+    	    	event.duration = this.duration;
             return event;
         }
         
