@@ -11,6 +11,8 @@ package org.tizianoproject.view
 	import flash.events.Event;
 	import flash.events.FullScreenEvent;
 	import flash.events.MouseEvent;
+	import flash.events.TextEvent;
+	import flash.net.URLRequest;
 	
 	public class HeaderView extends CompositeView
 	{
@@ -25,6 +27,8 @@ package org.tizianoproject.view
 		private var browserWidth:Number;
 
 		public var headerRight_mc:MovieClip;
+		public var logo_mc:MovieClip;
+		
 		private var reportersBtn:SimpleButton;
 		private var mentorsBtn:SimpleButton;
 		private var infoBtn:SimpleButton;
@@ -36,7 +40,7 @@ package org.tizianoproject.view
 			mentorsBtn 		= headerRight_mc.mentorsBtn;			
 			reportersBtn	= headerRight_mc.reportersBtn;
 		}
-
+		
 		/**********************************
 		 * 
 		 **********************************/

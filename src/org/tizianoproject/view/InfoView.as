@@ -4,8 +4,11 @@ package org.tizianoproject.view
 	
 	import flash.display.MovieClip;
 	import flash.display.StageDisplayState;
+	import flash.events.Event;
 	import flash.events.FullScreenEvent;
+	import flash.events.TextEvent;
 	import flash.geom.Point;
+	import flash.text.TextField;
 	
 	import org.tizianoproject.events.BaseViewEvent;
 	
@@ -18,10 +21,13 @@ package org.tizianoproject.view
 		
 		private static const DEFAULT_POS:Point = new Point( 0, 71 );
 		
+		private static const URL:String = "http://www.tizianoproject.org";
+		
 		private var browserWidth:Number;
 		private var browserHeight:Number;
 		
 		public var baseView_mc:BaseView;
+		public var url_txt:TextField;		
 		
 		public function InfoView()
 		{
@@ -31,7 +37,15 @@ package org.tizianoproject.view
 		{
 			updatePosition();
 			
+			url_txt.htmlText = "<a href='" + URL + "' target='_blank'>www.TizianoProject.org</a>";
+			url_txt.addEventListener(TextEvent.LINK, onTextLinkHandler, false, 0, true );			
+
 			baseView_mc.addEventListener( BaseViewEvent.CLOSE, onBaseCloseHandler, false, 0, true );
+		}
+		
+		private function onTextLinkHandler( e:TextEvent ):void
+		{
+			trace( "InfoView::onTextLinkHandler:", e.text );
 		}
 		
 		/**********************************
