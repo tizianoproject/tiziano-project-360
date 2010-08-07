@@ -27,7 +27,6 @@ package org.tizianoproject.model.vo
 		private var _caption:String;
 		private var _related:Array;
 		private var _sound:String;
-		private var _xml:String;
 		private var _bgImage:String;
 		
 		//Text Article
@@ -37,11 +36,11 @@ package org.tizianoproject.model.vo
 		//Flickr
 		private var _flickrKey:String
 		private var _flickrPhotoset:String;
-		//Vimeo
-		private var _vimeoConsumerKey:String;
-		private var _vimeoID:Number;
 		//You Tube
 		private var _youTubeID:String;
+		private var _aspectRatio:String;
+		//Quiz
+		private var _xml:String;
 		
 		public function Story()
 		{
@@ -219,28 +218,8 @@ package org.tizianoproject.model.vo
 		}
 		
 		/**
-		 * Vimeo		
+		 * YouTube		
 		 **/		
-		public function set vimeoConsumerKey( value:String ):void
-		{
-			_vimeoConsumerKey = value;
-		}
-		
-		public function get vimeoConsumerKey():String
-		{
-			return _vimeoConsumerKey;
-		}
-		
-		public function set vimeoID( value:Number ):void
-		{
-			_vimeoID = value;
-		}
-		
-		public function get vimeoID():Number
-		{
-			return _vimeoID;
-		}
-		
 		public function set youTubeID( value:String ):void
 		{
 			_youTubeID = value;
@@ -251,6 +230,17 @@ package org.tizianoproject.model.vo
 			return _youTubeID;
 		}
 
+		public function set aspectRatio( value:String ):void
+		{
+			_aspectRatio = value;
+		}
+		
+		public function get aspectRatio():String
+		{
+			return _aspectRatio;
+		}
+		
+		
 		/**
 		 * Quiz		
 		 **/
