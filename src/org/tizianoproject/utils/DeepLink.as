@@ -6,9 +6,10 @@ package org.tizianoproject.utils
 	{
 		private static const BROWSER_TITLE:String = "Tiziano 360: ";
 		
-		public static const STORY:String = "story";
-		public static const DIRECTORY:String = "directory";
-		public static const PROFILE:String = "profile";
+		public static const STORY:String		= "story";
+		public static const ABOUT:String		= "about";
+		public static const PROFILE:String		= "profile";
+		public static const DIRECTORY:String	= "directory";
 		
 		private var _param:String;
 		private var _id:Number;
@@ -39,28 +40,32 @@ package org.tizianoproject.utils
 			
 			switch( value ){
 				case "mentors":
-					param = "mentorsView";
+					param = "mentorsBtn";
 					type = DIRECTORY;
 					break;
 				case "mentor":
-					param = "mentorsView";
+					param = "mentorsBtn";
 					type = DIRECTORY;
 					break;
 				case "reporters":
-					param = "studentsView";
+					param = "reportersBtn";
 					type = DIRECTORY;
 					break;
 				case "reporter":
-					param = "studentsView";
+					param = "reportersBtn";
 					type = DIRECTORY;
 					break;
 				case "students":
-					param = "studentsView";
+					param = "reportersBtn";
 					type = DIRECTORY;
 					break;
 				case "student":
-					param = "studentsView";
+					param = "reportersBtn";
 					type = DIRECTORY;
+					break;
+				case "about":
+					param = "aboutBtn";
+					type = ABOUT;
 					break;
 				//Try to convert the deep link into a Number
 				default:
@@ -74,7 +79,7 @@ package org.tizianoproject.utils
 						}
 					}
 					catch( e:Error ){
-						trace( "Application::onSwfAddressHandler:Error:", e.message );
+						trace( "DeepLink::onSwfAddressHandler:Error:", e.message );
 					}
 					break;
 			} 			

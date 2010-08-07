@@ -80,7 +80,9 @@ package org.tizianoproject.view.components.article
 			loader = new Loader();
 			loader.name = "loader";
 			loader.contentLoaderInfo.addEventListener(Event.INIT, onLoaderInit);
-			loader.load( request );
+			try{
+				loader.load( request );				
+			} catch( e:ErrorEvent ){ trace( "Video::load:" ) }
 			
 			//Load the Aspect Ratio Information
 			try {
@@ -131,16 +133,18 @@ package org.tizianoproject.view.components.article
 		private function onPlayerReady( e:Event ):void
 		{
 			// Event.data contains the event parameter, which is the Player API ID 
-			trace("Video::onPlayerReady:", Object(e).data);
+			//trace("Video::onPlayerReady:", Object(e).data);
 
 			// Once this event has been dispatched by the player, we can use
 			// cueVideoById, loadVideoById, cueVideoByUrl and loadVideoByUrl
 			// to load a particular YouTube video.
-			player = loader.content;
-			player.x = DEFAULT_POS.x;
-			player.y = DEFAULT_POS.y;
-			setQuality( QUALITY_TO_PLAYER_WIDTH.medium );
-			resizePlayer(  );
+			if( loader.content ){
+				player = loader.content;
+				player.x = DEFAULT_POS.x;
+				player.y = DEFAULT_POS.y;
+				setQuality( QUALITY_TO_PLAYER_WIDTH.medium );
+				resizePlayer(  );				
+			}
 		}
 		
 		private function setQuality( suggestedQuality:String ):void

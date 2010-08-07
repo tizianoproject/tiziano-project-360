@@ -191,6 +191,18 @@ package org.tizianoproject.model
 			return story;
 		}
 		
+		public function findArticle( uniqueID:Number ):Boolean
+		{
+			var boolean:Boolean;
+			var article:XMLList = getAllArticles().( child("id") == uniqueID );
+			var story:Story = createStory( article ) as Story;
+
+			if( article.length() > 0 ) boolean = true;
+			else boolean = false;
+			
+			return boolean;
+		}
+		
 		//Create a Story Object from XML Node
 		private function createStory( xml:XMLList ):Story
 		{

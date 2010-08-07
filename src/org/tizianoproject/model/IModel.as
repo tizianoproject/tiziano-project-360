@@ -21,6 +21,7 @@ package org.tizianoproject.model
 		function getOtherArticlesByAuthorName( authorName:String, storyID:Number, callerName:String="" ):Array
 		function getAllArticlesByAuthorName( authorName:String, callerName:String="" ):Array			
 			
+		function findArticle( uniqueID:Number ):Boolean;
 		function getArticleByArticleID( uniqueID:Number, callerName:String="" ):Story
 		//Gets all author articles with the uniqueID story having priority
 		function getAllAuthorArticlesByID( uniqueID:Number, callerName:String="" ):Array

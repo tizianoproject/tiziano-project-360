@@ -31,12 +31,12 @@ package org.tizianoproject.view
 		
 		private var reportersBtn:SimpleButton;
 		private var mentorsBtn:SimpleButton;
-		private var infoBtn:SimpleButton;
+		private var aboutBtn:SimpleButton;
 		
 		public function HeaderView(  )
 		{
 			//Assign Target
-			infoBtn			= headerRight_mc.infoBtn;
+			aboutBtn		= headerRight_mc.aboutBtn;
 			mentorsBtn 		= headerRight_mc.mentorsBtn;			
 			reportersBtn	= headerRight_mc.reportersBtn;
 		}
@@ -48,7 +48,7 @@ package org.tizianoproject.view
 		{
 			initBackground();
 			
-			infoBtn.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
+			aboutBtn.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
 			mentorsBtn.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
 			reportersBtn.addEventListener(MouseEvent.CLICK, onMentorClickHandler, false, 0, true );
 		}
