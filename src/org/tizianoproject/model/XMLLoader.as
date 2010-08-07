@@ -56,11 +56,6 @@ package org.tizianoproject.model
 		////////////////////////////////
 		//Consumer KEYS
 		////////////////////////////////
-		private function getVimeoConsumerKey():String
-		{
-			return getConfig().child("vimeo_consumer_key").text();
-		}
-		
 		private function getFlickrAPIKey():String
 		{
 			return getConfig().child("flickr_key").text();			
@@ -228,8 +223,7 @@ package org.tizianoproject.model
 					story.content = article.child("content");
 					break;
 				case "video":
-					story.vimeoConsumerKey = getVimeoConsumerKey();
-					story.vimeoID = Number( article.child("vimeo_id").text() );
+					story.aspectRatio = article.child("aspect_ratio").text();
 					story.youTubeID = article.child("youtube_id").text();
 					break;
 				case "photo":
