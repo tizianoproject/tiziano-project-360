@@ -49,6 +49,7 @@ package org.tizianoproject.view.components.article
 		//Use this if you want to create your own custom chrome
 		private static const YOU_TUBE_API_PLAYER_URL:String = "http://www.youtube.com/apiplayer"; 
 		private static const YOU_TUBE_API_VERSION:String = "3";
+		private static const YOU_TUBE_GUI_HEIGHT:Number = 32;
 		private static const YOUTUBE_API_PREFIX:String = "http://gdata.youtube.com/feeds/api/videos/";
 		private static const QUALITY_TO_PLAYER_WIDTH:Object = { small: 320, medium: 640, large: 854, hd720: 1280 };
 
@@ -61,11 +62,13 @@ package org.tizianoproject.view.components.article
 
 		public function Video( )
 		{
-			setupYouTubeApiLoader();
+			Security.allowDomain("*");
+			//setupYouTubeApiLoader();
 		}
 
 		public function load( id:String, ratio:String ):void
 		{
+			//trace( "Video::load:", id, ratio );
 			aspectRatio = ratio;
 			
 			var urlVars:URLVariables = new URLVariables();
@@ -76,19 +79,27 @@ package org.tizianoproject.view.components.article
 				request.method = URLRequestMethod.GET;
 				request.url = YOU_TUBE_PLAYER_URL + id;
 				request.data = urlVars;
-			
+				
 			loader = new Loader();
 			loader.name = "loader";
-			loader.contentLoaderInfo.addEventListener(Event.INIT, onLoaderInit);
+			loader.addEventListener( IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
+			loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onErrorHandler, false, 0, true );
+			loader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
+			loader.contentLoaderInfo.addEventListener(Event.INIT, onLoaderInit, false, 0, true );
+			
 			try{
 				loader.load( request );				
-			} catch( e:ErrorEvent ){ trace( "Video::load:" ) }
+			} catch( e:ErrorEvent ){ 
+				trace( "Video::load:" ) 
+			}
 			
-			//Load the Aspect Ratio Information
-			try {
-				youtubeApiLoader.load( new URLRequest(YOUTUBE_API_PREFIX + id ));
-			} catch (error:SecurityError) {
-				trace("A SecurityError occurred while loading", request.url);
+			if( youtubeApiLoader ){
+				//Load the Aspect Ratio Information
+				try {
+					youtubeApiLoader.load( new URLRequest(YOUTUBE_API_PREFIX + id ));
+				} catch (error:SecurityError) {
+					trace("A SecurityError occurred while loading", request.url);
+				}
 			}
 		}
 		
@@ -109,7 +120,8 @@ package org.tizianoproject.view.components.article
 			}			
 		}
 		
-		private function setupYouTubeApiLoader():void {
+		private function setupYouTubeApiLoader():void
+		{
 			youtubeApiLoader = new URLLoader();
 			youtubeApiLoader.addEventListener(IOErrorEvent.IO_ERROR, onErrorHandler, false, 0, true );
 			youtubeApiLoader.addEventListener(Event.COMPLETE, youtubeApiLoaderCompleteHandler, false, 0, true );
@@ -133,7 +145,7 @@ package org.tizianoproject.view.components.article
 		private function onPlayerReady( e:Event ):void
 		{
 			// Event.data contains the event parameter, which is the Player API ID 
-			//trace("Video::onPlayerReady:", Object(e).data);
+			trace("Video::onPlayerReady:", Object(e).data);
 
 			// Once this event has been dispatched by the player, we can use
 			// cueVideoById, loadVideoById, cueVideoByUrl and loadVideoByUrl
@@ -155,8 +167,8 @@ package org.tizianoproject.view.components.article
 		private function resizePlayer():void
 		{
 			var newHeight:Number
-			if( aspectRatio == "16:9" ) newHeight = DEFAULT_WIDTH * 9 / 16;
-			else newHeight = DEFAULT_WIDTH * 3 / 4; 
+			if( aspectRatio == "16:9" ) newHeight = DEFAULT_WIDTH * 9 / 16 + YOU_TUBE_GUI_HEIGHT;
+			else newHeight = DEFAULT_WIDTH * 3 / 4 + YOU_TUBE_GUI_HEIGHT;
 			
 			player.setSize( DEFAULT_WIDTH, newHeight );
 		}
