@@ -10,6 +10,7 @@ package org.tizianoproject.view
 	public class CompositeView extends ComponentView
 	{
 		private var children:Array;
+		private var swfSizer:SWFSize;
 		
 		public function CompositeView()
 		{
@@ -19,6 +20,13 @@ package org.tizianoproject.view
 			addEventListener( Event.ADDED, onAddedHandler, false, 0, true );
 			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStageHandler, false, 0, true );
 		}
+
+		public function initSwfSize():void
+		{
+			swfSizer = SWFSize.getInstance();
+			swfSizer.addEventListener( SWFSizeEvent.INIT, swfSizerHandler, false, 0, true );
+			swfSizer.addEventListener( SWFSizeEvent.RESIZE, swfSizerHandler );
+		}		
 
 		protected function init():void
 		{

@@ -46,8 +46,6 @@ package org.tizianoproject.view
 			try{
 				swfLoader.load( new URLRequest( path ), new LoaderContext( true ) );				
 			} catch( e:Error ){ trace( "WallView::load Error:" ) }
-
-			ShowHideManager.addContent( (this as WallView), swfLoader );			
 		}
 		
 		public function showWall( duration:Number=TWEEN_SPEED ):void
@@ -118,6 +116,7 @@ package org.tizianoproject.view
 		private function onCompleteHandler( e:Event ):void
 		{
 			//trace( "WallView::onCompleteHandler:", "Wall is LOADED" );
+			ShowHideManager.addContent( (this as WallView), swfLoader );			
 		}
 		
 		private function onErrorHandler( e:Event ):void

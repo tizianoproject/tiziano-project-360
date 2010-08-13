@@ -14,6 +14,7 @@ package org.tizianoproject.utils
 		private var _param:String;
 		private var _id:Number;
 		private var _type:String;
+		private var _override:Boolean;
 		
 		public function DeepLink()
 		{
@@ -77,10 +78,7 @@ package org.tizianoproject.utils
 							id = number;
 							type = STORY;
 						}
-					}
-					catch( e:Error ){
-						trace( "DeepLink::onSwfAddressHandler:Error:", e.message );
-					}
+					} catch( e:Error ){ trace( "DeepLink::onSwfAddressHandler:Error:", e.message ); }
 					break;
 			} 			
 		}
@@ -116,6 +114,16 @@ package org.tizianoproject.utils
 		public function get type():String
 		{
 			return _type;
+		}
+		
+		public function set override( value:Boolean ):void
+		{
+			_override = value;
+		}
+		
+		public function get override():Boolean
+		{
+			return _override;
 		}
 	}
 }
