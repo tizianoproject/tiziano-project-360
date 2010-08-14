@@ -14,7 +14,7 @@ package org.tizianoproject.utils
 		private var _param:String;
 		private var _id:Number;
 		private var _type:String;
-		private var _override:Boolean;
+		private var _update:Boolean = true;
 		
 		public function DeepLink()
 		{
@@ -116,14 +116,14 @@ package org.tizianoproject.utils
 			return _type;
 		}
 		
-		public function set override( value:Boolean ):void
+		public function set update( value:Boolean ):void
 		{
-			_override = value;
+			_update = value;
 		}
 		
-		public function get override():Boolean
+		public function get update():Boolean
 		{
-			return _override;
+			return _update;
 		}
 	}
 }

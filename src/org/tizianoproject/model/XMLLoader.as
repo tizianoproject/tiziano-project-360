@@ -92,7 +92,7 @@ package org.tizianoproject.model
 		
 		private function showTrace( name:String, value:String ):void
 		{
-			trace( name, value );
+			//trace( name, value );
 		}
 
 		public function getAuthorByName( authorName:String, callerName:String="" ):Author
