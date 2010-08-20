@@ -71,13 +71,19 @@ package org.tizianoproject.view.components.article
 			//trace( "Video::load:", id, ratio );
 			aspectRatio = ratio;
 			
+			//Learn More about YouTube's paramaters here
+			//http://code.google.com/apis/youtube/player_parameters.html#showsearch
 			var urlVars:URLVariables = new URLVariables();
-				urlVars.cache_clear = new Date().getTime();
-				urlVars.version = YOU_TUBE_API_VERSION;
+				urlVars.cache_clear	= new Date().getTime();
+				urlVars.version		= YOU_TUBE_API_VERSION;
+				urlVars.rel			= 0;
+				urlVars.hd			= 1;
+				urlVars.showsearch	= 0;
+				
 					
 			var request:URLRequest = new URLRequest();
 				request.method = URLRequestMethod.GET;
-				request.url = YOU_TUBE_PLAYER_URL + id;
+				request.url  = YOU_TUBE_PLAYER_URL + id;
 				request.data = urlVars;
 				
 			loader = new Loader();
