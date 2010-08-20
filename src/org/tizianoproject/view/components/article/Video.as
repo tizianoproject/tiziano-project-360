@@ -45,13 +45,16 @@ package org.tizianoproject.view.components.article
 		private static const DEFAULT_WIDTH:Number = 451;
 		private static const DEFAULT_HEIGHT:Number = 370;
 		
+		private static const QUALITY_TO_PLAYER_WIDTH:Object = { small: 320, medium: 640, large: 854, hd720: 1280 };
+		private static const SUGGESTED_VIDEO_QUALITY:String = QUALITY_TO_PLAYER_WIDTH.medium;
+		
 		private static const YOU_TUBE_PLAYER_URL:String = "http://www.youtube.com/v/";
+		private static const YOU_TUBE_API_VERSION:String = "3";
+		private static const YOU_TUBE_API_PREFIX:String = "http://gdata.youtube.com/feeds/api/videos/";
+		private static const YOU_TUBE_GUI_HEIGHT:Number = 32;
 		//Use this if you want to create your own custom chrome
 		private static const YOU_TUBE_API_PLAYER_URL:String = "http://www.youtube.com/apiplayer"; 
-		private static const YOU_TUBE_API_VERSION:String = "3";
-		private static const YOU_TUBE_GUI_HEIGHT:Number = 32;
-		private static const YOUTUBE_API_PREFIX:String = "http://gdata.youtube.com/feeds/api/videos/";
-		private static const QUALITY_TO_PLAYER_WIDTH:Object = { small: 320, medium: 640, large: 854, hd720: 1280 };
+		
 
 		//YouTube
 		private var youtubeApiLoader:URLLoader;
@@ -76,8 +79,11 @@ package org.tizianoproject.view.components.article
 			var urlVars:URLVariables = new URLVariables();
 				urlVars.cache_clear	= new Date().getTime();
 				urlVars.version		= YOU_TUBE_API_VERSION;
-				urlVars.rel			= 0;
+				//Offer HD (when Available)
 				urlVars.hd			= 1;
+				//Don't Show Related Videos
+				urlVars.rel			= 0;
+				//DOn't show search
 				urlVars.showsearch	= 0;
 				
 					
@@ -102,7 +108,7 @@ package org.tizianoproject.view.components.article
 			if( youtubeApiLoader ){
 				//Load the Aspect Ratio Information
 				try {
-					youtubeApiLoader.load( new URLRequest(YOUTUBE_API_PREFIX + id ));
+					youtubeApiLoader.load( new URLRequest(YOU_TUBE_API_PREFIX + id ));
 				} catch (error:SecurityError) {
 					trace("A SecurityError occurred while loading", request.url);
 				}
@@ -160,7 +166,7 @@ package org.tizianoproject.view.components.article
 				player = loader.content;
 				player.x = DEFAULT_POS.x;
 				player.y = DEFAULT_POS.y;
-				setQuality( QUALITY_TO_PLAYER_WIDTH.medium );
+				setQuality( SUGGESTED_VIDEO_QUALITY );
 				resizePlayer(  );				
 			}
 		}
