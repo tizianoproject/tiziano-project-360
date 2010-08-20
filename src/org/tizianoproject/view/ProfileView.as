@@ -44,6 +44,7 @@ package org.tizianoproject.view
 		private static const DEFAULT_RELATED_AUTHOR_POS:Point = new Point( 45, 510);
 		private static const DEFAULT_TABLE_COLUMNS:Number = 1;
 		private static const MAX_OTHER_AUTHORS:Number = 6;
+		private static const MAX_FEATURES:Number = 4;
 		
 		private static const IMAGE_PADDING_WIDTH:Number = 18;
 		private static const IMAGE_PADDING_HEIGHT:Number = 0;
@@ -125,6 +126,7 @@ package org.tizianoproject.view
 			clearLoader()
 
 			//Load New Profile
+			ShowHideManager.removeContent( (this as ProfileView), "featureScrollBar" );			
 			ShowHideManager.unloadContent( featureHolder );
 			ShowHideManager.unloadContent( relatedAuthorHolder );
 		}
@@ -268,7 +270,8 @@ package org.tizianoproject.view
 			}
 			
 			//If there are more than 5 features, add a Scroll Bar
-			if( featureHolder.numChildren > 5 ) initFeatureScrollBar();
+			
+			if( featureHolder.numChildren > MAX_FEATURES ) initFeatureScrollBar();
 		}
 		
 		private function initFeatureScrollBar():void

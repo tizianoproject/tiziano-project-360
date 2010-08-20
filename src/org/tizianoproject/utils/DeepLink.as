@@ -1,6 +1,7 @@
 package org.tizianoproject.utils
 {
 	import com.asual.swfaddress.SWFAddress;
+	import com.google.analytics.GATracker;
 
 	public class DeepLink extends Object
 	{

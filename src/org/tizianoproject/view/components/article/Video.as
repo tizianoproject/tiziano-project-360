@@ -40,7 +40,7 @@ package org.tizianoproject.view.components.article
 	
 	public class Video extends CompositeView
 	{	
-		private static const DEFAULT_POS:Point = new Point( 35, 105 );
+		private static const DEFAULT_POS:Point = new Point( 35, 110 );
 		
 		private static const DEFAULT_WIDTH:Number = 451;
 		private static const DEFAULT_HEIGHT:Number = 370;

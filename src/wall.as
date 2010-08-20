@@ -102,6 +102,7 @@ matrix_mc.border = 0;
 matrix_mc.preloader = "circle";
 matrix_mc.preloaderColor = 0xFFFFFF;
 matrix_mc.navigation = "mouse movement";
+//matrix_mc.navigation = "scroll bars";
 matrix_mc.background = false;
 matrix_mc.thumbBorderSize = 0;
 matrix_mc.thumbWidth = 201;
